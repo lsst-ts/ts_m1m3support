@@ -31,6 +31,7 @@
 
 #include "FABumpTestData.h"
 #include "ForceActuatorApplicationSettings.h"
+#include "ForceActuatorBumpTestStatus.h"
 #include "ForceActuatorSettings.h"
 #include "M1M3SSPublisher.h"
 
@@ -127,7 +128,7 @@ size_t FABumpTestData::size() const {
     return _head;
 }
 
-BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type, float expected_force) {
+BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type) {
     if (size() != _capacity) {
         return BumpTestStatus::NO_DATA;
     }
@@ -165,13 +166,13 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type, float e
         warning = fa_settings.bumpTestNonTestedWarning;
     }
 
-    return _test_rms(x_index, y_index, z_index, s_index, test_type, expected_force, error, warning);
-    // return _test_min_max(x_index, y_index, z_index, s_index, kind, expected_force, error, warning);
+    return _test_rms(x_index, y_index, z_index, s_index, test_type, error, warning);
+    // return _test_min_max(x_index, y_index, z_index, s_index, kind, error, warning);
 }
 
 void FABumpTestData::test_mirror(int test_type, BumpTestStatus (&results)[FA_COUNT]) {
     for (int i = 0; i < FA_COUNT; i++) {
-        results[i] = test_actuator(i, test_type, NAN);
+        results[i] = test_actuator(i, test_type);
     }
 }
 
@@ -237,6 +238,7 @@ BumpTestStatistics FABumpTestData::statistics(int fa_index, int axis_index, int 
     stat.average /= i;
 
     stat.error_rms = sqrt(stat.error_rms / i);
+    stat.rms_baseline = rms_baseline;
 
     fa_statistics[fa_index].statistics[test_type] = stat;
 
@@ -263,6 +265,16 @@ BumpTestStatus in_range(float force, float expected_force, float error, float wa
     return BumpTestStatus::PASSED;
 }
 
+BumpTestStatus in_rms(float error_rms, float error, float warning) {
+    if (error_rms > error) {
+        return RMS_ERROR;
+    }
+    if (error_rms > warning) {
+        return RMS_WARNING;
+    }
+    return BumpTestStatus::PASSED;
+}
+
 float FABumpTestData::get_expected_force(int axis_index, int test_type) {
     auto &pub = M1M3SSPublisher::instance();
     switch (test_type) {
@@ -281,7 +293,7 @@ float FABumpTestData::get_expected_force(int axis_index, int test_type) {
 }
 
 BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, int s_index, int test_type,
-                                         float expected_force, float error, float warning) {
+                                         float error, float warning) {
     BumpTestStatistics stat;
 
     BumpTestStatus *p_state = _primary_results + z_index;
@@ -295,55 +307,32 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
 
     switch (test_type) {
         case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
-            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Primary, expected_force);
-            *p_state = in_range(stat.error_rms, 0, error, warning);
-
-            if (s_state != NULL) {
-                stat = statistics(z_index, s_index, MTM1M3::MTM1M3_shared_BumpTestType_Secondary, NAN);
-                *s_state = in_range(stat.error_rms, 0, error, warning);
-            }
+            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Primary);
+            *p_state = in_rms(stat.error_rms, error, warning);
+        case MTM1M3::MTM1M3_shared_BumpTestType_Z:
+            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Z);
+            *p_state = in_rms(stat.error_rms, error, warning);
             break;
         case MTM1M3::MTM1M3_shared_BumpTestType_Secondary:
             if (s_index == -1) {
                 return BumpTestStatus::INVALID_ACTUATOR;
             }
-            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Primary, NAN);
-            *p_state = in_range(stat.error_rms, 0, error, warning);
-
-            stat = statistics(z_index, s_index, MTM1M3::MTM1M3_shared_BumpTestType_Secondary, NAN);
-            *s_state = in_range(stat.error_rms, 0, error, warning);
+            stat = statistics(z_index, s_index, MTM1M3::MTM1M3_shared_BumpTestType_Secondary);
+            *s_state = in_rms(stat.error_rms, error, warning);
             break;
         case MTM1M3::MTM1M3_shared_BumpTestType_X:
             if (x_index == -1) {
                 return BumpTestStatus::INVALID_ACTUATOR;
             }
-            stat = statistics(z_index, x_index, MTM1M3::MTM1M3_shared_BumpTestType_X, NAN);
-            *s_state = in_range(stat.error_rms, 0, error, warning);
-
-            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Z, NAN);
-            *p_state = in_range(stat.error_rms, 0, error, warning);
+            stat = statistics(z_index, x_index, MTM1M3::MTM1M3_shared_BumpTestType_X);
+            *s_state = in_rms(stat.error_rms, error, warning);
             break;
         case MTM1M3::MTM1M3_shared_BumpTestType_Y:
             if (y_index == -1) {
                 return BumpTestStatus::INVALID_ACTUATOR;
             }
-            stat = statistics(z_index, y_index, MTM1M3::MTM1M3_shared_BumpTestType_Y, NAN);
-            *s_state = in_range(stat.error_rms, 0, error, warning);
-
-            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Z, NAN);
-            *p_state = in_range(stat.error_rms, 0, error, warning);
-            break;
-        case MTM1M3::MTM1M3_shared_BumpTestType_Z:
-            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Z, NAN);
-            *p_state = in_range(stat.error_rms, 0, error, warning);
-
-            if (x_index != -1) {
-                stat = statistics(z_index, x_index, MTM1M3::MTM1M3_shared_BumpTestType_X, NAN);
-                *s_state = in_range(stat.error_rms, 0, error, warning);
-            } else if (y_index != -1) {
-                stat = statistics(z_index, y_index, MTM1M3::MTM1M3_shared_BumpTestType_Y, NAN);
-                *s_state = in_range(stat.error_rms, 0, error, warning);
-            }
+            stat = statistics(z_index, y_index, MTM1M3::MTM1M3_shared_BumpTestType_Y);
+            *s_state = in_rms(stat.error_rms, error, warning);
             break;
         default:
             return BumpTestStatus::INVALID_TEST_KIND;
@@ -360,8 +349,7 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
 }
 
 BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_index, int s_index,
-                                             int test_type, float expected_force, float error,
-                                             float warning) {
+                                             int test_type, float error, float warning) {
     BumpTestStatus *p_state = _primary_results + z_index;
     *p_state = BumpTestStatus::PASSED;
 
@@ -374,12 +362,8 @@ BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_ind
     for (size_t i = 0; i < _capacity; i++) {
         switch (test_type) {
             case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
-                if (isnan(expected_force)) {
-                    expected_force = M1M3SSPublisher::instance()
-                                             .getAppliedCylinderForces()
-                                             ->primaryCylinderForces[z_index];
-                }
-                *p_state = in_range(_primary_forces[z_index][i], expected_force, error, warning);
+                *p_state = in_range(_primary_forces[z_index][i], get_expected_force(z_index, test_type),
+                                    error, warning);
                 if (s_state != NULL) {
                     *s_state = in_range(_secondary_forces[z_index][i], 0, error, warning);
                 }
@@ -388,43 +372,29 @@ BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_ind
                 if (s_index == -1) {
                     return BumpTestStatus::INVALID_ACTUATOR;
                 }
-                if (isnan(expected_force)) {
-                    expected_force = M1M3SSPublisher::instance()
-                                             .getAppliedCylinderForces()
-                                             ->secondaryCylinderForces[s_index];
-                }
                 *p_state = in_range(_primary_forces[z_index][i], 0, error, warning);
-                *s_state = in_range(_secondary_forces[s_index][i], expected_force, error, warning);
+                *s_state = in_range(_secondary_forces[s_index][i], get_expected_force(s_index, test_type),
+                                    error, warning);
                 break;
             case MTM1M3::MTM1M3_shared_BumpTestType_X:
                 if (x_index == -1) {
                     return BumpTestStatus::INVALID_ACTUATOR;
                 }
-                if (isnan(expected_force)) {
-                    expected_force =
-                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->xForces[x_index];
-                }
-                *s_state = in_range(_x_forces[x_index][i], expected_force, error, warning);
+                *s_state = in_range(_x_forces[x_index][i], get_expected_force(x_index, test_type), error,
+                                    warning);
                 *p_state = in_range(_z_forces[z_index][i], 0, error, warning);
                 break;
             case MTM1M3::MTM1M3_shared_BumpTestType_Y:
                 if (y_index == -1) {
                     return BumpTestStatus::INVALID_ACTUATOR;
                 }
-                if (isnan(expected_force)) {
-                    expected_force =
-                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->yForces[y_index];
-                }
-                *s_state = in_range(_y_forces[y_index][i], expected_force, error, warning);
+                *s_state = in_range(_y_forces[y_index][i], get_expected_force(y_index, test_type), error,
+                                    warning);
                 *p_state = in_range(_z_forces[z_index][i], 0, error, warning);
                 break;
             case MTM1M3::MTM1M3_shared_BumpTestType_Z:
-                if (isnan(expected_force)) {
-                    expected_force =
-                            M1M3SSPublisher::instance().getEventAppliedOffsetForces()->zForces[z_index];
-                }
-
-                *p_state = in_range(_z_forces[z_index][i], expected_force, error, warning);
+                *p_state = in_range(_z_forces[z_index][i], get_expected_force(z_index, test_type), error,
+                                    warning);
 
                 if (x_index != -1) {
                     *s_state = in_range(_x_forces[x_index][i], 0, error, warning);

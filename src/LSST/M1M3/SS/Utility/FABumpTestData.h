@@ -25,6 +25,7 @@
 #define FABUMPTESTDATA_H_
 
 #include <map>
+#include <math.h>
 #include <mutex>
 
 #include <SAL_MTM1M3.h>
@@ -42,7 +43,9 @@ enum BumpTestStatus {
     UNDERSHOOT_ERROR,
     UNDERSHOOT_WARNING,
     OVERSHOOT_WARNING,
-    OVERSHOOT_ERROR
+    OVERSHOOT_ERROR,
+    RMS_ERROR,
+    RMS_WARNING
 };
 
 typedef std::vector<float> float_v;
@@ -54,10 +57,16 @@ typedef std::vector<int> int_v;
 struct BumpTestStatistics {
     BumpTestStatistics();
 
+    // signal minimal value
     float min;
+    // signal maximal value
     float max;
+    // signal average/mean value
     float average;
+    // Error RMS
     float error_rms;
+    // expected force value - baseline for RMS calculation
+    float rms_baseline;
 };
 
 /**
@@ -125,11 +134,10 @@ public:
      *
      * @param actuator_id Actuator to test.
      * @param type Test type - P,S or axis (XYZ) forces
-     * @param expected_force Force expected to be measured by the force actuator
      *
      * @return force actuator status
      */
-    BumpTestStatus test_actuator(int actuator_id, int test_type, float expected_force);
+    BumpTestStatus test_actuator(int actuator_id, int test_type);
 
     /**
      * Test the mirror. Call test_actuator on all actuators.
@@ -163,7 +171,7 @@ public:
      *
      * @return BumpTestStatistics with various statistics computed from cached data or retrieved from cache.
      */
-    BumpTestStatistics statistics(int fa_index, int axis_index, int test_type, float rms_baseline);
+    BumpTestStatistics statistics(int fa_index, int axis_index, int test_type, float rms_baseline = NAN);
 
     /**
      * Returns cached statistics. Throws std::out_of_range if it isn't available.
@@ -178,10 +186,10 @@ public:
     FABumpTestStatistics fa_statistics[FA_COUNT];
 
 private:
-    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, int test_type,
-                             float expected_force, float error, float warning);
+    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, int test_type, float error,
+                             float warning);
     BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, int test_type,
-                                 float expected_force, float error, float warning);
+                                 float error, float warning);
 
     float *_x_forces[FA_X_COUNT];
     float *_y_forces[FA_Y_COUNT];

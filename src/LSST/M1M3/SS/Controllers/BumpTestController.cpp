@@ -41,6 +41,12 @@ BumpTestController::BumpTestController() : _test_force(222), _bump_test_data(NUL
     SPDLOG_DEBUG("BumpTestController: BumpTestController()");
 
     ForceActuatorBumpTestStatus::instance().reset();
+
+    auto test_timeout = steady_clock::now() - seconds(10);
+
+    for (int i = 0; i < FA_COUNT; i++) {
+        _test_timeout[i] = test_timeout;
+    }
 }
 
 BumpTestController::~BumpTestController() { delete _bump_test_data; }
@@ -89,9 +95,6 @@ void BumpTestController::runLoop() {
     auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
     _collect_results();
-
-    BumpTestStatus primary_status[FA_COUNT], secondary_status[FA_COUNT], x_status[FA_COUNT],
-            y_status[FA_COUNT], z_status[FA_COUNT];
 
     _bump_test_data->test_mirror(MTM1M3::MTM1M3_shared_BumpTestType_Primary, primary_status);
     _bump_test_data->test_mirror(MTM1M3::MTM1M3_shared_BumpTestType_Secondary, secondary_status);
@@ -190,12 +193,191 @@ void BumpTestController::stopAll(bool forced) {
     }
 }
 
+int status_to_sal(BumpTestStatus status, const BumpTestStatistics &stat, int stage) {
+    switch (status) {
+        case BumpTestStatus::PASSED:
+        case BumpTestStatus::OVERSHOOT_WARNING:
+        case BumpTestStatus::UNDERSHOOT_WARNING:
+        case BumpTestStatus::RMS_WARNING:
+            return MTM1M3::MTM1M3_shared_BumpTest_Passed;
+        case BumpTestStatus::OVERSHOOT_ERROR:
+            switch (stage) {
+                case MTM1M3::MTM1M3_shared_BumpTest_Triggered:
+                case MTM1M3::MTM1M3_shared_BumpTest_TestingPositive:
+                case MTM1M3::MTM1M3_shared_BumpTest_TestingPositiveWait:
+                    return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedPositive_Overshoot;
+                default:
+                    return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedNegative_Overshoot;
+            }
+        case BumpTestStatus::UNDERSHOOT_ERROR:
+            switch (stage) {
+                case MTM1M3::MTM1M3_shared_BumpTest_Triggered:
+                case MTM1M3::MTM1M3_shared_BumpTest_TestingPositive:
+                case MTM1M3::MTM1M3_shared_BumpTest_TestingPositiveWait:
+                    return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedPositive_Undershoot;
+                default:
+                    return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedNegative_Undershoot;
+            }
+        case BumpTestStatus::RMS_ERROR:
+            if ((stat.average - stat.rms_baseline) >= 0) {
+                switch (stage) {
+                    case MTM1M3::MTM1M3_shared_BumpTest_Triggered:
+                    case MTM1M3::MTM1M3_shared_BumpTest_TestingPositive:
+                    case MTM1M3::MTM1M3_shared_BumpTest_TestingPositiveWait:
+                        return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedPositive_Overshoot;
+                    default:
+                        return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedNegative_Overshoot;
+                }
+            } else {
+                switch (stage) {
+                    case MTM1M3::MTM1M3_shared_BumpTest_Triggered:
+                    case MTM1M3::MTM1M3_shared_BumpTest_TestingPositive:
+                    case MTM1M3::MTM1M3_shared_BumpTest_TestingPositiveWait:
+                        return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedPositive_Undershoot;
+                    default:
+                        return MTM1M3::MTM1M3_shared_BumpTest_Failed_TestedNegative_Undershoot;
+                }
+            }
+        default:
+            return MTM1M3::MTM1M3_shared_BumpTest_Failed_Timeout;
+    }
+}
+
+void BumpTestController::_finalize_test(int actuator_id, int z_index, int s_index, int test_type, int stage,
+                                        const BumpTestStatistics &stat, steady_clock::time_point now,
+                                        BumpTestStatus status) {
+    if (status == BumpTestStatus::PASSED) {
+        M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
+                actuator_id, test_type, stage,
+                std::chrono::duration<float>(now - _test_start[z_index]).count(), stat);
+    } else {
+        if (FABumpTestData::is_primary(test_type)) {
+            _final_primary_states[z_index] = status_to_sal(status, stat, stage);
+        } else {
+            _final_secondary_states[s_index] = status_to_sal(status, stat, stage);
+        }
+
+        M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type, stage, NAN,
+                                                                       stat);
+    }
+
+    int failed_count = 0;
+
+    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+
+    bool test_cylinder = false;
+
+    switch (test_type) {
+        case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
+        case MTM1M3::MTM1M3_shared_BumpTestType_Secondary:
+            test_cylinder = true;
+        default:
+            break;
+    }
+
+    for (int acc = 0; acc < FA_COUNT; acc++) {
+        // don't look for problems on FAs being tested
+        if (_test_timeout[acc] > now) continue;
+
+        if (acc != z_index || FABumpTestData::is_primary(test_type) == false) {
+            auto p_state = test_cylinder ? primary_status[acc] : z_status[acc];
+            switch (p_state) {
+                case BumpTestStatus::OVERSHOOT_ERROR:
+                case BumpTestStatus::UNDERSHOOT_ERROR:
+                case BumpTestStatus::RMS_ERROR: {
+                    auto failed_id = faa_settings.ZIndexToActuatorId(acc);
+                    M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
+                            actuator_id, test_type, test_cylinder ? failed_id : 4000 + failed_id, NAN,
+                            _bump_test_data->cached_statistics(
+                                    acc, test_cylinder ? MTM1M3::MTM1M3_shared_BumpTestType_Primary
+                                                       : MTM1M3::MTM1M3_shared_BumpTestType_Z));
+                    failed_count++;
+                }
+                default:
+                    break;
+            }
+        }
+
+        auto s_index = faa_settings.ZIndexToSecondaryCylinderIndex[acc];
+        if (s_index >= 0 && (acc != z_index || FABumpTestData::is_primary(test_type) == true)) {
+            BumpTestStatus s_state;
+
+            int s_test_type = MTM1M3::MTM1M3_shared_BumpTestType_Secondary;
+            int s_offset = 1000;
+
+            if (test_cylinder) {
+                s_state = secondary_status[acc];
+            } else {
+                switch (test_type) {
+                    case MTM1M3::MTM1M3_shared_BumpTestType_X:
+                        s_state = x_status[acc];
+                        s_test_type = MTM1M3::MTM1M3_shared_BumpTestType_X;
+                        s_offset = 2000;
+                        break;
+                    case MTM1M3::MTM1M3_shared_BumpTestType_Y:
+                        s_state = y_status[acc];
+                        s_test_type = MTM1M3::MTM1M3_shared_BumpTestType_Y;
+                        s_offset = 3000;
+                        break;
+                    case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
+                        s_state = secondary_status[acc];
+                        break;
+                    case MTM1M3::MTM1M3_shared_BumpTestType_Z: {
+                        auto x_index = faa_settings.ZIndexToXIndex[acc];
+                        if (x_index >= 0) {
+                            s_state = x_status[acc];
+                            s_test_type = MTM1M3::MTM1M3_shared_BumpTestType_X;
+                            s_offset = 2000;
+                        } else {
+                            auto y_index = faa_settings.ZIndexToYIndex[acc];
+                            if (y_index < 0) {
+                                SPDLOG_ERROR(
+                                        "Expected either X or Y forces when looking for issues in "
+                                        "non-cylinder test - z_index {} s_index {} x_index {} y_index {}.",
+                                        acc, s_index, x_index, y_index);
+                                continue;
+                            }
+                            s_state = y_status[acc];
+                            s_test_type = MTM1M3::MTM1M3_shared_BumpTestType_Y;
+                            s_offset = 3000;
+                        };
+                    }
+                }
+            }
+
+            switch (s_state) {
+                case BumpTestStatus::OVERSHOOT_ERROR:
+                case BumpTestStatus::UNDERSHOOT_ERROR:
+                case BumpTestStatus::RMS_ERROR: {
+                    auto failed_id = faa_settings.SecondaryCylinderIndexToActuatorId(s_index);
+                    M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
+                            actuator_id, test_type, s_offset + failed_id, NAN,
+                            _bump_test_data->cached_statistics(acc, s_test_type));
+                    failed_count++;
+                }
+                default:
+                    break;
+            }
+        }
+    }
+
+    if (failed_count > 0) {
+        if (FABumpTestData::is_primary(test_type)) {
+            if (_final_primary_states[z_index] == MTM1M3::MTM1M3_shared_BumpTest_Passed) {
+                _final_primary_states[z_index] = MTM1M3::MTM1M3_shared_BumpTest_Failed_NonTestedProblem;
+            }
+        } else {
+            if (_final_secondary_states[s_index] == MTM1M3::MTM1M3_shared_BumpTest_Passed) {
+                _final_secondary_states[s_index] = MTM1M3::MTM1M3_shared_BumpTest_Failed_NonTestedProblem;
+            }
+        }
+    }
+}
+
 bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int actuator_id, int test_type,
                                    BumpTestStatus status, int &stage, double &timestamp) {
     // runs after statistics is updated in runLoop. So all FA data are current.
     ForceController *force_controller = Model::instance().getForceController();
-
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
 
     auto now = steady_clock::now();
 
@@ -218,50 +400,8 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
                     actuator_id, int(test_type), axis_index, z_index, s_index, stat.min, stat.max,
                     stat.average, stat.error_rms, stage, int(status));
 
-            // find out which FAs are in fault
-            for (i = 0; i < FA_COUNT; i++) {
-                if (i == z_index) {
-                    if (FABumpTestData::is_primary(test_type)) {
-                        _final_primary_states[z_index] = primary_status[z_index];
-                        if (_final_primary_states[z_index] == MTM1M3::MTM1M3_shared_BumpTest_Passed) {
-                            _final_primary_states[z_index] =
-                                    MTM1M3::MTM1M3_shared_BumpTest_Failed_NonTestedProblem;
-                        }
-                    } else {
-                        _final_secondary_states[s_index] = secondary_status[z_index];
-                        if (_final_secondary_states[s_index] == MTM1M3::MTM1M3_shared_BumpTest_Passed) {
-                            _final_secondary_states[s_index] =
-                                    MTM1M3::MTM1M3_shared_BumpTest_Failed_NonTestedProblem;
-                        }
-                    }
+            _finalize_test(actuator_id, z_index, s_index, test_type, stage, stat, now, status);
 
-                    M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type,
-                                                                                   stage, NAN, stat);
-                } else {
-                    auto p_state = primary_status[i];
-                    if (p_state != BumpTestStatus::PASSED) {
-                        auto failed_id = faa_settings.ZIndexToActuatorId(i);
-                        M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
-                                actuator_id, test_type, failed_id, NAN,
-                                _bump_test_data->cached_statistics(
-                                        i, MTM1M3::MTM1M3_shared_BumpTestType_Primary));
-                    }
-                    auto s_index = faa_settings.ZIndexToSecondaryCylinderIndex[i];
-                    if (s_index != -1) {
-                        auto s_state = secondary_status[i];
-                        if (s_state != BumpTestStatus::PASSED) {
-                            auto failed_id = faa_settings.SecondaryCylinderIndexToActuatorId(i);
-                            M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
-                                    actuator_id, test_type, 1000 + failed_id, NAN,
-                                    _bump_test_data->cached_statistics(
-                                            i, MTM1M3::MTM1M3_shared_BumpTestType_Secondary));
-                        }
-                    }
-                }
-            }
-
-            M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(actuator_id, test_type, stage, NAN,
-                                                                           stat);
             timed_out = true;
         }
     } catch (std::out_of_range &ex) {
@@ -305,9 +445,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
         case MTM1M3_shared_BumpTest_TestingPositiveWait:
         case MTM1M3_shared_BumpTest_TestingNegativeWait:
             if (status == BumpTestStatus::PASSED) {
-                M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
-                        actuator_id, test_type, stage,
-                        std::chrono::duration<float>(now - _test_start[z_index]).count(), stat);
+                _finalize_test(actuator_id, z_index, s_index, test_type, stage, stat, now, status);
             } else if (timed_out == false) {
                 return false;
             }
@@ -351,11 +489,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
             positive = true;
         case MTM1M3_shared_BumpTest_TestingNegative:
             if (status == BumpTestStatus::PASSED) {
-                M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
-                        actuator_id, test_type, stage,
-                        std::chrono::duration<float>(now - _test_start[z_index]).count(), stat);
-                std::cout << "Send stat " << z_index << " " << (test_type == MTM1M3_shared_BumpTestType_Y)
-                          << " " << stat.error_rms << std::endl;
+                _finalize_test(actuator_id, z_index, s_index, test_type, stage, stat, now, status);
             } else if (timed_out == false) {
                 return false;
             }

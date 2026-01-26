@@ -148,6 +148,10 @@ private:
 
     FABumpTestData *_bump_test_data;
 
+    void _finalize_test(int actuator_id, int z_index, int s_index, int test_type, int stage,
+                        const BumpTestStatistics &stat, std::chrono::steady_clock::time_point now,
+                        BumpTestStatus status);
+
     /**
      * Run tests on cylinder.
      *
