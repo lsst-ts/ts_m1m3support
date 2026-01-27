@@ -88,7 +88,7 @@ public:
      *
      * @return true if no data were entered into array.
      */
-    bool empty() const { return _head == _tail; }
+    bool empty() const { return _head == 0 && _filled == false; }
 
     /**
      * Returns size of archived data points.
@@ -164,9 +164,11 @@ private:
     int *_primary_states[FA_COUNT];
     int *_secondary_states[FA_S_COUNT];
 
-    // circular buffer indices
+    // circular buffer indice
     size_t _head;
-    size_t _tail;
+    // when true, the buffer is full. New members are added to _head position,
+    // all elements contains valid data
+    bool _filled;
     size_t _capacity;
 
     // current test result

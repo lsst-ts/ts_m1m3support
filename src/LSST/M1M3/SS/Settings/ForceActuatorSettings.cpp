@@ -44,11 +44,13 @@ ForceActuatorSettings::ForceActuatorSettings(token) { measuredWarningPercentage 
 void load_bump_test_limits(YAML::Node node, float &warning, float &error) {
     warning = node["Warning"].as<float>();
     if (warning < 0)
-        throw std::runtime_error(fmt::format("Invalid Force Actuator Bump Test Warning value {} : {}", node.Tag(), warning));
+        throw std::runtime_error(
+                fmt::format("Invalid Force Actuator Bump Test Warning value {} : {}", node.Tag(), warning));
 
     error = node["Error"].as<float>();
     if (error < 0)
-        throw std::runtime_error(fmt::format("Invalid Force Actuator Bump Test Error value {} : {}", node.Tag(), error));
+        throw std::runtime_error(
+                fmt::format("Invalid Force Actuator Bump Test Error value {} : {}", node.Tag(), error));
 }
 
 void ForceActuatorSettings::load(YAML::Node doc) {

@@ -93,10 +93,6 @@ void BumpTestController::runLoop() {
     BumpTestStatus primary_status[FA_COUNT], secondary_status[FA_COUNT], x_status[FA_COUNT],
             y_status[FA_COUNT], z_status[FA_COUNT];
 
-    for (int z_index = 0; z_index < FA_COUNT; z_index++) {
-        _bump_test_data->fa_statistics[z_index].clear();
-    }
-
     _bump_test_data->test_mirror(MTM1M3::MTM1M3_shared_BumpTestType_Primary, primary_status);
     _bump_test_data->test_mirror(MTM1M3::MTM1M3_shared_BumpTestType_Secondary, secondary_status);
 

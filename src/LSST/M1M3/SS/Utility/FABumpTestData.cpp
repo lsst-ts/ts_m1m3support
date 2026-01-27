@@ -44,7 +44,7 @@ void FABumpTestStatistics::clear() { statistics.clear(); }
 
 FABumpTestData::FABumpTestData(size_t capacity) {
     _head = 0;
-    _tail = 0;
+    _filled = false;
     _capacity = capacity;
 
     for (size_t c = 0; c < FA_COUNT; c++) {
@@ -104,26 +104,27 @@ void FABumpTestData::add_data(const float_v &x_forces, const float_v &y_forces, 
             _secondary_forces[c][_head] = secondary_forces[c];
             _secondary_states[c][_head] = secondary_states[c];
         }
+        fa_statistics[c].clear();
     }
     _head = (_head + 1) % _capacity;
-    if (_head == _tail) {
-        _tail = (_tail + 1) % _capacity;
+    if (_head == 0) {
+        _filled = true;
     }
 }
 
 void FABumpTestData::clear() {
     _head = 0;
-    _tail = 0;
+    _filled = false;
     for (int i = 0; i < FA_COUNT; i++) {
         fa_statistics[i].clear();
     }
 }
 
 size_t FABumpTestData::size() const {
-    if (_head >= _tail) {
-        return _head - _tail;
+    if (_filled) {
+        return _capacity;
     }
-    return 1 + _capacity - (_tail - _head);
+    return _head;
 }
 
 BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type, float expected_force, float error,
@@ -195,22 +196,24 @@ BumpTestStatistics FABumpTestData::statistics(int fa_index, int axis_index, int 
 
     float *data = get_data(axis_index, test_type);
 
-    if (size() == 0) {
+    if (empty() == true) {
         throw std::runtime_error("Cannot compute statistics of empty data.");
     }
-
-    stat.min = stat.max = stat.average = data[_head];
 
     if (isnan(rms_baseline)) {
         rms_baseline = get_expected_force(axis_index, test_type);
     }
 
-    float v_b = data[_head] - rms_baseline;
+    size_t end = _filled ? _capacity : _head;
+
+    size_t i = 0;
+
+    stat.min = stat.max = stat.average = data[i];
+
+    float v_b = data[i] - rms_baseline;
     stat.error_rms = v_b * v_b;
 
-    size_t count = 1;
-
-    for (size_t i = _tail; i != _head; i = ((i + 1) % _capacity), count++) {
+    for (i = 1; i < end; i++) {
         float v = data[i];
         if (v < stat.min) {
             stat.min = v;
@@ -224,9 +227,9 @@ BumpTestStatistics FABumpTestData::statistics(int fa_index, int axis_index, int 
         stat.error_rms += v_b * v_b;
     }
 
-    stat.average /= count;
+    stat.average /= i;
 
-    stat.error_rms = sqrt(stat.error_rms / count);
+    stat.error_rms = sqrt(stat.error_rms / i);
 
     fa_statistics[fa_index].statistics[test_type] = stat;
 
@@ -285,7 +288,7 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
 
     switch (test_type) {
         case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
-            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Primary, NAN);
+            stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Primary, expected_force);
             *p_state = in_range(stat.error_rms, 0, error, warning);
 
             if (s_state != NULL) {
@@ -311,7 +314,7 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
             *s_state = in_range(stat.error_rms, 0, error, warning);
 
             stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Z, NAN);
-            *s_state = in_range(stat.error_rms, 0, error, warning);
+            *p_state = in_range(stat.error_rms, 0, error, warning);
             break;
         case MTM1M3::MTM1M3_shared_BumpTestType_Y:
             if (y_index == -1) {

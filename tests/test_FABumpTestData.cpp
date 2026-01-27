@@ -32,6 +32,7 @@
 #include <cRIO/DataTypes.h>
 
 #include <FABumpTestData.h>
+#include <ForceActuatorApplicationSettings.h>
 
 using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;
@@ -48,7 +49,8 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
 
     for (size_t i = 0; i < size; i++) {
         CHECK(data.size() == i);
-        CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::NO_DATA);
+        CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary, 0, 0.2, 0.1) ==
+              BumpTestStatus::NO_DATA);
 
         CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, zeros, zeros, states, states));
         CHECK(data.empty() == false);
@@ -56,51 +58,73 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
 
     CHECK(data.size() == size);
 
-    CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+    CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary, 0, 0.2, 0.1) ==
+          BumpTestStatus::PASSED);
 
     for (size_t i = 0; i < size / 2; i++) {
         CHECK(data.size() == size);
-        CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+        CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary, 0, 0.2, 0.1) ==
+              BumpTestStatus::PASSED);
 
         data.add_data(zeros, zeros, zeros, zeros, zeros, states, states);
         CHECK(data.empty() == false);
     }
 
-    CHECK(data.test_actuator(1, BumpTestKind::AXIS_Y, 0, 0.2, 0.1) == BumpTestStatus::PASSED);
+    CHECK(data.test_actuator(1, MTM1M3::MTM1M3_shared_BumpTestType_Y, 0, 0.2, 0.1) == BumpTestStatus::PASSED);
 
     std::vector<float> warnings(FA_COUNT, 0.15);
-    CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, warnings, zeros, states, states));
+    for (int i = 0; i < size; i++) {
+        std::vector<float> x(FA_COUNT, sin(M_PI * static_cast<float>(i) / size / 2) * 0.21);
+        std::vector<float> y(FA_COUNT, -0.15 + sin(M_PI * static_cast<float>(i) / size / 2) * 0.1);
+        CHECK_NOTHROW(data.add_data(x, y, zeros, warnings, zeros, states, states));
+    }
 
-    CHECK(data.test_actuator(0, BumpTestKind::PRIMARY, 0, 0.2, 0.1) == BumpTestStatus::OVERSHOOT_WARNING);
+    CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary, 0, 0.2, 0.1) ==
+          BumpTestStatus::OVERSHOOT_WARNING);
 
-    std::vector<float> errors(FA_COUNT, -0.21);
-    CHECK_NOTHROW(data.add_data(errors, zeros, zeros, zeros, zeros, states, states));
+    CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_X, 0, 0.2, 0.1) ==
+          BumpTestStatus::INVALID_ACTUATOR);
 
-    CHECK(data.test_actuator(0, BumpTestKind::AXIS_X, 0, 0.2, 0.1) == BumpTestStatus::INVALID_ACTUATOR);
-    CHECK(data.test_actuator(147, BumpTestKind::AXIS_X, 0, 0.2, 0.1) == BumpTestStatus::UNDERSHOOT_ERROR);
+    auto stat_x = data.statistics(147, 11, MTM1M3::MTM1M3_shared_BumpTestType_X, 0);
+    CHECK_THAT(stat_x.max, WithinAbs(0.207414553, 1e-3));
+    CHECK_THAT(stat_x.error_rms, WithinAbs(0.140872285, 1e-3));
 
-    float min, max, average, rms;
-    data.statistics(0, BumpTestKind::AXIS_Y, 0, min, max, average, rms);
-    CHECK(min == 0);
-    CHECK(max == 0);
-    CHECK(average == 0);
+    CHECK(data.test_actuator(147, MTM1M3::MTM1M3_shared_BumpTestType_X, 0, 0.2, 0.1) ==
+          BumpTestStatus::OVERSHOOT_WARNING);
+
+    auto stat = data.statistics(0, 0, MTM1M3::MTM1M3_shared_BumpTestType_Y, 0);
+    CHECK_THAT(stat.min, WithinAbs(-0.15, 1e-3));
+    CHECK_THAT(stat.max, WithinAbs(-0.051231164, 1e-3));
+    CHECK_THAT(stat.average, WithinAbs(-0.091468975, 1e-3));
 
     CHECK_NOTHROW(
             data.add_data(std::vector<float>(FA_COUNT, 0.21), zeros, zeros, zeros, zeros, states, states));
 
     for (int x = 0; x < FA_X_COUNT; x++) {
-        data.statistics(x, BumpTestKind::AXIS_X, 0, min, max, average, rms);
-        CHECK_THAT(min, WithinAbs(-0.21, 1e-5));
-        CHECK_THAT(max, WithinAbs(0.21, 1e-6));
-        CHECK_THAT(average, WithinAbs(0, 1e-6));
+        int fa_index = ForceActuatorApplicationSettings::instance().XIndexToZIndex[x];
+        auto stat = data.statistics(fa_index, x, MTM1M3::MTM1M3_shared_BumpTestType_X, 0);
+        CHECK_THAT(stat.min, WithinAbs(0.032851238, 1e-5));
+        CHECK_THAT(stat.max, WithinAbs(0.21, 1e-6));
+        CHECK_THAT(stat.average, WithinAbs(0.143915147, 1e-6));
     }
 
     CHECK_NOTHROW(data.add_data(zeros, zeros, zeros, zeros, zeros, states, states));
 
     for (int x = 0; x < FA_X_COUNT; x++) {
-        data.statistics(x, BumpTestKind::AXIS_X, 0, min, max, average, rms);
-        CHECK_THAT(min, WithinAbs(-0.21, 1e-5));
-        CHECK_THAT(max, WithinAbs(0.21, 1e-6));
-        CHECK_THAT(average, WithinAbs(0, 1e-6));
+        int fa_index = ForceActuatorApplicationSettings::instance().XIndexToZIndex[x];
+        auto stat = data.statistics(fa_index, x, MTM1M3::MTM1M3_shared_BumpTestType_X, 0);
+        CHECK_THAT(stat.min, WithinAbs(0, 1e-5));
+        CHECK_THAT(stat.max, WithinAbs(0.21, 1e-6));
+        CHECK_THAT(stat.average, WithinAbs(0.140630037, 1e-6));
+        CHECK_THAT(stat.error_rms, WithinAbs(0.155393302, 1e-3));
+    }
+
+    for (int y = 0; y < FA_Y_COUNT; y++) {
+        int fa_index = ForceActuatorApplicationSettings::instance().YIndexToZIndex[y];
+        auto stat = data.statistics(fa_index, y, MTM1M3::MTM1M3_shared_BumpTestType_Y, 0);
+        CHECK_THAT(stat.min, WithinAbs(-0.119098298, 1e-5));
+        CHECK_THAT(stat.max, WithinAbs(0, 1e-6));
+        CHECK_THAT(stat.average, WithinAbs(-0.06303332, 1e-6));
+        CHECK_THAT(stat.error_rms, WithinAbs(0.073386133, 1e-3));
     }
 }
