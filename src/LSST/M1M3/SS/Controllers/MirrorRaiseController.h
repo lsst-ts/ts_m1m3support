@@ -34,7 +34,28 @@ namespace M1M3 {
 namespace SS {
 
 /**
- * Controls mirror raising peration. The operations are executed as command.
+ * Keeps track of the HP in range after raising had finished. This is needed to
+ * deliver mirror without significant HP force oscillations, causing failure
+ * of balance force corrections executed right after mirror finishes raising.
+ */
+class HpInRangeCounter {
+public:
+    HpInRangeCounter();
+
+    void reset();
+
+    bool check(float force);
+
+    bool timeouted();
+
+private:
+    float _current_middlepoint;
+    int _counter;
+    int _timeout_counter;
+};
+
+/**
+ * Controls mirror raising operation. The operations are executed as command.
  * Command transition system to RaisingState or RaisingEngineeringState. The
  * newly set system state calls in a loop method the MirrorRaiseController to
  * perform operations
@@ -60,6 +81,8 @@ public:
     MirrorRaiseController(PositionController *positionController, ForceController *forceController,
                           SafetyController *safetyController, PowerController *powerController);
 
+    void reset();
+
     /**
      * Starts mirror raising. Should be called once
      * @param bypassMoveToReference
@@ -75,6 +98,8 @@ public:
     void resumeM1M3Raising();
 
 private:
+    bool _check_hp_ready();
+
     PositionController *_positionController;
     ForceController *_forceController;
     SafetyController *_safetyController;
@@ -86,12 +111,15 @@ private:
 
     bool _bypassMoveToReference;
 
-    bool _lastForceFilled;
-    bool _lastPositionCompleted;
+    bool _last_force_filled;
+    bool _last_position_completed;
+    bool _last_hp_forces_minimal;
     bool _airPressureWaitReported;
     bool _raisePauseReported;
 
     bool _raisingPaused;
+
+    HpInRangeCounter _hp_in_range[HP_COUNT];
 };
 
 } /* namespace SS */

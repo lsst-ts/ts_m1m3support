@@ -24,7 +24,10 @@
 #ifndef FABUMPTESTDATA_H_
 #define FABUMPTESTDATA_H_
 
+#include <map>
 #include <mutex>
+
+#include <SAL_MTM1M3.h>
 
 namespace LSST {
 namespace M1M3 {
@@ -42,16 +45,28 @@ enum BumpTestStatus {
     OVERSHOOT_ERROR
 };
 
-enum BumpTestKind {
-    PRIMARY = 'P',
-    SECONDARY = 'S',
-    AXIS_X = 'X',
-    AXIS_Y = 'Y',
-    AXIS_Z = 'Z',
-};
-
 typedef std::vector<float> float_v;
 typedef std::vector<int> int_v;
+
+/**
+ * Stores statistics of data acquired during bump test.
+ */
+struct BumpTestStatistics {
+    BumpTestStatistics();
+
+    float min;
+    float max;
+    float average;
+    float error_rms;
+};
+
+struct FABumpTestStatistics {
+    FABumpTestStatistics();
+
+    std::map<int, BumpTestStatistics> statistics;
+
+    void clear();
+};
 
 /**
  * Keep track of forces measured during force actuators bump tests. Provides
@@ -66,17 +81,14 @@ public:
                   const float_v &primary_forces, const float_v &secondary_forces, const int_v &primary_states,
                   const int_v &secondary_states);
 
-    void clear() {
-        _head = 0;
-        _tail = 0;
-    }
+    void clear();
 
     /**
      * Returns true if there aren't data.
      *
      * @return true if no data were entered into array.
      */
-    bool empty() const { return _head == _tail; }
+    bool empty() const { return _head == 0 && _filled == false; }
 
     /**
      * Returns size of archived data points.
@@ -89,37 +101,37 @@ public:
      * Confirms given force actuator test fine in capacity period.
      *
      * @param actuator_id Actuator to test.
-     * @param kind Test kind - P,S or axis (XYZ) forces
+     * @param type Test type - P,S or axis (XYZ) forces
      * @param expected_force Force expected to be measured by the force actuator
      * @param error allowed error margin
      * @param warning allowed warning margin
      *
      * @return force actuator status
      */
-    BumpTestStatus test_actuator(int actuator_id, BumpTestKind kind, float expected_force, float error,
+    BumpTestStatus test_actuator(int actuator_id, int test_type, float expected_force, float error,
                                  float warning);
 
     /**
      * Test the mirror. Call test_actuator on all actuators.
      *
-     * @param kind axis - X,Y,Z,P or S
+     * @param test_type Test type - axis - X,Y,Z,P or S
      * @param results tests results, indexed by z_index (not the axis index)
      */
-    void test_mirror(BumpTestKind kind, BumpTestStatus (&results)[FA_COUNT]);
+    void test_mirror(int test_type, BumpTestStatus (&results)[FA_COUNT]);
 
-    float *get_data(int axis_index, BumpTestKind axis);
+    float *get_data(int axis_index, int test_type);
 
-    static bool is_primary(BumpTestKind kind) {
-        switch (kind) {
-            case BumpTestKind::PRIMARY:
-            case BumpTestKind::AXIS_Z:
+    static bool is_primary(int test_type) {
+        switch (test_type) {
+            case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
+            case MTM1M3::MTM1M3_shared_BumpTestType_Z:
                 return true;
             default:
                 return false;
         }
     }
 
-    static float get_expected_force(int axis_index, BumpTestKind axis);
+    static float get_expected_force(int axis_index, int test_type);
 
     /**
      * Retrieve test statics.
@@ -127,18 +139,19 @@ public:
      * @param axis_index
      * @param axis
      * @param rms_baseline
-     * @param min
-     * @param max
-     * @param average
-     * @param rms
+     *
+     * @return
      */
-    void statistics(int axis_index, BumpTestKind axis, float rms_baseline, float &min, float &max,
-                    float &average, float &rms);
+    BumpTestStatistics statistics(int fa_index, int axis_index, int test_type, float rms_baseline);
+
+    BumpTestStatistics cached_statistics(int fa_index, int test_type);
+
+    FABumpTestStatistics fa_statistics[FA_COUNT];
 
 private:
-    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, BumpTestKind kind,
+    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, int test_type,
                              float expected_force, float error, float warning);
-    BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, BumpTestKind kind,
+    BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, int test_type,
                                  float expected_force, float error, float warning);
 
     float *_x_forces[FA_X_COUNT];
@@ -151,10 +164,16 @@ private:
     int *_primary_states[FA_COUNT];
     int *_secondary_states[FA_S_COUNT];
 
-    // circular buffer indices
+    // circular buffer indice
     size_t _head;
-    size_t _tail;
+    // when true, the buffer is full. New members are added to _head position,
+    // all elements contains valid data
+    bool _filled;
     size_t _capacity;
+
+    // current test result
+    BumpTestStatus _primary_results[FA_COUNT];
+    BumpTestStatus _secondary_results[FA_S_COUNT];
 
     std::mutex _g_mutex;
 };

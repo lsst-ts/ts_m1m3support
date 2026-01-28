@@ -77,6 +77,7 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_displacementSensorWarning");
     _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_enabledForceActuators");
     _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_errorCode");
+    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorBumpTestStatistics");
     _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorBumpTestStatus");
     _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorFollowingErrorCounter");
     _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorForceWarning");
@@ -369,6 +370,22 @@ void M1M3SSPublisher::tryLogErrorCode() {
     if (_eventErrorCode.errorCode != _previousEventErrorCode.errorCode) {
         logErrorCode();
     }
+}
+
+void M1M3SSPublisher::logForceActuatorBumpTestStatistics(int actuator_id, int test_type, int stage,
+                                                         float settle_time, const BumpTestStatistics &stat) {
+    MTM1M3_logevent_forceActuatorBumpTestStatisticsC data;
+    data.actuatorId = actuator_id;
+    data.testType = test_type;
+    data.stage = stage;
+    data.settleTime = settle_time;
+
+    data.minimum = stat.min;
+    data.maximum = stat.max;
+    data.average = stat.average;
+    data.errorRMS = stat.error_rms;
+
+    _m1m3SAL->logEvent_forceActuatorBumpTestStatistics(&data, 0);
 }
 
 void M1M3SSPublisher::logForceActuatorState() {

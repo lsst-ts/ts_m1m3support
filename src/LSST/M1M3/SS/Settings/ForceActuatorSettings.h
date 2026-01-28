@@ -34,7 +34,6 @@
 #include <cRIO/Singleton.h>
 
 #include <DistributedForces.h>
-#include <ForceActuatorBumpTestSettings.h>
 #include <ForceComponentSettings.h>
 #include <ForcesAndMoments.h>
 #include <Limit.h>
@@ -172,18 +171,9 @@ public:
     ForceComponentSettings VelocityComponentSettings;
     ForceComponentSettings FinalComponentSettings;
 
-    /**
-     * Tolerances for actuators being tested.
-     */
-    ForceActuatorBumpTestSettings TestedTolerances;
-
-    /**
-     * Tolerances for actuators not tested.
-     */
-    ForceActuatorBumpTestSettings NonTestedTolerances;
-
     float preclippedIgnoreChanges;
     float preclippedMaxDelay;
+    float enableStaticForcesSupportedPercentage;
 
 private:
     void _loadNearNeighborZTable(const std::string &filename);

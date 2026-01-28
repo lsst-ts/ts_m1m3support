@@ -34,6 +34,7 @@
 #include <cRIO/Singleton.h>
 
 #include "EnabledForceActuators.h"
+#include "FABumpTestData.h"
 #include "ForceActuatorWarning.h"
 #include "PowerSupplyStatus.h"
 
@@ -237,6 +238,9 @@ public:
     void logForceActuatorSettings(MTM1M3_logevent_forceActuatorSettingsC *data) {
         _m1m3SAL->logEvent_forceActuatorSettings(data, 0);
     }
+
+    void logForceActuatorBumpTestStatistics(int actuator_id, int test_type, int stage, float settle_time,
+                                            const BumpTestStatistics &stat);
     void logForceActuatorBumpTestStatus(MTM1M3_logevent_forceActuatorBumpTestStatusC *data) {
         _m1m3SAL->logEvent_forceActuatorBumpTestStatus(data, 0);
     }
