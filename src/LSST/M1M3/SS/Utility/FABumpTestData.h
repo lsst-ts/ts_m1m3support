@@ -34,18 +34,24 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Test state returned by the test_actuator method.
+ */
 enum BumpTestStatus {
-    PASSED,
-    NO_DATA,
-    INVALID_TEST_KIND,
-    INVALID_ACTUATOR,
-    WRONG_STATE_HISTORY,
-    UNDERSHOOT_ERROR,
-    UNDERSHOOT_WARNING,
-    OVERSHOOT_WARNING,
-    OVERSHOOT_ERROR,
-    RMS_ERROR,
-    RMS_WARNING
+    PASSED,   /// All OK, FA tested fine
+    NO_DATA,  /// Not enough data to perform the test - too short cache history (add more data through
+              /// add_data)
+    INVALID_TEST_KIND,    /// Invalid type of the requested test
+    INVALID_ACTUATOR,     /// Invalid actuator ID
+    WRONG_STATE_HISTORY,  /// Two or more stages are recorded in FA bump test stage history - test cannot be
+                          /// completed
+    UNDERSHOOT_ERROR,     /// Measured force is lower than target force - enough to cause FA test to fail
+    UNDERSHOOT_WARNING,   /// Measured force is lower than target force - enough to cause concerns
+    OVERSHOOT_WARNING,    /// Measured force is greater than target force - enough to cause concerns
+    OVERSHOOT_ERROR,      /// Measured force is greater than target force - enough to cause FA test to fail
+    RMS_ERROR,            /// Too high following error RMS - causes bump test failure
+    RMS_WARNING  /// Somehow high following error RMS, not enough to cause FA to fail, but enough to raise a
+                 /// concern
 };
 
 typedef std::vector<float> float_v;
@@ -86,7 +92,17 @@ struct FABumpTestStatistics {
 
 /**
  * Keep track of forces measured during force actuators bump tests. Provides
- * functions to check that force actuator tested fine.
+ * functions to check that force actuator tested fine. Data cache is organized
+ * as circular buffer, with _head holding index to the current top element
+ * (where new data will be written) and _filled signals if the buffer is full
+ * (so all values are valid values).
+ *
+ * Apart from recording measures forces, also keep tracks of the force actuator
+ * test state. This is needed for tests looking if the FA bunmp test state is
+ * the same throughout the test period.
+ *
+ * The two most important methods are add_data (to add new data) and statistics
+ * (to compute/retrieve data statistics).
  */
 class FABumpTestData {
 public:

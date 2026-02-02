@@ -34,64 +34,11 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-/**
- * Performs bump test on single force actuator (FA). Bump tests of an actuator
- * is performed by applying a small positive and negative force offsets on
+/***
+ * Performs force actuator (FA) bump test. Bump tests of an actuator is
+ * performed by applying a small positive and negative force offsets on
  * stationary (parked) mirror. The tests is evaluated by comparing value
  * reported by the force actuator load cell with the target (offset) value.
- *
- * Settings stored under ForceActuatorSettings/BumpTest specify timeouts,
- * allowable ranges and number of measurements performed. The configuration
- * values are enclosed in the following text with : - for example
- * :TestedTolerances/Warning:
- *
- * Bump test is performed in the following stages (per actuator axis, so if both
- * primary and secondary shall be tested, this is repeated twice per dual axis
- * actuator):
- *
- * 1. check that average of :TestMeasurements: measured forces roughly equal to
- * 0 (within :TestedTolerances/Error: for the FA being tested, and within
- * :NonTestedTolerances/Error: for FAs not tested)
- *
- * 2. apply a small positive force (222 N, _testForce member variable)
- *
- * 3. sleep for :SettleTime: seconds
- *
- * 4. check that the average of :TestMeasurements: force actuator values
- * following the settle time equals (within :TestedTolerances/Error: for tested
- * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the applied
- * (target offset) force
- *
- * 5. null applied offset
- *
- * 6. sleep for :SettleTime: seconds
- *
- * 7. check that the average of :TestMeasurements: force actuator values
- * following the settle time equals (within :TestedTolerances/Error: for tested
- * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the 0
- *
- * 8. apply a small negative force (-222 N, - _testForce member variable)
- *
- * 9. sleep for :SettleTime: seconds
- *
- * 10. check that the average of :TestMeasurements: force actuator values
- * following the settle time equals (within :TestedTolerances/Error: for tested
- * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the 0
- *
- * 11. null applied offset
- *
- * 12. sleep for :SettleTime: seconds
- *
- * 13. check that the average of :TestMeasurements: force actuator values
- * following the settle time equals (within :TestedTolerances/Error: for tested
- * FA and :NonTestedTolerances/Error: for not tested FAs) equals to the 0
- *
- * If any of the steps fails, transition to failed stage, reset to zero all
- * applied offsets and exit the bump test for the given FA.
- *
- * :TestedTolerances/Warning: and :NonTestedTolerances/Warning: are used as
- * warning levels. If the error surpassed those, but doesn't trigger an error
- * (is not above error value), a warning message is send to the system log.
  */
 class BumpTestController {
 public:
@@ -102,11 +49,11 @@ public:
     /**
      * Set current bump tests parameters.
      *
-     * @param actuatoro_id actuator ID (101-443)
-     * @param test_primary true if test primary (Z) actuator
-     * @param test_secondary true if test secondary (X or Y) actuator
+     * @param actuatoro_id actuator ID (101-443).
+     * @param test_primary true if test primary (Z) actuator.
+     * @param test_secondary true if test secondary (X or Y) actuator.
      *
-     * @return 0 on success, 1 if another force actuator is being tested
+     * @return 0 on success, 1 if another force actuator is being tested.
      */
     int setBumpTestActuator(int actuator_id, bool cylinders, bool test_primary, bool test_secondary);
 
@@ -119,15 +66,15 @@ public:
     /**
      * Stops all running bump tests.
      *
-     * @param forced if true, make sure Far Neighbor checks bypass is disabled
+     * @param forced if true, make sure Far Neighbor checks bypass is disabled.
      */
     void stopAll(bool forced);
 
     /**
      * Stops bump test on given cylinder.
      *
-     * @param axis cylinder axis (X,Y or Z)
-     * @param index actuator index (0..155)
+     * @param axis cylinder axis (X,Y or Z).
+     * @param index actuator index (0..155).
      */
     void stopCylinder(char axis, int index);
 
@@ -141,24 +88,39 @@ private:
     float _test_force;
 
     std::chrono::milliseconds _test_settle_time;
-    // if NAN, don't sleep
     std::chrono::time_point<std::chrono::steady_clock> _test_start[FA_COUNT];
     std::chrono::time_point<std::chrono::steady_clock> _test_timeout[FA_COUNT];
     bool _cylinders[FA_COUNT];
 
     FABumpTestData *_bump_test_data;
 
+    /**
+     * Called after statistics was collected. Report back interesting (above warning/error level) values.
+     *
+     * @param actuator_id Actuator ID (101-443).
+     * @param z_index Actuator Z/primary index (0-155).
+     * @param s_index Actuator secondary index (-1 or 0-112).
+     * @param test_type
+     * @param stage
+     * @param stat
+     * @param now Current time.
+     * @param status Test result - see BumpTestStatus enumeration.
+     */
     void _finalize_test(int actuator_id, int z_index, int s_index, int test_type, int stage,
                         const BumpTestStatistics &stat, std::chrono::steady_clock::time_point now,
                         BumpTestStatus status);
 
     /**
-     * Run tests on cylinder.
+     * Run test on an axis.
      *
-     * @param index
-     * @param axis
-     * @param stage
-     * @param timestamp
+     * @param axis_index Test axis index - X, Y Z, primary (=Z) or secondary index.
+     * @param z_index FA Z index (0-156).
+     * @param s_index FA secondary index (-1 or 1-112).
+     * @param actuator_id Actuator ID (101-443).
+     * @param test_type one of BumpTestType - Primary, Secondary, X, Y or Z.
+     * @param status see FABumpTestData::BumpTestStatus for allowed values.
+     * @param stage Bump tests stage - one of MTM1M3_shared_BumpTest_xxx value.
+     * @param timestamp current time.
      */
     bool _run_axis(int axis_index, int z_index, int s_index, int actuator_id, int test_type,
                    BumpTestStatus status, int &stage, double &timestamp);
