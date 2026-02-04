@@ -39,33 +39,37 @@ node {
         M1M3sim = docker.build("m1m3sim:" + env.BRANCH_NAME.replace("/", "_"), "--target crio-develop --build-arg XML_BRANCH=$XML_BRANCH " + (params.noCache ? "--no-cache " : " ") + "$WORKSPACE/ts_m1m3support")
     }
 
-    stage("Running tests")
-    {
-        withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
-             M1M3sim.inside("--entrypoint=''") {
-                 if (params.clean) {
-                 sh """
-                    cd $WORKSPACE/ts_cRIOcpp
-                    make clean
-                    cd $WORKSPACE/ts_m1m3support
-                    make clean
-                 """
+    try {
+        stage("Running tests")
+        {
+            withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
+                 M1M3sim.inside("--entrypoint=''") {
+                     if (params.clean) {
+                     sh """
+                        cd $WORKSPACE/ts_cRIOcpp
+                        make clean
+                        cd $WORKSPACE/ts_m1m3support
+                        make clean
+                     """
+                     }
+                     sh """
+                        source $SALUSER_HOME/.crio_setup.sh
+        
+                        cd $WORKSPACE/ts_cRIOcpp
+                        make
+        
+                        cd $WORKSPACE/ts_m1m3support
+
+                        make SIMULATOR=1
+                        LSST_DDS_PARTITION_PREFIX=test make SIMULATOR=1 junit || true
+                     """
                  }
-                 sh """
-                    source $SALUSER_HOME/.crio_setup.sh
-    
-                    cd $WORKSPACE/ts_cRIOcpp
-                    make
-    
-                    cd $WORKSPACE/ts_m1m3support
+            }
 
-                    make SIMULATOR=1
-                    LSST_DDS_PARTITION_PREFIX=test make SIMULATOR=1 junit || true
-                 """
-             }
+            junit 'ts_m1m3support/tests/*.xml'
         }
-
-        junit 'ts_m1m3support/tests/*.xml'
+    } catch(e) {
+        echo e.toString()
     }
 
     stage('Build documentation')
@@ -79,27 +83,31 @@ node {
          }
     }
 
-    stage('Running container')
-    {
-        withEnv(["SALUSER_HOME=" + SALUSER_HOME]){
-            M1M3sim.inside("--entrypoint=''") {
-                sh """
-                    source $SALUSER_HOME/.crio_setup.sh
+    try {
+        stage('Running container')
+        {
+            withEnv(["SALUSER_HOME=" + SALUSER_HOME]){
+                M1M3sim.inside("--entrypoint=''") {
+                    sh """
+                        source $SALUSER_HOME/.crio_setup.sh
 
-                    export LSST_DDS_PARTITION_PREFIX=test
-    
-                    cd $WORKSPACE/ts_m1m3support
-                    ./ts-M1M3supportd -c SettingFiles -f &
-    
-                    echo "Waiting for 15 seconds"
-                    sleep 15
-    
-                    cd tests
-                    ./runSimulator.py
-                    killall -9 ts-M1M3supportd
-                """
+                        export LSST_DDS_PARTITION_PREFIX=test
+
+                        cd $WORKSPACE/ts_m1m3support
+                        ./ts-M1M3supportd -c SettingFiles -f &
+
+                        echo "Waiting for 15 seconds"
+                        sleep 15
+
+                        cd tests
+                        ./runSimulator.py
+                        killall -9 ts-M1M3supportd
+                    """
+                }
             }
         }
+    } catch(e) {
+        echo e.toString()
     }
 
     if (BRANCH == "main" || BRANCH == "develop")

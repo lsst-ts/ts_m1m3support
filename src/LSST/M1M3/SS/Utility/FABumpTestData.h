@@ -25,6 +25,7 @@
 #define FABUMPTESTDATA_H_
 
 #include <map>
+#include <math.h>
 #include <mutex>
 
 #include <SAL_MTM1M3.h>
@@ -33,16 +34,24 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
+/**
+ * Test state returned by the test_actuator method.
+ */
 enum BumpTestStatus {
-    PASSED,
-    NO_DATA,
-    INVALID_TEST_KIND,
-    INVALID_ACTUATOR,
-    WRONG_STATE_HISTORY,
-    UNDERSHOOT_ERROR,
-    UNDERSHOOT_WARNING,
-    OVERSHOOT_WARNING,
-    OVERSHOOT_ERROR
+    PASSED,   /// All OK, FA tested fine
+    NO_DATA,  /// Not enough data to perform the test - too short cache history (add more data through
+              /// add_data)
+    INVALID_TEST_KIND,    /// Invalid type of the requested test
+    INVALID_ACTUATOR,     /// Invalid actuator ID
+    WRONG_STATE_HISTORY,  /// Two or more stages are recorded in FA bump test stage history - test cannot be
+                          /// completed
+    UNDERSHOOT_ERROR,     /// Measured force is lower than target force - enough to cause FA test to fail
+    UNDERSHOOT_WARNING,   /// Measured force is lower than target force - enough to cause concerns
+    OVERSHOOT_WARNING,    /// Measured force is greater than target force - enough to cause concerns
+    OVERSHOOT_ERROR,      /// Measured force is greater than target force - enough to cause FA test to fail
+    RMS_ERROR,            /// Too high following error RMS - causes bump test failure
+    RMS_WARNING  /// Somehow high following error RMS, not enough to cause FA to fail, but enough to raise a
+                 /// concern
 };
 
 typedef std::vector<float> float_v;
@@ -54,33 +63,72 @@ typedef std::vector<int> int_v;
 struct BumpTestStatistics {
     BumpTestStatistics();
 
+    // signal minimal value
     float min;
+    // signal maximal value
     float max;
+    // signal average/mean value
     float average;
+    // Error RMS
     float error_rms;
+    // expected force value - baseline for RMS calculation
+    float rms_baseline;
 };
 
+/**
+ * Collection of statistics entries. Organized as map of BumpTestStatistics,
+ * where index is FA index (z_index).
+ */
 struct FABumpTestStatistics {
     FABumpTestStatistics();
 
     std::map<int, BumpTestStatistics> statistics;
 
+    /**
+     * Clear all cached statistics.
+     */
     void clear();
 };
 
 /**
  * Keep track of forces measured during force actuators bump tests. Provides
- * functions to check that force actuator tested fine.
+ * functions to check that force actuator tested fine. Data cache is organized
+ * as circular buffer, with _head holding index to the current top element
+ * (where new data will be written) and _filled signals if the buffer is full
+ * (so all values are valid values).
+ *
+ * Apart from recording measures forces, also keep tracks of the force actuator
+ * test state. This is needed for tests looking if the FA bunmp test state is
+ * the same throughout the test period.
+ *
+ * The two most important methods are add_data (to add new data) and statistics
+ * (to compute/retrieve data statistics).
  */
 class FABumpTestData {
 public:
     FABumpTestData(size_t capacity);
     virtual ~FABumpTestData();
 
+    /**
+     * Add new data. Data are the same as send out in measuredForces message.
+     * Updates caches used to calculate statistics of the bump tests. All input
+     * data are arrays, indexed by appropriate axis.
+     *
+     * @param x_forces Measured X forces (calculated from cylinder forces).
+     * @param y_forces Measured Y forces (calculated from cylinder forces).
+     * @param z_forces Measured Z forces (calculated from cylinder forces).
+     * @param primary_forces Measured primary cylinder forces (taken from load cells).
+     * @param secondary_forces Measured secondary cylinder forces (taken from load cells).
+     * @param primary_states Primary cylinder/axis bump test states.
+     * @param secondary_states Secondary cylinder/axis bump test states.
+     */
     void add_data(const float_v &x_forces, const float_v &y_forces, const float_v &z_forces,
                   const float_v &primary_forces, const float_v &secondary_forces, const int_v &primary_states,
                   const int_v &secondary_states);
 
+    /**
+     * Clear all cache entries.
+     */
     void clear();
 
     /**
@@ -102,14 +150,10 @@ public:
      *
      * @param actuator_id Actuator to test.
      * @param type Test type - P,S or axis (XYZ) forces
-     * @param expected_force Force expected to be measured by the force actuator
-     * @param error allowed error margin
-     * @param warning allowed warning margin
      *
      * @return force actuator status
      */
-    BumpTestStatus test_actuator(int actuator_id, int test_type, float expected_force, float error,
-                                 float warning);
+    BumpTestStatus test_actuator(int actuator_id, int test_type);
 
     /**
      * Test the mirror. Call test_actuator on all actuators.
@@ -134,25 +178,34 @@ public:
     static float get_expected_force(int axis_index, int test_type);
 
     /**
-     * Retrieve test statics.
+     * Retrieve test statics. Returns cached data if they are available.
+     * Otherwise calculate the statistics, add it to the cache, and return it.
      *
      * @param axis_index
      * @param axis
      * @param rms_baseline
      *
-     * @return
+     * @return BumpTestStatistics with various statistics computed from cached data or retrieved from cache.
      */
-    BumpTestStatistics statistics(int fa_index, int axis_index, int test_type, float rms_baseline);
+    BumpTestStatistics statistics(int fa_index, int axis_index, int test_type, float rms_baseline = NAN);
 
+    /**
+     * Returns cached statistics. Throws std::out_of_range if it isn't available.
+     *
+     * @param fa_index FA index (0-155)
+     * @param test_type Test type (see MTM1M3_shared_BumpTestType_*).
+     *
+     * @return BumpTestStatistics with various statistics retrieved from cache.
+     */
     BumpTestStatistics cached_statistics(int fa_index, int test_type);
 
     FABumpTestStatistics fa_statistics[FA_COUNT];
 
 private:
-    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, int test_type,
-                             float expected_force, float error, float warning);
+    BumpTestStatus _test_rms(int x_index, int y_index, int z_index, int s_index, int test_type, float error,
+                             float warning);
     BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, int test_type,
-                                 float expected_force, float error, float warning);
+                                 float error, float warning);
 
     float *_x_forces[FA_X_COUNT];
     float *_y_forces[FA_Y_COUNT];
