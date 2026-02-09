@@ -617,17 +617,27 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             _writeModbus(response, address);              // Write Address
                             _writeModbus(response, function);             // Write Function
                             _writeModbus(response, _broadCastCounter());  // Write ILC Status
-                            float force = (((float)M1M3SSPublisher::instance()
+                            float p_force = (((float)M1M3SSPublisher::instance()
+                                                      .getAppliedCylinderForces()
+                                                      ->primaryCylinderForces[pIndex]) /
+                                             1000.0) +
+                                            (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
+
+                            float s_force = 0;
+                            if (address > 16) {
+                                s_force = (((float)M1M3SSPublisher::instance()
                                                     .getAppliedCylinderForces()
-                                                    ->primaryCylinderForces[pIndex]) /
+                                                    ->secondaryCylinderForces[sIndex]) /
                                            1000.0) +
-                                          (getRndPM1() * 0.5);  // Update to Primary Cylinder Force
-                                                                //
+                                          0.2 + (getRndPM1() * 0.7);  // Update to Secondary Cylinder Force
+                            }
+
+                            //
                             // simulate following error in disabled state
                             if (DetailedState::instance().detailedState ==
                                         MTM1M3::MTM1M3_shared_DetailedStates_DisabledState &&
                                 subnet == 4 && address == 17) {
-                                force = 505;
+                                p_force = 505;
                             }
                             // uncomment to simulate follow up error
                             // if (subnet == 1 && address == 17 && force > 500) force = 200;
@@ -639,55 +649,60 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                             };
                             // report under force on FA 102 if it's bump tested
                             if (pIndex == 1 && is_tested(bump_test.primaryTest[pIndex])) {
-                                force -= 7;
+                                p_force -= 7;
                             }
                             // report under force on FA 103 if it's positive bump tested
                             else if (pIndex == 2 && bump_test.primaryTest[pIndex] ==
                                                             MTM1M3_shared_BumpTest_TestingPositive) {
-                                force -= 7;
+                                p_force -= 7;
                             }
                             // report under force on FA 104 if after it's positive bump tested
                             else if (pIndex == 3 && bump_test.primaryTest[pIndex] ==
                                                             MTM1M3_shared_BumpTest_TestingPositiveWait) {
-                                force -= 7;
+                                p_force -= 7;
                             }
                             // report over force on FA 105 if after it's positive bump tested
                             else if (pIndex == 4 && bump_test.primaryTest[pIndex] ==
                                                             MTM1M3_shared_BumpTest_TestingNegative) {
-                                force += 7;
+                                p_force += 7;
                             }
                             // report over force on FA 106 if after it's positive bump tested
                             else if (pIndex == 5 && bump_test.primaryTest[pIndex] ==
                                                             MTM1M3_shared_BumpTest_TestingNegativeWait) {
-                                force += 7;
+                                p_force += 7;
+                            }
+                            // report FA 437 following error when FA 107 primary is being tested
+                            else if (pIndex == 149 &&
+                                     bump_test.primaryTest[6] == MTM1M3_shared_BumpTest_TestingPositive) {
+                                s_force -= 44;
+                            }
+                            // report FA 433 following error when FA 108 secondary is being tested
+                            else if (pIndex == 145 &&
+                                     bump_test.secondaryTest[4] == MTM1M3_shared_BumpTest_TestingNegative) {
+                                p_force -= 55;
                             }
                             // report under force on FA 434 Y negative (pull)
                             else if (sIndex == 108 && bump_test.secondaryTest[sIndex] ==
                                                               MTM1M3_shared_BumpTest_TestingNegative) {
-                                force += 120;
+                                p_force += 120;
                             }
                             // report under force for FA 435 Z positive (push)
                             else if (pIndex == 147 && bump_test.primaryTest[pIndex] ==
                                                               MTM1M3_shared_BumpTest_TestingPositive) {
-                                force -= 120;
+                                p_force -= 120;
                             }
                             // report very high force on FA 321 Y
                             else if (sIndex == 72 && bump_test.secondaryTest[sIndex] ==
                                                              MTM1M3_shared_BumpTest_TestingPositive) {
-                                force += 110;
+                                p_force += 110;
                                 // for M1M3 panic
-                                // force += 500;
+                                // p_force += 500;
                             }
 
-                            _writeModbusFloat(response, force);  // Write Primary Cylinder Force
+                            _writeModbusFloat(response, p_force);  // Write Primary Cylinder Force
                             if (address > 16) {
-                                force = (((float)M1M3SSPublisher::instance()
-                                                  .getAppliedCylinderForces()
-                                                  ->secondaryCylinderForces[sIndex]) /
-                                         1000.0) +
-                                        (getRndPM1() * 0.5);  // Update to Secondary Cylinder Force
-                                _writeModbusFloat(response,
-                                                  force);  // Write Secondary Cylinder Force
+                                // Write Secondary Cylinder Force
+                                _writeModbusFloat(response, s_force);
                             }
                             _writeModbusCRC(response);
                             break;

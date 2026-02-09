@@ -209,8 +209,8 @@ ForceActuatorSettings:
       Warning: 2.5
       Error: 5
     NonTestedTolerances:
-      Warning: 20
-      Error: 100
+      Warning: 5.2
+      Error: 6
     SettleTime: 3.5
     Measurements: 100
     MinimalDistance: 4
