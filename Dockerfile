@@ -1,25 +1,25 @@
 FROM lsstts/develop-env:develop AS crio-develop
 
-ARG XML_BRANCH=develop
-
 USER root
-# RUN chmod a+rwX -R /home/saluser/
 RUN cd /opt/lsst/tssw/ && git clone https://github.com/apache/avro 
 
 RUN source /home/saluser/.setup_salobj.sh && cd /opt/lsst/tssw/avro/lang/c \
     && cmake . && make && make install \
     && cd ../c++ && cmake . && make && make install
 
-RUN cd /opt/lsst/tssw/ && git clone https://github.com/confluentinc/libserdes
+RUN cd /opt/lsst/tssw/ && git clone https://github.com/confluentinc/libserdes 
+
+COPY libserdes.patch /opt/lsst/tssw/libserdes
+RUN source /home/saluser/.setup_salobj.sh && cd /opt/lsst/tssw/libserdes \
+    && patch -p1 < libserdes.patch
 
 RUN source /home/saluser/.setup_salobj.sh \
     && export CPATH="/usr/local/include" \
     && export LIBRARY_PATH="/usr/local/lib64:/opt/lsst/tssw/ts_sal/lib" \
     && cd /opt/lsst/tssw/libserdes && ./configure && make && make install
+
 USER saluser
-
-ARG XML_BRANCH=main
-
+ARG XML_BRANCH=develop
 WORKDIR /home/saluser
 
 RUN source ~/.setup_salobj.sh \
@@ -74,5 +74,21 @@ RUN source ~/.crio_setup.sh \
     && cd $TS_XML_DIR \
     && git fetch && git checkout $XML_BRANCH && git pull \
     && pip install .
+
+RUN source ~/.crio_setup.sh \
+    && salgeneratorKafka generate cpp MTM1M3 \
+    && salgeneratorKafka generate cpp MTMount
+
+ARG cRIO_CPP=v1.16.0
+ARG M1M3_SUPPORT=develop
+ARG TARGET=simulator
+
+RUN source ~/.crio_setup.sh \
+    && git clone --branch $cRIO_CPP https://github.com/lsst-ts/ts_cRIOcpp \
+    && cd ts_cRIOcpp && make
+
+RUN source ~/.crio_setup.sh \
+    && git clone --branch $M1M3_SUPPORT https://github.com/lsst-ts/ts_m1m3support \
+    && cd ts_m1m3support && make $TARGET
 
 SHELL ["/bin/bash", "-lc"]
