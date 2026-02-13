@@ -18,7 +18,7 @@ endif
 
 CRIOCPP := ../ts_cRIOcpp/
 
-PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog fmt --cflags $(silence))
+PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog fmt avro-cpp --cflags $(silence))
 
 SAL_CPPFLAGS += $(PKG_CPPFLAGS)  \
 	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src \
