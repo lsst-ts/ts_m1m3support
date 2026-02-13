@@ -42,8 +42,8 @@ class PausedRaisingEngineeringState : public EngineeringState {
 public:
     PausedRaisingEngineeringState();
 
-    States::Type update(UpdateCommand *command) override;
-    States::Type resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand *command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command) override;
 };
 
 } /* namespace SS */

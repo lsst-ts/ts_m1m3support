@@ -31,7 +31,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 RunMirrorForceProfileCommand::RunMirrorForceProfileCommand(int32_t commandID,
-                                                           MTM1M3_command_runMirrorForceProfileC *data)
+                                                           MTM1M3_command_runMirrorForceProfileC* data)
         : Command(commandID) {
     for (int i = 0; i < 1000; ++i) {
         _data.xForce[i] = data->xForce[i];
@@ -47,7 +47,7 @@ bool RunMirrorForceProfileCommand::validate() { return true; }
 
 void RunMirrorForceProfileCommand::execute() { Context::instance().runMirrorForceProfile(this); }
 
-void RunMirrorForceProfileCommand::ackInProgress(const char *description, double timeout) {
+void RunMirrorForceProfileCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandrunMirrorForceProfile(getCommandID(), ACK_INPROGRESS, description,
                                                                 timeout);
 }

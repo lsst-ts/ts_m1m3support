@@ -21,31 +21,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ABORTRAISEM1M3COMMAND_H_
-#define ABORTRAISEM1M3COMMAND_H_
+#include <spdlog/spdlog.h>
 
-#include <SAL_MTM1M3C.h>
+#include "SimulatorSettings.h"
 
-#include <cRIO/DataTypes.h>
+using namespace LSST::M1M3::SS;
 
-#include <Command.h>
+SimulatorSettings::SimulatorSettings(token) {}
 
-namespace LSST {
-namespace M1M3 {
-namespace SS {
+void SimulatorSettings::load(YAML::Node doc) {
+    SPDLOG_INFO("Loading SimulatorSettings");
 
-class AbortRaiseM1M3Command : public Command {
-public:
-    AbortRaiseM1M3Command(int32_t commandID, MTM1M3_command_abortRaiseM1M3C*);
-
-    void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
-};
-
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
-
-#endif /* ABORTRAISEM1M3COMMAND_H_ */
+    simulate_mirror_movement = doc["simulate_mirror_movement"].as<bool>(simulate_mirror_movement);
+    following_error_disable_state =
+            doc["following_error_disable_state"].as<bool>(following_error_disable_state);
+    following_error_raising = doc["following_error_raising"].as<bool>(following_error_raising);
+    fail_bump_tests = doc["fail_bump_tests"].as<bool>(fail_bump_tests);
+}

@@ -80,7 +80,7 @@ public:
      */
     void thaw() { _frozen = false; }
 
-    double getOffset(bool *changed);
+    double getOffset(bool* changed);
 
     void publishTelemetry();
 
@@ -89,8 +89,8 @@ private:
 
     //* initial parameters passed in constructor
     PIDParameters _initialParameters;
-    MTM1M3_logevent_pidInfoC *_pidInfo;
-    MTM1M3_pidDataC *_pidData;
+    MTM1M3_logevent_pidInfoC* _pidInfo;
+    MTM1M3_pidDataC* _pidData;
 
     void _calculateIntermediateValues();
     void _publishInfo();

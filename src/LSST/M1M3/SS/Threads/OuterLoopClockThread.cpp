@@ -41,7 +41,7 @@ void OuterLoopClockThread::run() {
     while (_keepRunning) {
         try {
             IFPGA::get().waitForOuterLoopClock(25);
-        } catch (std::runtime_error &er) {
+        } catch (std::runtime_error& er) {
             SPDLOG_WARN("OuterLoopClockThread: Failed to receive outer loop clock: {}", er.what());
         }
 

@@ -44,7 +44,7 @@ int highCount = 0;
 template <typename Mutex>
 class check_sink : public spdlog::sinks::base_sink<Mutex> {
 protected:
-    void sink_it_(const spdlog::details::log_msg &msg) override {
+    void sink_it_(const spdlog::details::log_msg& msg) override {
         spdlog::memory_buf_t formatted;
         spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
 
@@ -84,7 +84,7 @@ void init_logger() {
 TEST_CASE("Failure on low air pressure", "[SafetyController]") {
     init_logger();
 
-    SafetyControllerSettings *safetyControllerSettings =
+    SafetyControllerSettings* safetyControllerSettings =
             SettingReader::instance().getSafetyControllerSettings();
 
     SafetyController safetyController(safetyControllerSettings);
@@ -109,7 +109,7 @@ TEST_CASE("Failure on low air pressure", "[SafetyController]") {
 TEST_CASE("Failure on high air pressure", "[SafetyController]") {
     init_logger();
 
-    SafetyControllerSettings *safetyControllerSettings =
+    SafetyControllerSettings* safetyControllerSettings =
             SettingReader::instance().getSafetyControllerSettings();
 
     SafetyController safetyController(safetyControllerSettings);

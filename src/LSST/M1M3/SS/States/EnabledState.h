@@ -39,8 +39,8 @@ class EnabledState : public State {
 public:
     EnabledState(std::string name);
 
-    States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand *command) override;
-    States::Type storeTMAElevationSample(TMAElevationSampleCommand *command) override;
+    States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) override;
+    States::Type storeTMAElevationSample(TMAElevationSampleCommand* command) override;
 
 protected:
     /**

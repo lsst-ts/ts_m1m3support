@@ -388,7 +388,7 @@ bool PositionController::moveHardpoint(int32_t steps, int hpIndex) {
     return true;
 }
 
-bool PositionController::move(const std::vector<int> &steps) {
+bool PositionController::move(const std::vector<int>& steps) {
     SPDLOG_INFO("PositionController: move({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", steps[0], steps[1], steps[2],
                 steps[3], steps[4], steps[5]);
     if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
@@ -429,7 +429,7 @@ bool PositionController::move(const std::vector<int> &steps) {
     return true;
 }
 
-bool PositionController::moveToEncoder(const std::vector<int> &encoderValues) {
+bool PositionController::moveToEncoder(const std::vector<int>& encoderValues) {
     SPDLOG_INFO("PositionController: moveToEncoder({:d}, {:d}, {:d}, {:d}, {:d}, {:d})", encoderValues[0],
                 encoderValues[1], encoderValues[2], encoderValues[3], encoderValues[4], encoderValues[5]);
     if ((_hardpointActuatorState->motionState[0] != MTM1M3_shared_HardpointActuatorMotionState_Standby &&
@@ -684,7 +684,7 @@ void PositionController::checkLimits(int hp) {
     _safety_controller->positionControllerNotifyLimitHigh(hp, high_limit);
 }
 
-void PositionController::_convert_to_steps(int32_t *steps, double x, double y, double z, double rX, double rY,
+void PositionController::_convert_to_steps(int32_t* steps, double x, double y, double z, double rX, double rY,
                                            double rZ) {
     // The reason for defining HP 3 first (index 2) is due to the matrix. Review
     // the MirrorPositionToHardpointDisplacementTable for a description of the

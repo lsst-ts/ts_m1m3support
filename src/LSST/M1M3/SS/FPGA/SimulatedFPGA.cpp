@@ -31,24 +31,25 @@
 #include <SAL_MTM1M3C.h>
 #include <SAL_MTMountC.h>
 
-#include <AccelerometerSettings.h>
-#include <AirSupplyStatus.h>
-#include <CRC.h>
+#include "AccelerometerSettings.h"
+#include "AirSupplyStatus.h"
+#include "CRC.h"
 #include "DetailedState.h"
-#include <FPGAAddresses.h>
+#include "FPGAAddresses.h"
 #include "ForceActuatorApplicationSettings.h"
-#include <ForceActuatorBumpTestStatus.h>
-#include <ForceActuatorSettings.h>
-#include <M1M3SSPublisher.h>
-#include <NiFpga_M1M3SupportFPGA.h>
+#include "ForceActuatorBumpTestStatus.h"
+#include "ForceActuatorSettings.h"
+#include "M1M3SSPublisher.h"
+#include "NiFpga_M1M3SupportFPGA.h"
 #include "PositionControllerSettings.h"
 #include "RaisingLoweringInfo.h"
 #include "Range.h"
-#include <SettingReader.h>
-#include <SimulatedFPGA.h>
-#include <TMA.h>
-#include <Timestamp.h>
-#include <Units.h>
+#include "SettingReader.h"
+#include "SimulatedFPGA.h"
+#include "SimulatorSettings.h"
+#include "TMA.h"
+#include "Timestamp.h"
+#include "Units.h"
 
 using namespace MTM1M3;
 using namespace LSST::M1M3::SS;
@@ -183,7 +184,8 @@ void SimulatedFPGA::pullTelemetry() {
 
         switch (DetailedState::instance().detailedState) {
             case MTM1M3::MTM1M3_shared_DetailedStates_ActiveEngineeringState:
-                if (chrono::steady_clock::now() > _mountElevationValidTo) {
+                if (SimulatorSettings::instance().simulate_mirror_movement == true &&
+                    chrono::steady_clock::now() > _mountElevationValidTo) {
                     if (_mountSimulatedMovementFirstPass) {
                         SPDLOG_INFO("Starting to simulate mirror movement");
                         _mountSimulatedMovementFirstPass = false;
@@ -266,7 +268,7 @@ void SimulatedFPGA::pullTelemetry() {
     supportFPGAData.AccelerometerSampleCount++;
     supportFPGAData.AccelerometerSampleTimestamp = timestamp;
 
-    auto &accelerometerSettings = AccelerometerSettings::instance();
+    auto& accelerometerSettings = AccelerometerSettings::instance();
     for (int i = 0; i < 8; i++) {
         supportFPGAData.AccelerometerRaw[i] =
                 (getRndPM1() * 0.001 - accelerometerSettings.accelerometerOffset[i]) /
@@ -315,16 +317,16 @@ uint8_t _broadCastCounter() {
 }
 
 template <class t>
-void setBit(t &value, uint32_t bit, bool on) {
+void setBit(t& value, uint32_t bit, bool on) {
     value = (value & ~bit) | (on ? bit : 0);
 }
 
-void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length;) {
         uint16_t signal = data[i++];
         uint16_t dataLength = 0;
         uint16_t subnet = 0;
-        std::queue<uint16_t> *response = 0;
+        std::queue<uint16_t>* response = 0;
         switch (signal) {
             case FPGAAddresses::AccelerometerAx:
             case FPGAAddresses::AccelerometerAz:
@@ -499,7 +501,7 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                         _sendResponse = false;
                     }
 
-                    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+                    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
                     int zIndex = -1;
                     for (int j = 0; j < FA_COUNT; ++j) {
@@ -632,71 +634,78 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
                                           0.2 + (getRndPM1() * 0.7);  // Update to Secondary Cylinder Force
                             }
 
-                            //
-                            // simulate following error in disabled state
-                            if (DetailedState::instance().detailedState ==
-                                        MTM1M3::MTM1M3_shared_DetailedStates_DisabledState &&
-                                subnet == 4 && address == 17) {
-                                p_force = 505;
+                            if (SimulatorSettings::instance().following_error_disable_state == true) {
+                                // simulate following error in disabled state
+                                if (DetailedState::instance().detailedState ==
+                                            MTM1M3::MTM1M3_shared_DetailedStates_DisabledState &&
+                                    subnet == 4 && address == 17) {
+                                    p_force = 505;
+                                }
                             }
-                            // uncomment to simulate follow up error
-                            // if (subnet == 1 && address == 17 && force > 500) force = 200;
 
-                            auto &bump_test = ForceActuatorBumpTestStatus::instance();
-                            auto is_tested = [](int status) -> bool {
-                                return !(status == MTM1M3_shared_BumpTest_NotTested ||
-                                         status >= MTM1M3_shared_BumpTest_Passed);
-                            };
-                            // report under force on FA 102 if it's bump tested
-                            if (pIndex == 1 && is_tested(bump_test.primaryTest[pIndex])) {
-                                p_force -= 7;
+                            if (SimulatorSettings::instance().following_error_raising == true) {
+                                if (subnet == 1 && address == 17 && p_force > 500) {
+                                    p_force = 200;
+                                }
                             }
-                            // report under force on FA 103 if it's positive bump tested
-                            else if (pIndex == 2 && bump_test.primaryTest[pIndex] ==
-                                                            MTM1M3_shared_BumpTest_TestingPositive) {
-                                p_force -= 7;
-                            }
-                            // report under force on FA 104 if after it's positive bump tested
-                            else if (pIndex == 3 && bump_test.primaryTest[pIndex] ==
-                                                            MTM1M3_shared_BumpTest_TestingPositiveWait) {
-                                p_force -= 7;
-                            }
-                            // report over force on FA 105 if after it's positive bump tested
-                            else if (pIndex == 4 && bump_test.primaryTest[pIndex] ==
-                                                            MTM1M3_shared_BumpTest_TestingNegative) {
-                                p_force += 7;
-                            }
-                            // report over force on FA 106 if after it's positive bump tested
-                            else if (pIndex == 5 && bump_test.primaryTest[pIndex] ==
-                                                            MTM1M3_shared_BumpTest_TestingNegativeWait) {
-                                p_force += 7;
-                            }
-                            // report FA 437 following error when FA 107 primary is being tested
-                            else if (pIndex == 149 &&
-                                     bump_test.primaryTest[6] == MTM1M3_shared_BumpTest_TestingPositive) {
-                                s_force -= 44;
-                            }
-                            // report FA 433 following error when FA 108 secondary is being tested
-                            else if (pIndex == 145 &&
-                                     bump_test.secondaryTest[4] == MTM1M3_shared_BumpTest_TestingNegative) {
-                                p_force -= 55;
-                            }
-                            // report under force on FA 434 Y negative (pull)
-                            else if (sIndex == 108 && bump_test.secondaryTest[sIndex] ==
-                                                              MTM1M3_shared_BumpTest_TestingNegative) {
-                                p_force += 120;
-                            }
-                            // report under force for FA 435 Z positive (push)
-                            else if (pIndex == 147 && bump_test.primaryTest[pIndex] ==
-                                                              MTM1M3_shared_BumpTest_TestingPositive) {
-                                p_force -= 120;
-                            }
-                            // report very high force on FA 321 Y
-                            else if (sIndex == 72 && bump_test.secondaryTest[sIndex] ==
-                                                             MTM1M3_shared_BumpTest_TestingPositive) {
-                                p_force += 110;
-                                // for M1M3 panic
-                                // p_force += 500;
+
+                            if (SimulatorSettings::instance().fail_bump_tests == true) {
+                                auto& bump_test = ForceActuatorBumpTestStatus::instance();
+                                auto is_tested = [](int status) -> bool {
+                                    return !(status == MTM1M3_shared_BumpTest_NotTested ||
+                                             status >= MTM1M3_shared_BumpTest_Passed);
+                                };
+                                // report under force on FA 102 if it's bump tested
+                                if (pIndex == 1 && is_tested(bump_test.primaryTest[pIndex])) {
+                                    p_force -= 7;
+                                }
+                                // report under force on FA 103 if it's positive bump tested
+                                else if (pIndex == 2 && bump_test.primaryTest[pIndex] ==
+                                                                MTM1M3_shared_BumpTest_TestingPositive) {
+                                    p_force -= 7;
+                                }
+                                // report under force on FA 104 if after it's positive bump tested
+                                else if (pIndex == 3 && bump_test.primaryTest[pIndex] ==
+                                                                MTM1M3_shared_BumpTest_TestingPositiveWait) {
+                                    p_force -= 7;
+                                }
+                                // report over force on FA 105 if after it's positive bump tested
+                                else if (pIndex == 4 && bump_test.primaryTest[pIndex] ==
+                                                                MTM1M3_shared_BumpTest_TestingNegative) {
+                                    p_force += 7;
+                                }
+                                // report over force on FA 106 if after it's positive bump tested
+                                else if (pIndex == 5 && bump_test.primaryTest[pIndex] ==
+                                                                MTM1M3_shared_BumpTest_TestingNegativeWait) {
+                                    p_force += 7;
+                                }
+                                // report FA 437 following error when FA 107 primary is being tested
+                                else if (pIndex == 149 &&
+                                         bump_test.primaryTest[6] == MTM1M3_shared_BumpTest_TestingPositive) {
+                                    s_force -= 44;
+                                }
+                                // report FA 433 following error when FA 108 secondary is being tested
+                                else if (pIndex == 145 && bump_test.secondaryTest[4] ==
+                                                                  MTM1M3_shared_BumpTest_TestingNegative) {
+                                    p_force -= 55;
+                                }
+                                // report under force on FA 434 Y negative (pull)
+                                else if (sIndex == 108 && bump_test.secondaryTest[sIndex] ==
+                                                                  MTM1M3_shared_BumpTest_TestingNegative) {
+                                    p_force += 120;
+                                }
+                                // report under force for FA 435 Z positive (push)
+                                else if (pIndex == 147 && bump_test.primaryTest[pIndex] ==
+                                                                  MTM1M3_shared_BumpTest_TestingPositive) {
+                                    p_force -= 120;
+                                }
+                                // report very high force on FA 321 Y
+                                else if (sIndex == 72 && bump_test.secondaryTest[sIndex] ==
+                                                                 MTM1M3_shared_BumpTest_TestingPositive) {
+                                    p_force += 110;
+                                    // for M1M3 panic
+                                    // p_force += 500;
+                                }
                             }
 
                             _writeModbusFloat(response, p_force);  // Write Primary Cylinder Force
@@ -948,9 +957,9 @@ void SimulatedFPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t tim
     }
 }
 
-void SimulatedFPGA::writeRequestFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     int signal = data[0];
-    std::queue<uint16_t> *modbusResponse = 0;
+    std::queue<uint16_t>* modbusResponse = 0;
     switch (signal) {
         case FPGAAddresses::AccelerometerAx:
         case FPGAAddresses::AccelerometerAz:
@@ -1022,9 +1031,9 @@ void SimulatedFPGA::writeRequestFIFO(uint16_t *data, size_t length, uint32_t tim
 
 void SimulatedFPGA::writeTimestampFIFO(uint64_t timestamp) {}
 
-void SimulatedFPGA::readU8ResponseFIFO(uint8_t *data, size_t length, uint32_t timeoutInMs) {}
+void SimulatedFPGA::readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) {}
 
-void SimulatedFPGA::readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length; ++i) {
         data[i] = _u16Response.front();
         _u16Response.pop();
@@ -1033,13 +1042,13 @@ void SimulatedFPGA::readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t 
 
 void SimulatedFPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {}
 
-void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeoutInMs) {
+void SimulatedFPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs) {
     for (size_t i = 0; i < length; i++) {
         data[i] = i;
     }
 }
 
-void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t *raw, size_t samples) {
+void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t* raw, size_t samples) {
     for (size_t i = 0; i < samples * 8; i++) {
         raw[i] = NiFpga_ConvertFromFloatToFxp(
                 NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo, -1 + (0.01f * i));
@@ -1049,7 +1058,7 @@ void SimulatedFPGA::readRawAccelerometerFIFO(uint64_t *raw, size_t samples) {
 void SimulatedFPGA::_monitorElevation(void) {
     MTMount_elevationC mountElevationInstance;
 
-    _mgrMTMount.salTelemetrySub(const_cast<char *>("MTMount_elevation"));
+    _mgrMTMount.salTelemetrySub(const_cast<char*>("MTMount_elevation"));
 
     SPDLOG_DEBUG("Start monitoring mount elevation...");
 
@@ -1067,7 +1076,7 @@ void SimulatedFPGA::_monitorElevation(void) {
     }
 }
 
-void SimulatedFPGA::_writeModbus(std::queue<uint16_t> *response, uint16_t data) {
+void SimulatedFPGA::_writeModbus(std::queue<uint16_t>* response, uint16_t data) {
     if (_sendResponse == false) {
         return;
     }
@@ -1075,19 +1084,19 @@ void SimulatedFPGA::_writeModbus(std::queue<uint16_t> *response, uint16_t data) 
     response->push((data << 1) | 0x9000);
 }
 
-void SimulatedFPGA::_writeModbus16(std::queue<uint16_t> *response, int16_t data) {
+void SimulatedFPGA::_writeModbus16(std::queue<uint16_t>* response, int16_t data) {
     _writeModbus(response, (data >> 8) & 0xFF);
     _writeModbus(response, data & 0xFF);
 }
 
-void SimulatedFPGA::_writeModbus32(std::queue<uint16_t> *response, int32_t data) {
+void SimulatedFPGA::_writeModbus32(std::queue<uint16_t>* response, int32_t data) {
     _writeModbus(response, (data >> 24) & 0xFF);
     _writeModbus(response, (data >> 16) & 0xFF);
     _writeModbus(response, (data >> 8) & 0xFF);
     _writeModbus(response, data & 0xFF);
 }
 
-void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t> *response, float data) {
+void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t>* response, float data) {
     uint8_t buffer[4];
     memcpy(buffer, &data, 4);
     _writeModbus(response, buffer[3]);
@@ -1096,7 +1105,7 @@ void SimulatedFPGA::_writeModbusFloat(std::queue<uint16_t> *response, float data
     _writeModbus(response, buffer[0]);
 }
 
-void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t> *response) {
+void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t>* response) {
     uint16_t buffer[256];
     int i = 0;
     while (!_crcVector.empty()) {
@@ -1117,7 +1126,7 @@ void SimulatedFPGA::_writeModbusCRC(std::queue<uint16_t> *response) {
     response->push(0xA000);  // Write End of Frame
 }
 
-void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t> *response, int index) {
+void SimulatedFPGA::_writeHP_ILCStatus(std::queue<uint16_t>* response, int index) {
     _writeModbus16(
             response,
             (_hardpointActuatorData->encoder[index] < _HPEncoderLow[index] ? 0x0200 : 0x0000) |
@@ -1138,7 +1147,7 @@ float SimulatedFPGA::_getAirPressure() {
     return fabs(baseValue + getRndPM1() * 0.5);
 }
 
-void SimulatedFPGA::_fill_HP_status(int address, int function, int steps, std::queue<uint16_t> *response) {
+void SimulatedFPGA::_fill_HP_status(int address, int function, int steps, std::queue<uint16_t>* response) {
     int index = address - 1;
     auto encoder = _hardpointActuatorData->encoder[index];
 
@@ -1181,7 +1190,7 @@ void SimulatedFPGA::_fill_HP_status(int address, int function, int steps, std::q
     const float offsets_parked[HP_COUNT] = {-5000, 5000, 0, -2023, 945, 0};
 
     if (supported_pct < FULL_PCT) {
-        auto &ds = DetailedState::instance();
+        auto& ds = DetailedState::instance();
 
         if (ds.is_raising()) {
             if (supported_pct == 0) {

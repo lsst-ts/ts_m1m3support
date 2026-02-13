@@ -30,7 +30,7 @@ using namespace LSST::M1M3::SS;
 
 PIDSettings::PIDSettings() {}
 
-void PIDSettings::load(YAML::Node doc, const char *kind) {
+void PIDSettings::load(YAML::Node doc, const char* kind) {
     settingName = kind;
     SPDLOG_INFO("Loading {} PIDSettings", settingName);
 
@@ -50,7 +50,7 @@ PIDParameters PIDSettings::getParameters(int index) {
     return PIDParameters(timestep[index], p[index], i[index], d[index], n[index]);
 }
 
-void PIDSettings::_parsePID(const YAML::Node &node, int index) {
+void PIDSettings::_parsePID(const YAML::Node& node, int index) {
     timestep[index] = node["Timestep"].as<double>();
     p[index] = node["P"].as<double>();
     i[index] = node["I"].as<double>();

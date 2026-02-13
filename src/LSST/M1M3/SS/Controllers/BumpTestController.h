@@ -92,7 +92,7 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> _test_timeout[FA_COUNT];
     bool _cylinders[FA_COUNT];
 
-    FABumpTestData *_bump_test_data;
+    FABumpTestData* _bump_test_data;
 
     /**
      * Called after statistics was collected. Report back interesting (above warning/error level) values.
@@ -107,7 +107,7 @@ private:
      * @param status Test result - see BumpTestStatus enumeration.
      */
     void _finalize_test(int actuator_id, int z_index, int s_index, int test_type, int stage,
-                        const BumpTestStatistics &stat, std::chrono::steady_clock::time_point now,
+                        const BumpTestStatistics& stat, std::chrono::steady_clock::time_point now,
                         BumpTestStatus status);
 
     /**
@@ -123,7 +123,7 @@ private:
      * @param timestamp current time.
      */
     bool _run_axis(int axis_index, int z_index, int s_index, int actuator_id, int test_type,
-                   BumpTestStatus status, int &stage, double &timestamp);
+                   BumpTestStatus status, int& stage, double& timestamp);
     void _reset_progress(bool zeroOffsets = true);
 
     /**

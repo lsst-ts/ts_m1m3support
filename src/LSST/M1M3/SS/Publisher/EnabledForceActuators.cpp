@@ -36,7 +36,7 @@ EnabledForceActuators::EnabledForceActuators() {
 }
 
 void EnabledForceActuators::setEnabled(int32_t actuatorId, bool enabled) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     int32_t actuatorIndex = faa_settings.ActuatorIdToZIndex(actuatorId);
     if (forceActuatorEnabled[actuatorIndex] == enabled) {

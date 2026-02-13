@@ -39,7 +39,7 @@ SlewController::SlewController() { SPDLOG_DEBUG("SlewController: SlewController(
 
 void SlewController::enterSlew() {
     ForceControllerState::instance().set_slewFlag(true);
-    auto &slew_settings = SlewControllerSettings::instance();
+    auto& slew_settings = SlewControllerSettings::instance();
     Model::instance().getForceController()->freezePIDs();
     if (slew_settings.triggerBoosterValves) {
         BoosterValveStatus::instance().enterSlew();
@@ -62,7 +62,7 @@ void SlewController::enterSlew() {
 }
 
 void SlewController::exitSlew() {
-    auto &slew_settings = SlewControllerSettings::instance();
+    auto& slew_settings = SlewControllerSettings::instance();
     if (slew_settings.triggerBoosterValves) {
         BoosterValveStatus::instance().exitSlew();
     }

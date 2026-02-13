@@ -68,10 +68,10 @@ protected:
      * @return true when event can be ignored (as it happened in grace period from the last trigger,
      * or _active was false and the event wasn't active).
      */
-    bool ignore_actuator_warning(std::map<int, double> &_timeouts, double _timestamp, int _actuator_id,
+    bool ignore_actuator_warning(std::map<int, double>& _timeouts, double _timestamp, int _actuator_id,
                                  bool _active);
 
-    bool ignore_warning(double &_timeout, double _timestamp, bool _active);
+    bool ignore_warning(double& _timeout, double _timestamp, bool _active);
 
 private:
     // holds last timeouts/grace period for actuators

@@ -34,7 +34,7 @@ EnableCommand::EnableCommand(int32_t commandID) : Command(commandID) {}
 
 void EnableCommand::execute() { Context::instance().enable(this); }
 
-void EnableCommand::ackInProgress(const char *description, double timeout) {
+void EnableCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandenable(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

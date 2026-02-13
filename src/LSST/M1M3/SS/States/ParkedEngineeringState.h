@@ -38,14 +38,14 @@ class ParkedEngineeringState : public EngineeringState {
 public:
     ParkedEngineeringState();
 
-    States::Type update(UpdateCommand *command) override;
-    States::Type raiseM1M3(RaiseM1M3Command *command) override;
-    States::Type exitEngineering(ExitEngineeringCommand *command) override;
-    States::Type disable(DisableCommand *command) override;
-    States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand *command) override;
-    States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand *command) override;
-    States::Type testHardpoint(TestHardpointCommand *command) override;
-    States::Type killHardpointTest(KillHardpointTestCommand *command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type raiseM1M3(RaiseM1M3Command* command) override;
+    States::Type exitEngineering(ExitEngineeringCommand* command) override;
+    States::Type disable(DisableCommand* command) override;
+    States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) override;
+    States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) override;
+    States::Type testHardpoint(TestHardpointCommand* command) override;
+    States::Type killHardpointTest(KillHardpointTestCommand* command) override;
 };
 
 } /* namespace SS */

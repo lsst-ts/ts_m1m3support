@@ -33,7 +33,7 @@ namespace SS {
 
 LoweringFaultState::LoweringFaultState() : FaultState("LoweringFaultState") {}
 
-States::Type LoweringFaultState::update(UpdateCommand *command) {
+States::Type LoweringFaultState::update(UpdateCommand* command) {
     SPDLOG_TRACE("LoweringFaultState: update()");
     ensureFaulted();
     FaultState::update(command);

@@ -37,13 +37,13 @@ namespace SS {
  */
 class KillHardpointTestCommand : public Command {
 public:
-    KillHardpointTestCommand(int32_t commandID, MTM1M3_command_killHardpointTestC *data);
+    KillHardpointTestCommand(int32_t commandID, MTM1M3_command_killHardpointTestC* data);
 
-    MTM1M3_command_killHardpointTestC *getData() { return &_data; }
+    MTM1M3_command_killHardpointTestC* getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

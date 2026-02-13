@@ -39,10 +39,10 @@ class ParkedState : public EnabledState {
 public:
     ParkedState();
 
-    States::Type update(UpdateCommand *command) override;
-    States::Type raiseM1M3(RaiseM1M3Command *command) override;
-    States::Type enterEngineering(EnterEngineeringCommand *command) override;
-    States::Type disable(DisableCommand *command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type raiseM1M3(RaiseM1M3Command* command) override;
+    States::Type enterEngineering(EnterEngineeringCommand* command) override;
+    States::Type disable(DisableCommand* command) override;
 };
 
 } /* namespace SS */

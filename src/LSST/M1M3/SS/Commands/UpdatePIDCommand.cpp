@@ -30,7 +30,7 @@
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-UpdatePIDCommand::UpdatePIDCommand(int32_t commandID, MTM1M3_command_updatePIDC *data) : Command(commandID) {
+UpdatePIDCommand::UpdatePIDCommand(int32_t commandID, MTM1M3_command_updatePIDC* data) : Command(commandID) {
     _data.pid = data->pid;
     _data.timestep = data->timestep;
     _data.p = data->p;
@@ -49,7 +49,7 @@ bool UpdatePIDCommand::validate() {
 
 void UpdatePIDCommand::execute() { Context::instance().updatePID(this); }
 
-void UpdatePIDCommand::ackInProgress(const char *description, double timeout) {
+void UpdatePIDCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandupdatePID(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

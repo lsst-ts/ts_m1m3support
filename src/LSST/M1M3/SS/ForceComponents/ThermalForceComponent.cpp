@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 ThermalForceComponent::ThermalForceComponent()
         : ForceComponent("Thermal", &ForceActuatorSettings::instance().ThermalComponentSettings),
           _preclipped_thermal_forces(
-                  [](MTM1M3_logevent_preclippedThermalForcesC *data) {
+                  [](MTM1M3_logevent_preclippedThermalForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedThermalForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -50,8 +50,8 @@ ThermalForceComponent::ThermalForceComponent()
     _appliedThermalForces = M1M3SSPublisher::instance().getAppliedThermalForces();
 }
 
-void ThermalForceComponent::applyThermalForces(const std::vector<float> &x, const std::vector<float> &y,
-                                               const std::vector<float> &z) {
+void ThermalForceComponent::applyThermalForces(const std::vector<float>& x, const std::vector<float>& y,
+                                               const std::vector<float>& z) {
     SPDLOG_TRACE("ThermalForceComponent: applyThermalForces()");
 
     if (!isEnabled()) {
@@ -78,7 +78,7 @@ void ThermalForceComponent::applyThermalForcesByMirrorTemperature(float temperat
     SPDLOG_TRACE("ThermalForceComponent: applyThermalForcesByMirrorForces({:.1f})", temperature);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromTemperature(temperature);
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     std::vector<float> xForces(FA_X_COUNT, 0);
     std::vector<float> yForces(FA_Y_COUNT, 0);
@@ -107,7 +107,7 @@ void ThermalForceComponent::postEnableDisableActions() {
 void ThermalForceComponent::postUpdateActions() {
     SPDLOG_TRACE("ThermalForceController: postUpdateActions()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool notInRange = false;
     bool clippingRequired = false;

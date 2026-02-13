@@ -50,7 +50,7 @@ public:
      *
      * @return minimal distance from any currently tested force actuator
      */
-    float minimal_tested_distance(int actuator_id, int &min_actuator_id);
+    float minimal_tested_distance(int actuator_id, int& min_actuator_id);
 
     void trigger_bump_test(int z_index, bool test_primary, bool test_secondary);
 

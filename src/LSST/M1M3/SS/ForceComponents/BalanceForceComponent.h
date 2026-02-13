@@ -54,8 +54,8 @@ namespace SS {
 class BalanceForceComponent : public ForceComponent {
 public:
     BalanceForceComponent();
-    void applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y,
-                            const std::vector<float> &z, bool check = true);
+    void applyBalanceForces(const std::vector<float>& x, const std::vector<float>& y,
+                            const std::vector<float>& z, bool check = true);
     /**
      * Called from ForceController::updateAppliedForces. Feeds in hardpoint
      * force and moments measured from the hardpoint load cells and transformed
@@ -85,9 +85,9 @@ protected:
     void postUpdateActions() override;
 
 private:
-    PID *_idToPID(int id);
+    PID* _idToPID(int id);
 
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
     PID _fx;
     PID _fy;
@@ -96,8 +96,8 @@ private:
     PID _my;
     PID _mz;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_appliedBalanceForcesC *_appliedBalanceForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_appliedBalanceForcesC* _appliedBalanceForces;
 
     PreclippedForces<MTM1M3_logevent_preclippedBalanceForcesC> _preclipped_balance_forces;
 };

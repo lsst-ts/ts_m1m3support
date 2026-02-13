@@ -53,11 +53,11 @@ public:
      *
      * @return singleton instance.
      */
-    static M1M3SSSubscriber &get();
+    static M1M3SSSubscriber& get();
 
     void setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> mtMountSAL);
 
-    Command *tryAcceptCommandSetLogLevel();
+    Command* tryAcceptCommandSetLogLevel();
 
     /**
      * @brief Check for a Start command.
@@ -65,62 +65,62 @@ public:
      * @return NULL if the Start command isn't available. Start command if one is
      * available.
      */
-    Command *tryAcceptCommandStart();
-    Command *tryAcceptCommandEnable();
-    Command *tryAcceptCommandDisable();
-    Command *tryAcceptCommandStandby();
-    Command *tryAcceptCommandExitControl();
-    Command *tryAcceptCommandPanic();
-    Command *tryAcceptCommandSetSlewFlag();
-    Command *tryAcceptCommandClearSlewFlag();
-    Command *tryAcceptCommandTurnAirOn();
-    Command *tryAcceptCommandTurnAirOff();
-    Command *tryAcceptCommandBoosterValveOpen();
-    Command *tryAcceptCommandBoosterValveClose();
-    Command *tryAcceptCommandApplyOffsetForces();
-    Command *tryAcceptCommandClearOffsetForces();
-    Command *tryAcceptCommandRaiseM1M3();
-    Command *tryAcceptCommandLowerM1M3();
-    Command *tryAcceptCommandPauseM1M3RaisingLowering();
-    Command *tryAcceptCommandResumeM1M3RaisingLowering();
-    Command *tryAcceptCommandApplyActiveOpticForces();
-    Command *tryAcceptCommandClearActiveOpticForces();
-    Command *tryAcceptCommandEnterEngineering();
-    Command *tryAcceptCommandExitEngineering();
-    Command *tryAcceptCommandTestHardpoint();
-    Command *tryAcceptCommandKillHardpointTest();
-    Command *tryAcceptCommandMoveHardpointActuators();
-    Command *tryAcceptCommandEnableHardpointChase();
-    Command *tryAcceptCommandDisableHardpointChase();
-    Command *tryAcceptCommandAbortRaiseM1M3();
-    Command *tryAcceptCommandTranslateM1M3();
-    Command *tryAcceptCommandStopHardpointMotion();
-    Command *tryAcceptCommandPositionM1M3();
-    Command *tryAcceptCommandTurnLightsOn();
-    Command *tryAcceptCommandTurnLightsOff();
-    Command *tryAcceptCommandTurnPowerOn();
-    Command *tryAcceptCommandTurnPowerOff();
-    Command *tryAcceptCommandEnableHardpointCorrections();
-    Command *tryAcceptCommandDisableHardpointCorrections();
-    Command *tryAcceptCommandRunMirrorForceProfile();
-    Command *tryAcceptCommandAbortProfile();
-    Command *tryAcceptCommandApplyOffsetForcesByMirrorForce();
-    Command *tryAcceptCommandUpdatePID();
-    Command *tryAcceptCommandResetPID();
-    Command *tryAcceptCommandForceActuatorBumpTest();
-    Command *tryAcceptCommandKillForceActuatorBumpTest();
-    Command *tryAcceptCommandDisableForceActuator();
-    Command *tryAcceptCommandEnableForceActuator();
-    Command *tryAcceptCommandEnableAllForceActuators();
-    Command *tryAcceptCommandEnableDisableForceComponent();
-    Command *tryAcceptCommandSetSlewControllerSettings();
+    Command* tryAcceptCommandStart();
+    Command* tryAcceptCommandEnable();
+    Command* tryAcceptCommandDisable();
+    Command* tryAcceptCommandStandby();
+    Command* tryAcceptCommandExitControl();
+    Command* tryAcceptCommandPanic();
+    Command* tryAcceptCommandSetSlewFlag();
+    Command* tryAcceptCommandClearSlewFlag();
+    Command* tryAcceptCommandTurnAirOn();
+    Command* tryAcceptCommandTurnAirOff();
+    Command* tryAcceptCommandBoosterValveOpen();
+    Command* tryAcceptCommandBoosterValveClose();
+    Command* tryAcceptCommandApplyOffsetForces();
+    Command* tryAcceptCommandClearOffsetForces();
+    Command* tryAcceptCommandRaiseM1M3();
+    Command* tryAcceptCommandLowerM1M3();
+    Command* tryAcceptCommandPauseM1M3RaisingLowering();
+    Command* tryAcceptCommandResumeM1M3RaisingLowering();
+    Command* tryAcceptCommandApplyActiveOpticForces();
+    Command* tryAcceptCommandClearActiveOpticForces();
+    Command* tryAcceptCommandEnterEngineering();
+    Command* tryAcceptCommandExitEngineering();
+    Command* tryAcceptCommandTestHardpoint();
+    Command* tryAcceptCommandKillHardpointTest();
+    Command* tryAcceptCommandMoveHardpointActuators();
+    Command* tryAcceptCommandEnableHardpointChase();
+    Command* tryAcceptCommandDisableHardpointChase();
+    Command* tryAcceptCommandAbortRaiseM1M3();
+    Command* tryAcceptCommandTranslateM1M3();
+    Command* tryAcceptCommandStopHardpointMotion();
+    Command* tryAcceptCommandPositionM1M3();
+    Command* tryAcceptCommandTurnLightsOn();
+    Command* tryAcceptCommandTurnLightsOff();
+    Command* tryAcceptCommandTurnPowerOn();
+    Command* tryAcceptCommandTurnPowerOff();
+    Command* tryAcceptCommandEnableHardpointCorrections();
+    Command* tryAcceptCommandDisableHardpointCorrections();
+    Command* tryAcceptCommandRunMirrorForceProfile();
+    Command* tryAcceptCommandAbortProfile();
+    Command* tryAcceptCommandApplyOffsetForcesByMirrorForce();
+    Command* tryAcceptCommandUpdatePID();
+    Command* tryAcceptCommandResetPID();
+    Command* tryAcceptCommandForceActuatorBumpTest();
+    Command* tryAcceptCommandKillForceActuatorBumpTest();
+    Command* tryAcceptCommandDisableForceActuator();
+    Command* tryAcceptCommandEnableForceActuator();
+    Command* tryAcceptCommandEnableAllForceActuators();
+    Command* tryAcceptCommandEnableDisableForceComponent();
+    Command* tryAcceptCommandSetSlewControllerSettings();
 
-    Command *tryGetSampleTMAAzimuth();
-    Command *tryGetSampleTMAElevation();
+    Command* tryGetSampleTMAAzimuth();
+    Command* tryGetSampleTMAElevation();
 
 private:
-    M1M3SSSubscriber &operator=(const M1M3SSSubscriber &) = delete;
-    M1M3SSSubscriber(const M1M3SSSubscriber &) = delete;
+    M1M3SSSubscriber& operator=(const M1M3SSSubscriber&) = delete;
+    M1M3SSSubscriber(const M1M3SSSubscriber&) = delete;
 
     std::shared_ptr<SAL_MTM1M3> _m1m3SAL;
     std::shared_ptr<SAL_MTMount> _mtMountSAL;

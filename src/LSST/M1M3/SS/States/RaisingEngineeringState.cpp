@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 RaisingEngineeringState::RaisingEngineeringState() : EnabledState("RaisingEngineeringState") {}
 
-States::Type RaisingEngineeringState::update(UpdateCommand *command) {
+States::Type RaisingEngineeringState::update(UpdateCommand* command) {
     ModelPublisher publishModel{};
     SPDLOG_TRACE("RaisingEngineeringState: update()");
     Model::instance().getMirrorRaiseController()->runLoop();
@@ -41,13 +41,13 @@ States::Type RaisingEngineeringState::update(UpdateCommand *command) {
             raiseCompleted() ? States::ActiveEngineeringState : States::NoStateTransition);
 }
 
-States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command *command) {
+States::Type RaisingEngineeringState::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     SPDLOG_INFO("RaisingEngineeringState: abortRaiseM1M3()");
     Model::instance().getMirrorLowerController()->abortRaiseM1M3();
     return Model::instance().getSafetyController()->checkSafety(States::LoweringEngineeringState);
 }
 
-States::Type RaisingEngineeringState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand *command) {
+States::Type RaisingEngineeringState::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
     SPDLOG_INFO("Pausing M1M3 raising in engineering state");
     Model::instance().getMirrorRaiseController()->pauseM1M3Raising();
     return Model::instance().getSafetyController()->checkSafety(States::PausedRaisingEngineeringState);

@@ -36,7 +36,7 @@ namespace SS {
 struct PIDParameters {
     PIDParameters() { Timestep = P = I = D = N = NAN; }
 
-    PIDParameters(const PIDParameters &pid) {
+    PIDParameters(const PIDParameters& pid) {
         Timestep = pid.Timestep;
         P = pid.P;
         I = pid.I;

@@ -35,7 +35,7 @@ namespace SS {
 
 class SetADCChanneOffsetAndSensitivityBusList : public BusList {
 public:
-    SetADCChanneOffsetAndSensitivityBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory);
+    SetADCChanneOffsetAndSensitivityBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     void buildBuffer() override;
 };

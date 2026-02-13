@@ -40,7 +40,7 @@ using namespace LSST::M1M3::SS;
 ElevationForceComponent::ElevationForceComponent()
         : ForceComponent("Elevation", &ForceActuatorSettings::instance().ElevationComponentSettings),
           _preclipped_elevation_forces(
-                  [](MTM1M3_logevent_preclippedElevationForcesC *data) {
+                  [](MTM1M3_logevent_preclippedElevationForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedElevationForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -51,8 +51,8 @@ ElevationForceComponent::ElevationForceComponent()
     _appliedElevationForces = M1M3SSPublisher::instance().getAppliedElevationForces();
 }
 
-void ElevationForceComponent::applyElevationForces(const std::vector<float> &x, const std::vector<float> &y,
-                                                   const std::vector<float> &z) {
+void ElevationForceComponent::applyElevationForces(const std::vector<float>& x, const std::vector<float>& y,
+                                                   const std::vector<float>& z) {
     SPDLOG_TRACE("ElevationForceComponent: applyElevationForces()");
 
     if (!isEnabled()) {
@@ -86,7 +86,7 @@ void ElevationForceComponent::applyElevationForcesByElevationAngle(float elevati
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_Z_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -112,7 +112,7 @@ void ElevationForceComponent::postEnableDisableActions() {
 void ElevationForceComponent::postUpdateActions() {
     SPDLOG_TRACE("ElevationForceController: postUpdateActions()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool notInRange = false;
     bool clippingRequired = false;

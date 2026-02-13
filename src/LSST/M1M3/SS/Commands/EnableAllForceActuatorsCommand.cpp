@@ -34,7 +34,7 @@ EnableAllForceActuatorsCommand::EnableAllForceActuatorsCommand(int32_t commandID
 
 void EnableAllForceActuatorsCommand::execute() { Context::instance().enableAllForceActuators(this); }
 
-void EnableAllForceActuatorsCommand::ackInProgress(const char *description, double timeout) {
+void EnableAllForceActuatorsCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandenableAllForceActuators(getCommandID(), ACK_INPROGRESS, description,
                                                                   timeout);
 }

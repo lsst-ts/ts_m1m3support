@@ -39,7 +39,7 @@ TEST_CASE("CalculateCRC", "[ModbusBuffer]") {
     mbuf.writeCRC(2);
     mbuf.writeEndOfFrame();
 
-    uint16_t *buf = mbuf.getBuffer();
+    uint16_t* buf = mbuf.getBuffer();
 
     REQUIRE(mbuf.readInstructionByte(buf[2]) == 0xe3);
     REQUIRE(mbuf.readInstructionByte(buf[3]) == 0x4c);
@@ -59,7 +59,7 @@ TEST_CASE("CalculateLongCRC", "[ModbusBuffer]") {
 
     REQUIRE(mbuf.getIndex() == 22);
 
-    uint16_t *buf = mbuf.getBuffer();
+    uint16_t* buf = mbuf.getBuffer();
 
     REQUIRE(mbuf.readInstructionByte(buf[19]) == 0xA7);
     REQUIRE(mbuf.readInstructionByte(buf[20]) == 0x9F);

@@ -122,9 +122,9 @@ public:
      * @param primary_states Primary cylinder/axis bump test states.
      * @param secondary_states Secondary cylinder/axis bump test states.
      */
-    void add_data(const float_v &x_forces, const float_v &y_forces, const float_v &z_forces,
-                  const float_v &primary_forces, const float_v &secondary_forces, const int_v &primary_states,
-                  const int_v &secondary_states);
+    void add_data(const float_v& x_forces, const float_v& y_forces, const float_v& z_forces,
+                  const float_v& primary_forces, const float_v& secondary_forces, const int_v& primary_states,
+                  const int_v& secondary_states);
 
     /**
      * Clear all cache entries.
@@ -163,7 +163,7 @@ public:
      */
     void test_mirror(int test_type, BumpTestStatus (&results)[FA_COUNT]);
 
-    float *get_data(int axis_index, int test_type);
+    float* get_data(int axis_index, int test_type);
 
     static bool is_primary(int test_type) {
         switch (test_type) {
@@ -207,15 +207,15 @@ private:
     BumpTestStatus _test_min_max(int x_index, int y_index, int z_index, int s_index, int test_type,
                                  float error, float warning);
 
-    float *_x_forces[FA_X_COUNT];
-    float *_y_forces[FA_Y_COUNT];
-    float *_z_forces[FA_Z_COUNT];
+    float* _x_forces[FA_X_COUNT];
+    float* _y_forces[FA_Y_COUNT];
+    float* _z_forces[FA_Z_COUNT];
 
-    float *_primary_forces[FA_COUNT];
-    float *_secondary_forces[FA_S_COUNT];
+    float* _primary_forces[FA_COUNT];
+    float* _secondary_forces[FA_S_COUNT];
 
-    int *_primary_states[FA_COUNT];
-    int *_secondary_states[FA_S_COUNT];
+    int* _primary_states[FA_COUNT];
+    int* _secondary_states[FA_S_COUNT];
 
     // circular buffer indice
     size_t _head;

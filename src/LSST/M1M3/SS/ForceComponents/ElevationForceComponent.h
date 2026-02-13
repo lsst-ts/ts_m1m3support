@@ -37,8 +37,8 @@ namespace SS {
 class ElevationForceComponent : public ForceComponent {
 public:
     ElevationForceComponent();
-    void applyElevationForces(const std::vector<float> &x, const std::vector<float> &y,
-                              const std::vector<float> &z);
+    void applyElevationForces(const std::vector<float>& x, const std::vector<float>& y,
+                              const std::vector<float>& z);
     /**
      * Calculate offset forces from current telescope elevation.
      *
@@ -52,10 +52,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_appliedElevationForcesC *_appliedElevationForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_appliedElevationForcesC* _appliedElevationForces;
     PreclippedForces<MTM1M3_logevent_preclippedElevationForcesC> _preclipped_elevation_forces;
 };
 

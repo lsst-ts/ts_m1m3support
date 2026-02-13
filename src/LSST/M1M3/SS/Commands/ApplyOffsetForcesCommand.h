@@ -34,13 +34,13 @@ namespace SS {
 
 class ApplyOffsetForcesCommand : public Command {
 public:
-    ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_command_applyOffsetForcesC *data);
+    ApplyOffsetForcesCommand(int32_t commandID, MTM1M3_command_applyOffsetForcesC* data);
 
-    MTM1M3_command_applyOffsetForcesC *getData() { return &_data; }
+    MTM1M3_command_applyOffsetForcesC* getData() { return &_data; }
 
     bool validate();
     void execute();
-    void ackInProgress(const char *description, double timeout);
+    void ackInProgress(const char* description, double timeout);
     void ackComplete();
     void ackFailed(std::string reason);
 

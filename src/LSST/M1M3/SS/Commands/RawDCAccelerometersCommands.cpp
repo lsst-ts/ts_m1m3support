@@ -40,7 +40,7 @@ class DumpRawAccelerometer : public LSST::cRIO::Thread {
 public:
     void open(std::filesystem::path dump_path);
     void close();
-    void run(std::unique_lock<std::mutex> &lock) override;
+    void run(std::unique_lock<std::mutex>& lock) override;
 
 private:
     std::ofstream _file;
@@ -57,7 +57,7 @@ void DumpRawAccelerometer::open(std::filesystem::path dump_path) {
         _file.exceptions(std::ios::badbit | std::ios::failbit);
         _sync_counter = 0;
         SPDLOG_INFO("Recording raw DC accelerometer data to {}", dump_path.string());
-    } catch (const std::ios_base::failure &e) {
+    } catch (const std::ios_base::failure& e) {
         SPDLOG_ERROR("Cannot open raw DC accelerometer file {}: {}", dump_path.string(), e.what());
     }
 }
@@ -65,12 +65,12 @@ void DumpRawAccelerometer::open(std::filesystem::path dump_path) {
 void DumpRawAccelerometer::close() {
     try {
         _file.close();
-    } catch (const std::ios_base::failure &e) {
+    } catch (const std::ios_base::failure& e) {
         SPDLOG_ERROR("Cannot close raw DC accelerometer file: {}", e.what());
     }
 }
 
-void DumpRawAccelerometer::run(std::unique_lock<std::mutex> &lock) {
+void DumpRawAccelerometer::run(std::unique_lock<std::mutex>& lock) {
     while (keepRunning) {
         runCondition.wait_for(lock, 1ms);
         try {
@@ -80,7 +80,7 @@ void DumpRawAccelerometer::run(std::unique_lock<std::mutex> &lock) {
             IFPGA::get().readRawAccelerometerFIFO(raw, samples);
             for (size_t i = 0; i < samples * 8; i++) {
                 raw[i] = htobe64(raw[i]);
-                memcpy(data + (i * 3), (reinterpret_cast<char *>(raw + i)) + 5, 3);
+                memcpy(data + (i * 3), (reinterpret_cast<char*>(raw + i)) + 5, 3);
             }
             _file.write(data, samples * 8 * 3);
             if (_sync_counter > 10) {
@@ -89,7 +89,7 @@ void DumpRawAccelerometer::run(std::unique_lock<std::mutex> &lock) {
             } else {
                 _sync_counter++;
             }
-        } catch (const std::ios_base::failure &e) {
+        } catch (const std::ios_base::failure& e) {
             SPDLOG_ERROR("Cannot record raw DC accelerometer file: {}", e.what());
             close();
             break;

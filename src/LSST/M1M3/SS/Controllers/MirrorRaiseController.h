@@ -78,8 +78,8 @@ public:
      * @param safetyController
      * @param powerController
      */
-    MirrorRaiseController(PositionController *positionController, ForceController *forceController,
-                          SafetyController *safetyController, PowerController *powerController);
+    MirrorRaiseController(PositionController* positionController, ForceController* forceController,
+                          SafetyController* safetyController, PowerController* powerController);
 
     void reset();
 
@@ -100,10 +100,10 @@ public:
 private:
     bool _check_hp_ready();
 
-    PositionController *_positionController;
-    ForceController *_forceController;
-    SafetyController *_safetyController;
-    PowerController *_powerController;
+    PositionController* _positionController;
+    ForceController* _forceController;
+    SafetyController* _safetyController;
+    PowerController* _powerController;
 
     // time spend in paused state doesn't count to timeout
     double _cachedStartTime;

@@ -34,10 +34,10 @@ namespace SS {
 
 class TurnLightsOffCommand : public Command {
 public:
-    TurnLightsOffCommand(int32_t commandID, MTM1M3_command_turnLightsOffC *);
+    TurnLightsOffCommand(int32_t commandID, MTM1M3_command_turnLightsOffC*);
 
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 };

@@ -35,7 +35,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 EnableDisableForceComponentCommand::EnableDisableForceComponentCommand(
-        int32_t commandID, MTM1M3_command_enableDisableForceComponentC *data)
+        int32_t commandID, MTM1M3_command_enableDisableForceComponentC* data)
         : Command(commandID) {
     _data = *data;
 }
@@ -55,7 +55,7 @@ bool EnableDisableForceComponentCommand::validate() {
 
 void EnableDisableForceComponentCommand::execute() { Context::instance().enableDisableForceComponent(this); }
 
-void EnableDisableForceComponentCommand::ackInProgress(const char *description, double timeout) {
+void EnableDisableForceComponentCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandenableDisableForceComponent(getCommandID(), ACK_INPROGRESS,
                                                                       description, timeout);
 }

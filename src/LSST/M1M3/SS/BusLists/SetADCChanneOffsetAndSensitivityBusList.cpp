@@ -30,7 +30,7 @@
 using namespace LSST::M1M3::SS;
 
 SetADCChanneOffsetAndSensitivityBusList::SetADCChanneOffsetAndSensitivityBusList(
-        ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
+        ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG(
             "SetADCChanneOffsetAndSensitivityBusList: "

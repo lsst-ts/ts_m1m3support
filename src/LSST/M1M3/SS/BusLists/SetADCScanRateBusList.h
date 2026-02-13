@@ -33,7 +33,7 @@ namespace SS {
 
 class SetADCScanRateBusList : public BusList {
 public:
-    SetADCScanRateBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory);
+    SetADCScanRateBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     void buildBuffer() override;
 };

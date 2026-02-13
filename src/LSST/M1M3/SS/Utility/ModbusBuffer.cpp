@@ -80,7 +80,7 @@ void ModbusBuffer::skipToNextFrame() {
     _index++;
 }
 
-uint16_t *ModbusBuffer::getBuffer() { return _buffer; }
+uint16_t* ModbusBuffer::getBuffer() { return _buffer; }
 
 void ModbusBuffer::set(int32_t index, uint16_t data) { _buffer[index] = data; }
 
@@ -181,7 +181,7 @@ std::string ModbusBuffer::readString(int32_t length) {
     for (int i = 0; i < length; i++) {
         _stringBuffer[i] = this->readInstructionByte(_buffer[_index++]);
     }
-    return std::string((const char *)_stringBuffer, (size_t)length);
+    return std::string((const char*)_stringBuffer, (size_t)length);
 }
 
 uint16_t ModbusBuffer::readCRC() {
@@ -304,8 +304,8 @@ void ModbusBuffer::writeWaitForRx(uint32_t timeoutMicros) {
                                                : (timeoutMicros | FIFO_TX_WAIT_RX);
 }
 
-void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t &beginTs, uint64_t &endTs,
-                                      std::vector<uint8_t> &data) {
+void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t& beginTs, uint64_t& endTs,
+                                      std::vector<uint8_t>& data) {
     IFPGA::get().writeRequestFIFO(request, 0);
 
     reset();
@@ -361,7 +361,7 @@ void ModbusBuffer::pullModbusResponse(uint16_t request, uint64_t &beginTs, uint6
     crc = (crc << 8) | (uint16_t)data.back();
     data.pop_back();
 
-    beginTs = *((uint64_t *)getBuffer());
+    beginTs = *((uint64_t*)getBuffer());
 
     uint16_t calcCrc = calculateCRC(data);
 

@@ -36,7 +36,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Inclinometer::Inclinometer(SupportFPGAData *fpgaData, SafetyController *safetyController) {
+Inclinometer::Inclinometer(SupportFPGAData* fpgaData, SafetyController* safetyController) {
     SPDLOG_DEBUG("Inclinometer: Inclinometer()");
 
     _fpgaData = fpgaData;

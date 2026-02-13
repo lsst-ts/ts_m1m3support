@@ -48,13 +48,13 @@ namespace SS {
 
 EnabledState::EnabledState(std::string name) : State(name) {}
 
-States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand *command) {
+States::Type EnabledState::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAAzimuthSample()");
     TMA::instance().updateTMAAzimuth(command->getData());
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand *command) {
+States::Type EnabledState::storeTMAElevationSample(TMAElevationSampleCommand* command) {
     SPDLOG_TRACE("EnabledState: storeTMAElevationSample()");
     TMA::instance().updateTMAElevation(command->getData());
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);

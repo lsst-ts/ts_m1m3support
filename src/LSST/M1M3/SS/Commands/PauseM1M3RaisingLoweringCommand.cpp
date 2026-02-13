@@ -34,7 +34,7 @@ PauseM1M3RaisingLoweringCommand::PauseM1M3RaisingLoweringCommand(int32_t command
 
 void PauseM1M3RaisingLoweringCommand::execute() { Context::instance().pauseM1M3RaisingLowering(this); }
 
-void PauseM1M3RaisingLoweringCommand::ackInProgress(const char *description, double timeout) {
+void PauseM1M3RaisingLoweringCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandpauseM1M3RaisingLowering(getCommandID(), ACK_INPROGRESS,
                                                                    description, timeout);
 }

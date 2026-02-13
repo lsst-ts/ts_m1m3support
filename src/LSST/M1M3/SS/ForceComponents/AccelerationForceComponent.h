@@ -37,8 +37,8 @@ namespace SS {
 class AccelerationForceComponent : public ForceComponent {
 public:
     AccelerationForceComponent();
-    void applyAccelerationForces(const std::vector<float> &x, const std::vector<float> &y,
-                                 const std::vector<float> &z);
+    void applyAccelerationForces(const std::vector<float>& x, const std::vector<float>& y,
+                                 const std::vector<float>& z);
     /**
      * Calculate forces from accelerations.
      *
@@ -58,10 +58,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_appliedAccelerationForcesC *_appliedAccelerationForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_appliedAccelerationForcesC* _appliedAccelerationForces;
     PreclippedForces<MTM1M3_logevent_preclippedAccelerationForcesC> _preclipped_acceleration_forces;
 };
 

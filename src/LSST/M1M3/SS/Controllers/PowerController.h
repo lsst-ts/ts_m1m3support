@@ -48,7 +48,7 @@ public:
      * Instantiates the power controller.
      * @param[in] safetyController The safety controller.
      */
-    PowerController(SafetyController *safetyController);
+    PowerController(SafetyController* safetyController);
 
     /*!
      * Processes currently available power data and publish it.
@@ -114,11 +114,11 @@ public:
     void setAuxPowerNetworkD(bool on);
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_powerSupplyDataC *_powerSupplyData;
-    MTM1M3_logevent_powerStatusC *_powerStatus;
-    MTM1M3_logevent_powerWarningC *_powerWarning;
+    MTM1M3_powerSupplyDataC* _powerSupplyData;
+    MTM1M3_logevent_powerStatusC* _powerStatus;
+    MTM1M3_logevent_powerWarningC* _powerWarning;
 
     uint64_t _lastPowerTimestamp;
 };

@@ -41,7 +41,7 @@ void InclinometerSettings::load(YAML::Node doc) {
         warningLow = limits["WarningLow"].as<float>();
         warningHigh = limits["WarningHigh"].as<float>();
         faultHigh = limits["FaultHigh"].as<float>();
-    } catch (YAML::Exception &ex) {
+    } catch (YAML::Exception& ex) {
         throw std::runtime_error(fmt::format("YAML Loading InclinometerSettings: {}", ex.what()));
     }
 

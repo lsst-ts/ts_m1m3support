@@ -35,7 +35,7 @@
 using namespace LSST::M1M3::SS;
 using namespace LSST::M1M3::SS::FPGAAddresses;
 
-PowerController::PowerController(SafetyController *safetyController) {
+PowerController::PowerController(SafetyController* safetyController) {
     SPDLOG_DEBUG("PowerController: PowerController()");
     _safetyController = safetyController;
 
@@ -50,7 +50,7 @@ void PowerController::processData() {
     // TODO: Handle no data available
     // TODO: Handle limits, push to safety controller
     SPDLOG_TRACE("PowerController: processData()");
-    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
 
     if (fpgaData->PowerSupplyTimestamp != _lastPowerTimestamp) {
         _lastPowerTimestamp = fpgaData->PowerSupplyTimestamp;

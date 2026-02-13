@@ -35,9 +35,9 @@ namespace SS {
 
 class TMAAzimuthSampleCommand : public Command {
 public:
-    TMAAzimuthSampleCommand(MTMount_azimuthC *data);
+    TMAAzimuthSampleCommand(MTMount_azimuthC* data);
 
-    MTMount_azimuthC *getData() { return &_data; }
+    MTMount_azimuthC* getData() { return &_data; }
 
     void execute();
 

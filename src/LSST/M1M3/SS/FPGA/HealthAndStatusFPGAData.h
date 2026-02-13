@@ -45,7 +45,7 @@ public:
     /**
      * Fill values from FIFO buffer.
      */
-    void fillFromFIFO(uint64_t *buffer);
+    void fillFromFIFO(uint64_t* buffer);
 
     // flag's constants
     const uint64_t TxInternalFIFOOverflow = 0x01;

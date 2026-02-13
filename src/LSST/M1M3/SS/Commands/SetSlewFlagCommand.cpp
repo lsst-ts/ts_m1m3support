@@ -34,7 +34,7 @@ SetSlewFlagCommand::SetSlewFlagCommand(int32_t commandID) : Command(commandID) {
 
 void SetSlewFlagCommand::execute() { Context::instance().setSlewFlag(this); }
 
-void SetSlewFlagCommand::ackInProgress(const char *description, double timeout) {
+void SetSlewFlagCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandsetSlewFlag(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

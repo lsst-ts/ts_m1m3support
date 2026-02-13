@@ -37,21 +37,21 @@
 #include <SettingReader.h>
 #include <StandbyState.h>
 
-extern const char *CONFIG_SCHEMA_VERSION;
-extern const char *CONFIG_URL;
-extern const char *GIT_HASH;
+extern const char* CONFIG_SCHEMA_VERSION;
+extern const char* CONFIG_URL;
+extern const char* GIT_HASH;
 
 using namespace LSST::M1M3::SS;
 
 StandbyState::StandbyState() : State("StandbyState") {}
 
-States::Type StandbyState::update(UpdateCommand *command) {
+States::Type StandbyState::update(UpdateCommand* command) {
     SPDLOG_TRACE("StandbyState: update()");
     Heartbeat::instance().tryToggle();
     return States::NoStateTransition;
 }
 
-States::Type StandbyState::start(StartCommand *command) {
+States::Type StandbyState::start(StartCommand* command) {
     SPDLOG_INFO("StandbyState: start()");
 
     ForceControllerState::instance().log();
@@ -85,13 +85,13 @@ States::Type StandbyState::start(StartCommand *command) {
             "positionControllerSettings,";
     M1M3SSPublisher::instance().logConfigurationApplied();
 
-    PowerController *powerController = Model::instance().getPowerController();
+    PowerController* powerController = Model::instance().getPowerController();
     auto ilc = Model::instance().getILC();
-    Gyro *gyro = Model::instance().getGyro();
+    Gyro* gyro = Model::instance().getGyro();
 
     BoosterValveStatus::instance().reset();
 
-    auto &heartbeat = Heartbeat::instance();
+    auto& heartbeat = Heartbeat::instance();
     heartbeat.tryToggle();
     std::this_thread::sleep_for(1ms);  // wait for GIS to sense heartbeat
 
@@ -176,7 +176,7 @@ States::Type StandbyState::start(StartCommand *command) {
     return Model::instance().getSafetyController()->checkSafety(States::DisabledState);
 }
 
-States::Type StandbyState::exitControl(ExitControlCommand *command) {
+States::Type StandbyState::exitControl(ExitControlCommand* command) {
     SPDLOG_INFO("StandbyState: ExitControl()");
     Model::instance().exitControl();
     return States::OfflineState;

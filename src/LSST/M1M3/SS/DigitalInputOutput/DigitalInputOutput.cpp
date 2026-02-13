@@ -65,7 +65,7 @@ DigitalInputOutput::DigitalInputOutput(token) {
     memset(_cellLightWarning, 0, sizeof(MTM1M3_logevent_cellLightWarningC));
 }
 
-void DigitalInputOutput::setSafetyController(SafetyController *safetyController) {
+void DigitalInputOutput::setSafetyController(SafetyController* safetyController) {
     SPDLOG_DEBUG("DigitalInputOutput: setSafetyController()");
     _safetyController = safetyController;
 }
@@ -79,7 +79,7 @@ void DigitalInputOutput::processData() {
         throw std::runtime_error("Safety controller must be set in outside of standby state.");
     }
 
-    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     double timestamp =
             Timestamp::fromFPGA(std::max(fpgaData->DigitalOutputTimestamp, fpgaData->DigitalInputTimestamp));
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();

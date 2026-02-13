@@ -41,7 +41,7 @@ void HardpointActuatorSettings::load(YAML::Node doc) {
     micrometersPerStep = doc["MicrometersPerStep"].as<double>();
     micrometersPerEncoder = doc["MicrometersPerEncoder"].as<double>();
 
-    auto _hpIntSettings = [doc](std::vector<int> &dataVec, const char *field) {
+    auto _hpIntSettings = [doc](std::vector<int>& dataVec, const char* field) {
         dataVec = doc[field].as<std::vector<int>>();
         if (dataVec.size() != HP_COUNT) {
             throw std::runtime_error(

@@ -37,8 +37,8 @@ namespace SS {
 class AzimuthForceComponent : public ForceComponent {
 public:
     AzimuthForceComponent();
-    void applyAzimuthForces(const std::vector<float> &x, const std::vector<float> &y,
-                            const std::vector<float> &z);
+    void applyAzimuthForces(const std::vector<float>& x, const std::vector<float>& y,
+                            const std::vector<float>& z);
     /**
      * Calculate and apply azimuth forces.
      *
@@ -52,10 +52,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_appliedAzimuthForcesC *_appliedAzimuthForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_appliedAzimuthForcesC* _appliedAzimuthForces;
     PreclippedForces<MTM1M3_logevent_preclippedAzimuthForcesC> _preclipped_azimuth_forces;
 };
 

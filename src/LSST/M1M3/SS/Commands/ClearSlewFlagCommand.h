@@ -37,7 +37,7 @@ public:
     ClearSlewFlagCommand(int32_t commandID);
 
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 };

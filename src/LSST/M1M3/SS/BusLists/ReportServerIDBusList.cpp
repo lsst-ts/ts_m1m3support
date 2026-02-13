@@ -28,7 +28,7 @@
 
 using namespace LSST::M1M3::SS;
 
-ReportServerIDBusList::ReportServerIDBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
+ReportServerIDBusList::ReportServerIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportServerIDBusList: ReportServerIDBusList()");
 }

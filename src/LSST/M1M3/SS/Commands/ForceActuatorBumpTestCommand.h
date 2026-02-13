@@ -39,12 +39,12 @@ namespace SS {
  */
 class ForceActuatorBumpTestCommand : public Command {
 public:
-    ForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_forceActuatorBumpTestC *data);
+    ForceActuatorBumpTestCommand(int32_t commandID, MTM1M3_command_forceActuatorBumpTestC* data);
 
     int index;
     bool cylinders;
 
-    MTM1M3_command_forceActuatorBumpTestC *getData() { return &_data; }
+    MTM1M3_command_forceActuatorBumpTestC* getData() { return &_data; }
 
     /**
      * Validates command parameters. Return false if actuator ID is invalid, or
@@ -52,7 +52,7 @@ public:
      */
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

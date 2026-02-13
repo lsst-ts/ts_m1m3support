@@ -45,7 +45,7 @@ void HpInRangeCounter::reset() {
 }
 
 bool HpInRangeCounter::check(float force) {
-    auto &hp_actuator_settings = HardpointActuatorSettings::instance();
+    auto& hp_actuator_settings = HardpointActuatorSettings::instance();
     if (_counter < 0) {
         _counter = 0;
         _timeout_counter = 0;
@@ -74,10 +74,10 @@ bool HpInRangeCounter::timeouted() {
     return _timeout_counter > HardpointActuatorSettings::instance().inRangeAfterRaiseTimeoutLoops;
 }
 
-MirrorRaiseController::MirrorRaiseController(PositionController *positionController,
-                                             ForceController *forceController,
-                                             SafetyController *safetyController,
-                                             PowerController *powerController) {
+MirrorRaiseController::MirrorRaiseController(PositionController* positionController,
+                                             ForceController* forceController,
+                                             SafetyController* safetyController,
+                                             PowerController* powerController) {
     SPDLOG_DEBUG("MirrorRaiseController: MirrorRaiseController()");
     _positionController = positionController;
     _forceController = forceController;

@@ -50,10 +50,10 @@ void Accelerometer::processData() {
     // TODO: Handle no data available
     // TODO: Handle acceleration limits, push to safety controller
     SPDLOG_TRACE("Accelerometer: processData()");
-    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     _accelerometerData->timestamp = Timestamp::fromFPGA(fpgaData->AccelerometerSampleTimestamp);
 
-    auto &accelerometerSettings = AccelerometerSettings::instance();
+    auto& accelerometerSettings = AccelerometerSettings::instance();
 
     for (int i = 0; i < 8; i++) {
         _accelerometerData->rawAccelerometer[i] = fpgaData->AccelerometerRaw[i];

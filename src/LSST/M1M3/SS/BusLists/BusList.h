@@ -56,7 +56,7 @@ class ILCSubnetData;
  */
 class BusList {
 public:
-    BusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory);
+    BusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     /**
      * (Re)-build message send to FPGA. Should be called when external
@@ -67,11 +67,11 @@ public:
     virtual void buildBuffer();
 
     int32_t getLength() { return this->buffer.getLength(); }
-    uint16_t *getBuffer() { return this->buffer.getBuffer(); }
+    uint16_t* getBuffer() { return this->buffer.getBuffer(); }
 
-    int32_t *getExpectedHPResponses() { return this->expectedHPResponses; }
-    int32_t *getExpectedFAResponses() { return this->expectedFAResponses; }
-    int32_t *getExpectedHMResponses() { return this->expectedHMResponses; }
+    int32_t* getExpectedHPResponses() { return this->expectedHPResponses; }
+    int32_t* getExpectedFAResponses() { return this->expectedFAResponses; }
+    int32_t* getExpectedHMResponses() { return this->expectedHMResponses; }
 
     /**
      * Called when update to buffer is required. Shall write new values to ILC
@@ -83,8 +83,8 @@ protected:
     /**
      * Status of messages on a subnet.
      */
-    ILCSubnetData *subnetData;
-    ILCMessageFactory *ilcMessageFactory;
+    ILCSubnetData* subnetData;
+    ILCMessageFactory* ilcMessageFactory;
 
     /**
      * Buffer holding data send to FPGA Command FIFO.

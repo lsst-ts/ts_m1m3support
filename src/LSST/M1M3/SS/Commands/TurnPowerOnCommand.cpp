@@ -30,7 +30,7 @@
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-TurnPowerOnCommand::TurnPowerOnCommand(int32_t commandID, MTM1M3_command_turnPowerOnC *data)
+TurnPowerOnCommand::TurnPowerOnCommand(int32_t commandID, MTM1M3_command_turnPowerOnC* data)
         : Command(commandID) {
     _data.turnPowerNetworkAOn = data->turnPowerNetworkAOn;
     _data.turnPowerNetworkBOn = data->turnPowerNetworkBOn;
@@ -56,7 +56,7 @@ bool TurnPowerOnCommand::validate() {
 
 void TurnPowerOnCommand::execute() { Context::instance().turnPowerOn(this); }
 
-void TurnPowerOnCommand::ackInProgress(const char *description, double timeout) {
+void TurnPowerOnCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnPowerOn(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

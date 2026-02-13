@@ -32,7 +32,7 @@ using namespace LSST::M1M3::SS;
 
 PausedRaisingState::PausedRaisingState() : EnabledState("PausedRaisingState") {}
 
-States::Type PausedRaisingState::update(UpdateCommand *command) {
+States::Type PausedRaisingState::update(UpdateCommand* command) {
     ModelPublisher publishModel{};
     SPDLOG_TRACE("PausedRaisingState: update()");
     Model::instance().getMirrorRaiseController()->runLoop();
@@ -40,7 +40,7 @@ States::Type PausedRaisingState::update(UpdateCommand *command) {
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type PausedRaisingState::resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand *command) {
+States::Type PausedRaisingState::resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command) {
     SPDLOG_INFO("Resuming M1M3 raising");
     Model::instance().getMirrorRaiseController()->resumeM1M3Raising();
     return Model::instance().getSafetyController()->checkSafety(States::RaisingState);

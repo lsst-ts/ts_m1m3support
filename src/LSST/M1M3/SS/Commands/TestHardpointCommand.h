@@ -34,13 +34,13 @@ namespace SS {
 
 class TestHardpointCommand : public Command {
 public:
-    TestHardpointCommand(int32_t commandID, MTM1M3_command_testHardpointC *data);
+    TestHardpointCommand(int32_t commandID, MTM1M3_command_testHardpointC* data);
 
-    MTM1M3_command_testHardpointC *getData() { return &_data; }
+    MTM1M3_command_testHardpointC* getData() { return &_data; }
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

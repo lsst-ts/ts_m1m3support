@@ -30,19 +30,24 @@
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
-#include <AccelerometerSettings.h>
-#include <DisplacementSensorSettings.h>
-#include <ExpansionFPGAApplicationSettings.h>
-#include <ForceActuatorSettings.h>
-#include <GyroSettings.h>
-#include <HardpointActuatorSettings.h>
-#include <ILCApplicationSettings.h>
-#include <InclinometerSettings.h>
-#include <PositionControllerSettings.h>
-#include <SettingReader.h>
-#include <SlewControllerSettings.h>
+#include "AccelerometerSettings.h"
+#include "DisplacementSensorSettings.h"
+#include "ExpansionFPGAApplicationSettings.h"
+#include "ForceActuatorSettings.h"
+#include "GyroSettings.h"
+#include "HardpointActuatorSettings.h"
+#include "ILCApplicationSettings.h"
+#include "InclinometerSettings.h"
+#include "PositionControllerSettings.h"
+#include "SettingReader.h"
 
-extern const char *CONFIG_SCHEMA_VERSION;
+#ifdef SIMULATOR
+#include "SimulatorSettings.h"
+#endif
+
+#include "SlewControllerSettings.h"
+
+extern const char* CONFIG_SCHEMA_VERSION;
 
 using namespace LSST::M1M3::SS;
 
@@ -58,7 +63,7 @@ auto test_dir = [](std::string dir) {
 
 void SettingReader::setRootPath(std::string rootPath) {
     if (rootPath[0] != '/') {
-        char *cwd = getcwd(NULL, 0);
+        char* cwd = getcwd(NULL, 0);
         rootPath = std::string(cwd) + "/" + rootPath;
         free(cwd);
     }
@@ -85,7 +90,7 @@ std::list<std::string> SettingReader::getAvailableConfigurations() {
     if (dirp == NULL) {
         throw std::runtime_error("Directory " + setdir + " cannot be opened: " + strerror(errno));
     }
-    dirent *de;
+    dirent* de;
     while ((de = readdir(dirp)) != NULL) {
         if ((de->d_type & DT_REG) == DT_REG && de->d_name[0] != '.' && de->d_name[0] != '_') {
             ret.push_back(de->d_name);
@@ -123,7 +128,12 @@ void SettingReader::load() {
         _trackingPID.load(settings["PIDSettings"], "Tracking");
 
         InclinometerSettings::instance().load(settings["InclinometerSettings"]);
-    } catch (YAML::Exception &ex) {
+
+#ifdef SIMULATOR
+        SimulatorSettings::instance().load(settings["simulator"]);
+#endif
+
+    } catch (YAML::Exception& ex) {
         auto msg = fmt::format("YAML Loading {}:{}:{}:{}: {}", filename, ex.mark.pos, ex.mark.line + 1,
                                ex.mark.column + 1, ex.what());
         SPDLOG_ERROR(msg);
@@ -131,7 +141,7 @@ void SettingReader::load() {
     }
 }
 
-PIDSettings &SettingReader::getPIDSettings(bool slew) {
+PIDSettings& SettingReader::getPIDSettings(bool slew) {
     if (slew) {
         return _slewPID;
     }

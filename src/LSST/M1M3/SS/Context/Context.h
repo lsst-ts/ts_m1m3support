@@ -104,58 +104,58 @@ public:
      *
      * @param command pointer to command to execute
      */
-    void enterControl(EnterControlCommand *command);
-    void start(StartCommand *command);
-    void enable(EnableCommand *command);
-    void disable(DisableCommand *command);
-    void standby(StandbyCommand *command);
-    void exitControl(ExitControlCommand *command);
-    void update(UpdateCommand *command);
-    void setSlewFlag(SetSlewFlagCommand *command);
-    void clearSlewFlag(ClearSlewFlagCommand *command);
-    void turnAirOn(TurnAirOnCommand *command);
-    void turnAirOff(TurnAirOffCommand *command);
-    void applyOffsetForces(ApplyOffsetForcesCommand *command);
-    void clearOffsetForces(ClearOffsetForcesCommand *command);
-    void raiseM1M3(RaiseM1M3Command *command);
-    void lowerM1M3(LowerM1M3Command *command);
-    void pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand *command);
-    void resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand *command);
-    void applyActiveOpticForces(ApplyActiveOpticForcesCommand *command);
-    void clearActiveOpticForces(ClearActiveOpticForcesCommand *command);
-    void enterEngineering(EnterEngineeringCommand *command);
-    void exitEngineering(ExitEngineeringCommand *command);
-    void boosterValveOpen(BoosterValveOpenCommand *command);
-    void boosterValveClose(BoosterValveCloseCommand *command);
-    void testHardpoint(TestHardpointCommand *command);
-    void killHardpointTest(KillHardpointTestCommand *command);
-    void moveHardpointActuators(MoveHardpointActuatorsCommand *command);
-    void enableHardpointChase(EnableHardpointChaseCommand *command);
-    void disableHardpointChase(DisableHardpointChaseCommand *command);
-    void abortRaiseM1M3(AbortRaiseM1M3Command *command);
-    void translateM1M3(TranslateM1M3Command *command);
-    void stopHardpointMotion(StopHardpointMotionCommand *command);
-    void storeTMAAzimuthSample(TMAAzimuthSampleCommand *command);
-    void storeTMAElevationSample(TMAElevationSampleCommand *command);
-    void positionM1M3(PositionM1M3Command *command);
-    void turnLightsOn(TurnLightsOnCommand *command);
-    void turnLightsOff(TurnLightsOffCommand *command);
-    void turnPowerOn(TurnPowerOnCommand *command);
-    void turnPowerOff(TurnPowerOffCommand *command);
-    void enableHardpointCorrections(EnableHardpointCorrectionsCommand *command);
-    void disableHardpointCorrections(DisableHardpointCorrectionsCommand *command);
-    void runMirrorForceProfile(RunMirrorForceProfileCommand *command);
-    void abortProfile(AbortProfileCommand *command);
-    void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand *command);
-    void updatePID(UpdatePIDCommand *command);
-    void resetPID(ResetPIDCommand *command);
-    void forceActuatorBumpTest(ForceActuatorBumpTestCommand *command);
-    void killForceActuatorBumpTest(KillForceActuatorBumpTestCommand *command);
-    void disableForceActuator(DisableForceActuatorCommand *command);
-    void enableForceActuator(EnableForceActuatorCommand *command);
-    void enableAllForceActuators(EnableAllForceActuatorsCommand *command);
-    void enableDisableForceComponent(EnableDisableForceComponentCommand *command);
-    void setSlewControllerSettings(SetSlewControllerSettingsCommand *command);
+    void enterControl(EnterControlCommand* command);
+    void start(StartCommand* command);
+    void enable(EnableCommand* command);
+    void disable(DisableCommand* command);
+    void standby(StandbyCommand* command);
+    void exitControl(ExitControlCommand* command);
+    void update(UpdateCommand* command);
+    void setSlewFlag(SetSlewFlagCommand* command);
+    void clearSlewFlag(ClearSlewFlagCommand* command);
+    void turnAirOn(TurnAirOnCommand* command);
+    void turnAirOff(TurnAirOffCommand* command);
+    void applyOffsetForces(ApplyOffsetForcesCommand* command);
+    void clearOffsetForces(ClearOffsetForcesCommand* command);
+    void raiseM1M3(RaiseM1M3Command* command);
+    void lowerM1M3(LowerM1M3Command* command);
+    void pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command);
+    void resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command);
+    void applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
+    void clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
+    void enterEngineering(EnterEngineeringCommand* command);
+    void exitEngineering(ExitEngineeringCommand* command);
+    void boosterValveOpen(BoosterValveOpenCommand* command);
+    void boosterValveClose(BoosterValveCloseCommand* command);
+    void testHardpoint(TestHardpointCommand* command);
+    void killHardpointTest(KillHardpointTestCommand* command);
+    void moveHardpointActuators(MoveHardpointActuatorsCommand* command);
+    void enableHardpointChase(EnableHardpointChaseCommand* command);
+    void disableHardpointChase(DisableHardpointChaseCommand* command);
+    void abortRaiseM1M3(AbortRaiseM1M3Command* command);
+    void translateM1M3(TranslateM1M3Command* command);
+    void stopHardpointMotion(StopHardpointMotionCommand* command);
+    void storeTMAAzimuthSample(TMAAzimuthSampleCommand* command);
+    void storeTMAElevationSample(TMAElevationSampleCommand* command);
+    void positionM1M3(PositionM1M3Command* command);
+    void turnLightsOn(TurnLightsOnCommand* command);
+    void turnLightsOff(TurnLightsOffCommand* command);
+    void turnPowerOn(TurnPowerOnCommand* command);
+    void turnPowerOff(TurnPowerOffCommand* command);
+    void enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
+    void disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
+    void runMirrorForceProfile(RunMirrorForceProfileCommand* command);
+    void abortProfile(AbortProfileCommand* command);
+    void applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
+    void updatePID(UpdatePIDCommand* command);
+    void resetPID(ResetPIDCommand* command);
+    void forceActuatorBumpTest(ForceActuatorBumpTestCommand* command);
+    void killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command);
+    void disableForceActuator(DisableForceActuatorCommand* command);
+    void enableForceActuator(EnableForceActuatorCommand* command);
+    void enableAllForceActuators(EnableAllForceActuatorsCommand* command);
+    void enableDisableForceComponent(EnableDisableForceComponentCommand* command);
+    void setSlewControllerSettings(SetSlewControllerSettingsCommand* command);
 
     /**
      * Returns true if system is in Standby state.
@@ -170,8 +170,8 @@ public:
     }
 
 private:
-    Context &operator=(const Context &) = delete;
-    Context(const Context &) = delete;
+    Context& operator=(const Context&) = delete;
+    Context(const Context&) = delete;
 
     States::Type _currentState;
 

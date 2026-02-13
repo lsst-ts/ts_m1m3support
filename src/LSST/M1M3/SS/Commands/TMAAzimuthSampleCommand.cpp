@@ -29,7 +29,7 @@
 
 using namespace LSST::M1M3::SS;
 
-TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC *data) : Command(-1) {
+TMAAzimuthSampleCommand::TMAAzimuthSampleCommand(MTMount_azimuthC* data) : Command(-1) {
     memcpy(&_data, data, sizeof(MTMount_azimuthC));
 }
 

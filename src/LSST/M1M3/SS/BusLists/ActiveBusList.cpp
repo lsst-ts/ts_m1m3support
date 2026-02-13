@@ -36,7 +36,7 @@
 
 using namespace LSST::M1M3::SS;
 
-ActiveBusList::ActiveBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
+ActiveBusList::ActiveBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("RaisedBusList: RaisedBusList()");
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();

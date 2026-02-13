@@ -67,7 +67,7 @@
 using namespace std::chrono;
 using namespace LSST::M1M3::SS;
 
-extern const char *VERSION;
+extern const char* VERSION;
 
 void printHelp() {
     std::cout << "M1M3 Static Support controller. Runs either as simulator or as "
@@ -98,7 +98,7 @@ void printHelp() {
 int debugLevel = 0;
 int debugLevelSAL = 0;
 
-const char *pidFile = NULL;
+const char* pidFile = NULL;
 std::string daemonUser("m1m3");
 std::string daemonGroup("m1m3");
 
@@ -123,7 +123,7 @@ void sigUsr2(int signal) {
 std::vector<spdlog::sink_ptr> sinks;
 int enabledSinks = 0x10;
 
-void processArgs(int argc, char *const argv[], const char *&configRoot) {
+void processArgs(int argc, char* const argv[], const char*& configRoot) {
     int opt;
     while ((opt = getopt(argc, argv, "bc:dfhp:sSu:vV")) != -1) {
         switch (opt) {
@@ -153,7 +153,7 @@ void processArgs(int argc, char *const argv[], const char *&configRoot) {
                 enabledSinks &= ~0x10;
                 break;
             case 'u': {
-                char *sep = strchr(optarg, ':');
+                char* sep = strchr(optarg, ':');
                 if (sep) {
                     *sep = '\0';
                     daemonUser = optarg;
@@ -182,7 +182,7 @@ void processArgs(int argc, char *const argv[], const char *&configRoot) {
     }
 }
 
-void initializeFPGA(IFPGA *fpga) {
+void initializeFPGA(IFPGA* fpga) {
 #ifdef SIMULATOR
     SPDLOG_WARN("Starting Simulator version! Version {} with Kafka middleware", VERSION);
 #else
@@ -252,7 +252,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
         controller.join();
         SPDLOG_INFO("Main: Joining outer loop clock thread");
         outerLoopClock.join();
-    } catch (std::exception &ex) {
+    } catch (std::exception& ex) {
         if (retPipe >= 0) {
             write(retPipe, ex.what(), strlen(ex.what()));
             close(retPipe);
@@ -293,20 +293,20 @@ void startLog() {
     setSinks();
 }
 
-int main(int argc, char *const argv[]) {
-    const char *configRoot = "/var/lib/M1M3support";
+int main(int argc, char* const argv[]) {
+    const char* configRoot = "/var/lib/M1M3support";
 
     processArgs(argc, argv, configRoot);
 
     int startPipe[2] = {-1, -1};
 
     if (pidFile) {
-        struct passwd *runAs = getpwnam(daemonUser.c_str());
+        struct passwd* runAs = getpwnam(daemonUser.c_str());
         if (runAs == NULL) {
             std::cerr << "Error: Cannot find user " << daemonUser << std::endl;
             exit(EXIT_FAILURE);
         }
-        struct group *runGroup = getgrnam(daemonGroup.c_str());
+        struct group* runGroup = getgrnam(daemonGroup.c_str());
         if (runGroup == NULL) {
             std::cerr << "Error: Cannot find group " << daemonGroup << std::endl;
             exit(EXIT_FAILURE);
@@ -396,8 +396,8 @@ int main(int argc, char *const argv[]) {
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
     M1M3SSPublisher::instance().newLogLevel(getSpdLogLogLevel() * 10);
 
-    IFPGA *fpga = &IFPGA::get();
-    IExpansionFPGA *expansionFPGA = &IExpansionFPGA::get();
+    IFPGA* fpga = &IFPGA::get();
+    IExpansionFPGA* expansionFPGA = &IExpansionFPGA::get();
 
     try {
         initializeFPGA(fpga);
@@ -409,7 +409,7 @@ int main(int argc, char *const argv[]) {
         expansionFPGA->close();
         fpga->close();
         fpga->finalize();
-    } catch (std::runtime_error &nie) {
+    } catch (std::runtime_error& nie) {
         if (startPipe[1] >= 0) {
             write(startPipe[1], nie.what(), strlen(nie.what()));
             close(startPipe[1]);

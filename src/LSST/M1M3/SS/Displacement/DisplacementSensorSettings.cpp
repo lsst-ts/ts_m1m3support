@@ -43,7 +43,7 @@ void DisplacementSensorSettings::load(YAML::Node doc) {
         xRotationOffset = doc["XRotationOffset"].as<double>();
         yRotationOffset = doc["YRotationOffset"].as<double>();
         zRotationOffset = doc["ZRotationOffset"].as<double>();
-    } catch (YAML::Exception &ex) {
+    } catch (YAML::Exception& ex) {
         throw std::runtime_error(fmt::format("YAML Loading DisplacementSensorSettings: {}", ex.what()));
     }
 

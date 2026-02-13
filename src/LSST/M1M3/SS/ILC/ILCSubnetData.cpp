@@ -30,11 +30,11 @@
 
 using namespace LSST::M1M3::SS;
 
-ILCSubnetData::ILCSubnetData(HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
-                             HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings) {
+ILCSubnetData::ILCSubnetData(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
+                             HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
     SPDLOG_DEBUG("ILCSubnetData::ILCSubnetData()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->subnetData[subnetIndex].FACount = 0;
@@ -121,7 +121,7 @@ ILCMap ILCSubnetData::getMap(int32_t actuatorId) {
 
 void ILCSubnetData::disableFA(int32_t actuatorId) {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container *container = &subnetData[subnetIndex];
+        Container* container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
             if (container->FAIndex[i].ActuatorId == actuatorId) {
                 container->FAIndex[i].Disabled = true;
@@ -136,7 +136,7 @@ void ILCSubnetData::disableFA(int32_t actuatorId) {
 
 void ILCSubnetData::enableFA(int32_t actuatorId) {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container *container = &subnetData[subnetIndex];
+        Container* container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
             if (container->FAIndex[i].ActuatorId == actuatorId) {
                 if (container->FAIndex[i].Disabled == true) {
@@ -153,7 +153,7 @@ void ILCSubnetData::enableFA(int32_t actuatorId) {
 
 void ILCSubnetData::enableAllFA() {
     for (int subnetIndex = 0; subnetIndex < 5; ++subnetIndex) {
-        Container *container = &subnetData[subnetIndex];
+        Container* container = &subnetData[subnetIndex];
         for (int i = 0; i < container->FACount; ++i) {
             container->FAIndex[i].Disabled = false;
         }

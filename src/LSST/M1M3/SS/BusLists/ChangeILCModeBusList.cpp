@@ -28,7 +28,7 @@
 
 using namespace LSST::M1M3::SS;
 
-ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory,
+ChangeILCModeBusList::ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory,
                                            ILCModes::Type mode, ILCModes::Type hmMode)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ChangeILCModeBusList: ChangeILCModeBusList()");

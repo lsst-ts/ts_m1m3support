@@ -47,7 +47,7 @@ namespace SS {
 
 DisabledState::DisabledState() : State("DisabledState") {}
 
-States::Type DisabledState::update(UpdateCommand *command) {
+States::Type DisabledState::update(UpdateCommand* command) {
     ModelPublisher publishIt{};
     SPDLOG_TRACE("DisabledState::update()");
     auto ilc = Model::instance().getILC();
@@ -78,7 +78,7 @@ States::Type DisabledState::update(UpdateCommand *command) {
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type DisabledState::enable(EnableCommand *command) {
+States::Type DisabledState::enable(EnableCommand* command) {
     SPDLOG_INFO("DisabledState: enable()");
     auto ilc = Model::instance().getILC();
     ilc->writeSetModeEnableBuffer();
@@ -91,7 +91,7 @@ States::Type DisabledState::enable(EnableCommand *command) {
     return Model::instance().getSafetyController()->checkSafety(States::ParkedState);
 }
 
-States::Type DisabledState::standby(StandbyCommand *command) {
+States::Type DisabledState::standby(StandbyCommand* command) {
     SPDLOG_INFO("DisabledState: standby()");
     auto ilc = Model::instance().getILC();
     ilc->writeSetModeStandbyBuffer();

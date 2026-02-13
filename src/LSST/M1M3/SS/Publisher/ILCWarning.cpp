@@ -47,7 +47,7 @@ ILCWarning::ILCWarning(token) {
     _last_unknown_subnet = -INFINITY;
 }
 
-bool ILCWarning::ignore_actuator_warning(std::map<int, double> &_timeouts, double _timestamp,
+bool ILCWarning::ignore_actuator_warning(std::map<int, double>& _timeouts, double _timestamp,
                                          int _actuator_id, bool _active) {
     auto entry = _timeouts.find(_actuator_id);
 
@@ -68,7 +68,7 @@ bool ILCWarning::ignore_actuator_warning(std::map<int, double> &_timeouts, doubl
     return true;
 }
 
-bool ILCWarning::ignore_warning(double &_timeout, double _timestamp, bool _active) {
+bool ILCWarning::ignore_warning(double& _timeout, double _timestamp, bool _active) {
     if (_timestamp > _timeout) {
         if (_active == true) {
             _timeout = _timestamp + ILCApplicationSettings::instance().WarningGracePeriod;

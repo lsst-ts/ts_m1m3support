@@ -41,7 +41,7 @@ ForceActuatorNeighbors::ForceActuatorNeighbors() {}
 
 ForceActuatorSettings::ForceActuatorSettings(token) { measuredWarningPercentage = 90; }
 
-void load_bump_test_limits(YAML::Node node, float &warning, float &error) {
+void load_bump_test_limits(YAML::Node node, float& warning, float& error) {
     warning = node["Warning"].as<float>();
     if (warning < 0)
         throw std::runtime_error(
@@ -57,7 +57,7 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     SPDLOG_INFO("Loading ForceActuatorSettings");
     auto disabledIndices = doc["DisabledActuators"].as<std::vector<int>>();
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int i = 0; i < FA_COUNT; ++i) {
         int faId = faa_settings.ZIndexToActuatorId(i);
@@ -220,9 +220,9 @@ void ForceActuatorSettings::load(YAML::Node doc) {
     log();
 }
 
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vector<float> &xForces,
-                                                                  const std::vector<float> &yForces,
-                                                                  const std::vector<float> &zForces) {
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vector<float>& xForces,
+                                                                  const std::vector<float>& yForces,
+                                                                  const std::vector<float>& zForces) {
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;
@@ -232,7 +232,7 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vec
     fm.Mz = 0;
     fm.ForceMagnitude = 0;
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -263,7 +263,7 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vec
     return fm;
 }
 
-ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vector<float> &zForces) {
+ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vector<float>& zForces) {
     ForcesAndMoments fm;
     fm.Fx = 0;
     fm.Fy = 0;
@@ -273,7 +273,7 @@ ForcesAndMoments ForceActuatorSettings::calculateForcesAndMoments(const std::vec
     fm.Mz = 0;
     fm.ForceMagnitude = 0;
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         float rx = faa_settings.Table[zIndex].XPosition - mirrorCenterOfGravityX;
@@ -480,7 +480,7 @@ DistributedForces ForceActuatorSettings::calculateForceDistribution(float xForce
 
 void ForceActuatorSettings::log() { M1M3SSPublisher::instance().logForceActuatorSettings(this); }
 
-void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename) {
+void ForceActuatorSettings::_loadNearNeighborZTable(const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document nearTable(fullPath);
@@ -494,7 +494,7 @@ void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename)
                                                  nearTable.GetRowCount(), FA_COUNT));
         }
 
-        auto &faa_settings = ForceActuatorApplicationSettings::instance();
+        auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
         for (size_t row = 0; row < FA_COUNT; row++) {
             size_t neighIdx = 0;
@@ -508,18 +508,18 @@ void ForceActuatorSettings::_loadNearNeighborZTable(const std::string &filename)
                 for (neighIdx = 0; neighIdx < FA_MAX_NEAR_COUNT; neighIdx++) {
                     Neighbors[row].NearZIDs[neighIdx] = nearTable.GetCell<unsigned>(neighIdx + 1, row);
                 }
-            } catch (std::logic_error &er) {
+            } catch (std::logic_error& er) {
                 throw std::runtime_error(
                         fmt::format("{}:{}: cannot parse row (\"{}\") (column {}): {}", fullPath, row,
                                     rowToStr(nearTable.GetRow<std::string>(row)), neighIdx, er.what()));
             }
         }
-    } catch (std::ios_base::failure &er) {
+    } catch (std::ios_base::failure& er) {
         throw std::runtime_error(fmt::format("Cannot read near neighbors CSV {}: {}", fullPath, er.what()));
     }
 }
 
-void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
+void ForceActuatorSettings::_loadNeighborsTable(const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document farTable(fullPath);
@@ -532,7 +532,7 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
                                                  farTable.GetRowCount(), FA_COUNT));
         }
 
-        auto &faa_settings = ForceActuatorApplicationSettings::instance();
+        auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
         for (size_t row = 0; row < FA_COUNT; row++) {
             size_t neighIdx = 0;
@@ -546,19 +546,19 @@ void ForceActuatorSettings::_loadNeighborsTable(const std::string &filename) {
                 for (neighIdx = 0; neighIdx < FA_FAR_COUNT; neighIdx++) {
                     Neighbors[row].FarIDs[neighIdx] = farTable.GetCell<unsigned>(neighIdx + 1, row);
                 }
-            } catch (std::logic_error &er) {
+            } catch (std::logic_error& er) {
                 throw std::runtime_error(
                         fmt::format("{}:{}: cannot parse row (\"{}\") (column {}): {}", fullPath, row,
                                     rowToStr(farTable.GetRow<std::string>(row)), neighIdx, er.what()));
             }
         }
-    } catch (std::ios_base::failure &er) {
+    } catch (std::ios_base::failure& er) {
         throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
 }
 
-void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primaryFilename,
-                                                      const std::string &secondaryFilename) {
+void ForceActuatorSettings::_loadFollowingErrorTables(const std::string& primaryFilename,
+                                                      const std::string& secondaryFilename) {
     auto primaryFullPath = SettingReader::instance().getTablePath(primaryFilename);
     try {
         rapidcsv::Document primary(primaryFullPath);
@@ -589,7 +589,7 @@ void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primary
             primaryFollowingErrorCountingFaultThreshold[i] = CountingFaultThreshold[i];
             primaryFollowingErrorImmediateFaultThreshold[i] = ImmediateFaultThreshold[i];
         }
-    } catch (std::ios_base::failure &er) {
+    } catch (std::ios_base::failure& er) {
         throw std::runtime_error(fmt::format("Cannot read {}: {}", primaryFilename, er.what()));
     }
 
@@ -624,7 +624,7 @@ void ForceActuatorSettings::_loadFollowingErrorTables(const std::string &primary
             secondaryFollowingErrorCountingFaultThreshold[i] = CountingFaultThreshold[i];
             secondaryFollowingErrorImmediateFaultThreshold[i] = ImmediateFaultThreshold[i];
         }
-    } catch (std::ios_base::failure &er) {
+    } catch (std::ios_base::failure& er) {
         throw std::runtime_error(fmt::format("Cannot read {}: {}", secondaryFilename, er.what()));
     }
 }

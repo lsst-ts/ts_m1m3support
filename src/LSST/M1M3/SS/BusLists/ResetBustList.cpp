@@ -28,7 +28,7 @@
 
 using namespace LSST::M1M3::SS;
 
-ResetBustList::ResetBustList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
+ResetBustList::ResetBustList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ResetBustList: ResetBustList()");
 }

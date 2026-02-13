@@ -28,8 +28,8 @@
 
 using namespace LSST::M1M3::SS;
 
-ReadBoostValveDCAGainBusList::ReadBoostValveDCAGainBusList(ILCSubnetData *subnetData,
-                                                           ILCMessageFactory *ilcMessageFactory)
+ReadBoostValveDCAGainBusList::ReadBoostValveDCAGainBusList(ILCSubnetData* subnetData,
+                                                           ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReadBoostValveDCAGainBusList: ReadBoostValveDCAGainBusList()");
 }

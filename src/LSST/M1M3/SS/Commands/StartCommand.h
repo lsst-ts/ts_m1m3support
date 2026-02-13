@@ -42,7 +42,7 @@ namespace SS {
  */
 class StartCommand : public Command {
 public:
-    StartCommand(int32_t commandID, MTM1M3_command_startC *data);
+    StartCommand(int32_t commandID, MTM1M3_command_startC* data);
 
     std::string getConfigurationOverride() { return _data.configurationOverride; }
 
@@ -50,7 +50,7 @@ public:
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

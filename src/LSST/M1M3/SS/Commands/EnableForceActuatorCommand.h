@@ -37,11 +37,11 @@ namespace SS {
  */
 class EnableForceActuatorCommand : public Command {
 public:
-    EnableForceActuatorCommand(int32_t commandID, MTM1M3_command_enableForceActuatorC *data);
+    EnableForceActuatorCommand(int32_t commandID, MTM1M3_command_enableForceActuatorC* data);
 
     bool validate() override;
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

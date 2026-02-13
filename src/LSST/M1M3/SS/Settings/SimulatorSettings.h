@@ -21,31 +21,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ABORTRAISEM1M3COMMAND_H_
-#define ABORTRAISEM1M3COMMAND_H_
+#ifndef SIMULATORSETTINGS_H_
+#define SIUMLATORSETTINGS_H_
 
-#include <SAL_MTM1M3C.h>
+#include <yaml-cpp/yaml.h>
 
-#include <cRIO/DataTypes.h>
-
-#include <Command.h>
+#include <cRIO/Singleton.h>
 
 namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-class AbortRaiseM1M3Command : public Command {
+class SimulatorSettings : public cRIO::Singleton<SimulatorSettings> {
 public:
-    AbortRaiseM1M3Command(int32_t commandID, MTM1M3_command_abortRaiseM1M3C*);
+    SimulatorSettings(token);
 
-    void execute() override;
-    void ackInProgress(const char* description, double timeout) override;
-    void ackComplete() override;
-    void ackFailed(std::string reason) override;
+    void load(YAML::Node doc);
+
+    bool simulate_mirror_movement = false;
+    bool following_error_disable_state = false;
+    bool following_error_raising = false;
+    bool fail_bump_tests = false;
 };
 
-} /* namespace SS */
-} /* namespace M1M3 */
-} /* namespace LSST */
+}  // namespace SS
+}  // namespace M1M3
+}  // namespace LSST
 
-#endif /* ABORTRAISEM1M3COMMAND_H_ */
+#endif  ///! SIMULATORSETTINGS_H_

@@ -38,7 +38,7 @@ using namespace LSST::M1M3::SS;
 ActiveOpticForceComponent::ActiveOpticForceComponent()
         : ForceComponent("ActiveOptic", &ForceActuatorSettings::instance().ActiveOpticComponentSettings),
           _preclipped_active_optic_forces(
-                  [](MTM1M3_logevent_preclippedActiveOpticForcesC *data) {
+                  [](MTM1M3_logevent_preclippedActiveOpticForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedActiveOpticForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -49,7 +49,7 @@ ActiveOpticForceComponent::ActiveOpticForceComponent()
     _appliedActiveOpticForces = M1M3SSPublisher::instance().getEventAppliedActiveOpticForces();
 }
 
-void ActiveOpticForceComponent::applyActiveOpticForces(const std::vector<float> &z) {
+void ActiveOpticForceComponent::applyActiveOpticForces(const std::vector<float>& z) {
     SPDLOG_DEBUG("ActiveOpticForceComponent: applyActiveOpticForces()");
 
     if (!isEnabled()) {

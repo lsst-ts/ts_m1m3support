@@ -37,7 +37,7 @@ TEST_CASE("M1M3 ForceActuatorBumpTestStatus data", "[ForceActuatorBumpTestStatus
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
-    auto &fa_bump_status = ForceActuatorBumpTestStatus::instance();
+    auto& fa_bump_status = ForceActuatorBumpTestStatus::instance();
 
     int actuator_id;
     CHECK(fa_bump_status.minimal_tested_distance(10, actuator_id) == std::numeric_limits<float>::infinity());

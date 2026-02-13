@@ -31,12 +31,12 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 EnableHardpointCorrectionsCommand::EnableHardpointCorrectionsCommand(
-        int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC *)
+        int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC*)
         : Command(commandID) {}
 
 void EnableHardpointCorrectionsCommand::execute() { Context::instance().enableHardpointCorrections(this); }
 
-void EnableHardpointCorrectionsCommand::ackInProgress(const char *description, double timeout) {
+void EnableHardpointCorrectionsCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandenableHardpointCorrections(getCommandID(), ACK_INPROGRESS,
                                                                      description, timeout);
 }

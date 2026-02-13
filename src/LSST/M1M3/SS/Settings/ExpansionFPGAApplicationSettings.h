@@ -39,7 +39,7 @@ struct ExpansionFPGAApplicationSettings : public cRIO::Singleton<ExpansionFPGAAp
     ExpansionFPGAApplicationSettings(token);
 
     void load(YAML::Node doc);
-    void initialize(StartCommand *command);
+    void initialize(StartCommand* command);
 
     bool Enabled;
     std::string Resource;

@@ -28,7 +28,7 @@
 
 using namespace LSST::M1M3::SS;
 
-ReportDCAIDBusList::ReportDCAIDBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
+ReportDCAIDBusList::ReportDCAIDBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportDCAIDBusList: ReportDCAIDBusList()");
 }

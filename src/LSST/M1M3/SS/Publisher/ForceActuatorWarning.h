@@ -62,7 +62,7 @@ public:
      * @param buffer receiving buffer
      * @param dataIndex FA index
      */
-    void parseFAServerStatusResponse(ModbusBuffer *buffer, int32_t dataIndex);
+    void parseFAServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex);
 
     /**
      * Parses FA status (included in response to function code 75).
@@ -71,7 +71,7 @@ public:
      * @param dataIndex FA index
      * @param broadcastCounter actual (expected) value of broadcast counter
      */
-    void parseStatus(ModbusBuffer *buffer, int32_t dataIndex, int32_t broadcastCounter);
+    void parseStatus(ModbusBuffer* buffer, int32_t dataIndex, int32_t broadcastCounter);
 
     /**
      * Parses DCA status (included in response to function code 121).
@@ -79,7 +79,7 @@ public:
      * @param buffer receiving buffer
      * @param dataIndex FA index
      */
-    void parseDCAStatus(ModbusBuffer *buffer, int32_t dataIndex);
+    void parseDCAStatus(ModbusBuffer* buffer, int32_t dataIndex);
 
     /**
      * Sends updates through SAL/DDS.

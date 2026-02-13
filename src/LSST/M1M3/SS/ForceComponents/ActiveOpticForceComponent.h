@@ -37,17 +37,17 @@ namespace SS {
 class ActiveOpticForceComponent : public ForceComponent {
 public:
     ActiveOpticForceComponent();
-    void applyActiveOpticForces(const std::vector<float> &z);
+    void applyActiveOpticForces(const std::vector<float>& z);
     void postEnableDisableActions() override;
 
 protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_logevent_appliedActiveOpticForcesC *_appliedActiveOpticForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedActiveOpticForcesC* _appliedActiveOpticForces;
     PreclippedZForces<MTM1M3_logevent_preclippedActiveOpticForcesC> _preclipped_active_optic_forces;
 };
 

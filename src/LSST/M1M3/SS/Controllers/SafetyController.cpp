@@ -36,7 +36,7 @@
 
 using namespace LSST::M1M3::SS;
 
-SafetyController::SafetyController(SafetyControllerSettings *safetyControllerSettings) {
+SafetyController::SafetyController(SafetyControllerSettings* safetyControllerSettings) {
     SPDLOG_DEBUG("SafetyController: SafetyController()");
     _safetyControllerSettings = safetyControllerSettings;
     _errorCodeData = M1M3SSPublisher::instance().getEventErrorCode();

@@ -40,10 +40,10 @@ void ExpansionFPGAApplicationSettings::load(YAML::Node doc) {
     Resource = doc["Resource"].as<std::string>();
 }
 
-void ExpansionFPGAApplicationSettings::initialize(StartCommand *command) {
+void ExpansionFPGAApplicationSettings::initialize(StartCommand* command) {
     IExpansionFPGA::get().setResource(Enabled, Resource);
     if (Enabled) {
-        auto &heartbeat = Heartbeat::instance();
+        auto& heartbeat = Heartbeat::instance();
 
         heartbeat.tryToggle();
         IExpansionFPGA::get().close();
