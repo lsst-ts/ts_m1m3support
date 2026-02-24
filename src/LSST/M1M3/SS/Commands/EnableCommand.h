@@ -42,7 +42,7 @@ public:
     EnableCommand(int32_t commandID);
 
     void execute();
-    void ackInProgress(const char *description, double timeout);
+    void ackInProgress(const char* description, double timeout);
     void ackComplete();
     void ackFailed(std::string reason);
 };

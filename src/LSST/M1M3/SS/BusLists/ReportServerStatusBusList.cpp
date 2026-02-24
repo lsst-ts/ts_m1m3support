@@ -28,8 +28,8 @@
 
 using namespace LSST::M1M3::SS;
 
-ReportServerStatusBusList::ReportServerStatusBusList(ILCSubnetData *subnetData,
-                                                     ILCMessageFactory *ilcMessageFactory)
+ReportServerStatusBusList::ReportServerStatusBusList(ILCSubnetData* subnetData,
+                                                     ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportServerStatusBusList: ReportServerStatusBusList()");
 }

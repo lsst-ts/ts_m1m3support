@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;
 
 void checkAppliedActuatorForcesZ(int zIndex, float zForce) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
     CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
@@ -47,7 +47,7 @@ void checkAppliedActuatorForcesZ(int zIndex, float zForce) {
 }
 
 void checkAppliedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
 
@@ -58,7 +58,7 @@ void checkAppliedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
 }
 
 void checkAppliedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
 
@@ -79,7 +79,7 @@ void checkAppliedForces(float fx, float fy, float fz, float mx, float my, float 
 }
 
 void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
     CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
@@ -91,7 +91,7 @@ void checkRejectedActuatorForcesZ(int zIndex, float zForce) {
 }
 
 void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     CHECK(faa_settings.ZIndexToYIndex[zIndex] == -1);
 
@@ -104,7 +104,7 @@ void checkRejectedActuatorForcesXZ(int zIndex, float xForce, float zForce) {
 }
 
 void checkRejectedActuatorForcesYZ(int zIndex, float yForce, float zForce) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     CHECK(faa_settings.ZIndexToXIndex[zIndex] == -1);
 
@@ -128,7 +128,7 @@ void checkRejectedForces(float fx, float fy, float fz, float mx, float my, float
     CHECK_THAT(_preclipped_forces.mz, WithinRel(mz));
 }
 
-void runAndCheck(ForceController *forceController, float fx, float fy, float fz, float mx, float my, float mz,
+void runAndCheck(ForceController* forceController, float fx, float fy, float fz, float mx, float my, float mz,
                  int n = 1) {
     for (int i = 0; i < n; i++) {
         forceController->updateAppliedForces();
@@ -225,10 +225,10 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
         runAndCheck(Model::instance().getForceController(), 0, 8157.62793, 8134.57812, 84.48508, -21.52274,
                     -25.1534);
 
-        MTM1M3_appliedElevationForcesC *appliedElevationForces =
+        MTM1M3_appliedElevationForcesC* appliedElevationForces =
                 M1M3SSPublisher::instance().getAppliedElevationForces();
-        MTM1M3_appliedForcesC *appliedForces = M1M3SSPublisher::instance().getAppliedForces();
-        MTM1M3_logevent_errorCodeC *errorCodeData = M1M3SSPublisher::instance().getEventErrorCode();
+        MTM1M3_appliedForcesC* appliedForces = M1M3SSPublisher::instance().getAppliedForces();
+        MTM1M3_logevent_errorCodeC* errorCodeData = M1M3SSPublisher::instance().getEventErrorCode();
 
         CHECK(errorCodeData->errorCode == 0);
 
@@ -238,7 +238,7 @@ TEST_CASE("M1M3 ForceController tests", "[M1M3]") {
             appliedElevationForces->zForces[i] = -50000;
         }
 
-        SafetyControllerSettings *safetyControllerSettings =
+        SafetyControllerSettings* safetyControllerSettings =
                 SettingReader::instance().getSafetyControllerSettings();
 
         // make sure M1M3 will fail - default settings is now false

@@ -30,7 +30,7 @@
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-KillHardpointTestCommand::KillHardpointTestCommand(int32_t commandID, MTM1M3_command_killHardpointTestC *data)
+KillHardpointTestCommand::KillHardpointTestCommand(int32_t commandID, MTM1M3_command_killHardpointTestC* data)
         : Command(commandID) {
     _data.hardpointActuator = data->hardpointActuator;
 }
@@ -51,7 +51,7 @@ bool KillHardpointTestCommand::validate() {
 
 void KillHardpointTestCommand::execute() { Context::instance().killHardpointTest(this); }
 
-void KillHardpointTestCommand::ackInProgress(const char *description, double timeout) {
+void KillHardpointTestCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandkillHardpointTest(getCommandID(), ACK_INPROGRESS, description,
                                                             timeout);
 }

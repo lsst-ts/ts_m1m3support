@@ -58,7 +58,7 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
 
     SettingReader::instance().getSafetyControllerSettings()->ForceController.enterBumpTesting();
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
     auto z_index = faa_settings.ActuatorIdToZIndex(actuator_id);
 
     _test_start[z_index] = steady_clock::now() + _test_settle_time;
@@ -91,8 +91,8 @@ void BumpTestController::runLoop() {
     size_t tested_count = 0;
     size_t status_change = 0;
 
-    auto &actuator_status = ForceActuatorBumpTestStatus::instance();
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& actuator_status = ForceActuatorBumpTestStatus::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     _collect_results();
 
@@ -193,7 +193,7 @@ void BumpTestController::stopAll(bool forced) {
     }
 }
 
-int status_to_sal(BumpTestStatus status, const BumpTestStatistics &stat, int stage) {
+int status_to_sal(BumpTestStatus status, const BumpTestStatistics& stat, int stage) {
     switch (status) {
         case BumpTestStatus::PASSED:
         case BumpTestStatus::OVERSHOOT_WARNING:
@@ -244,7 +244,7 @@ int status_to_sal(BumpTestStatus status, const BumpTestStatistics &stat, int sta
 }
 
 void BumpTestController::_finalize_test(int actuator_id, int z_index, int s_index, int test_type, int stage,
-                                        const BumpTestStatistics &stat, steady_clock::time_point now,
+                                        const BumpTestStatistics& stat, steady_clock::time_point now,
                                         BumpTestStatus status) {
     if (status == BumpTestStatus::PASSED) {
         M1M3SSPublisher::instance().logForceActuatorBumpTestStatistics(
@@ -263,7 +263,7 @@ void BumpTestController::_finalize_test(int actuator_id, int z_index, int s_inde
 
     int failed_count = 0;
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool test_cylinder = false;
 
@@ -375,9 +375,9 @@ void BumpTestController::_finalize_test(int actuator_id, int z_index, int s_inde
 }
 
 bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int actuator_id, int test_type,
-                                   BumpTestStatus status, int &stage, double &timestamp) {
+                                   BumpTestStatus status, int& stage, double& timestamp) {
     // runs after statistics is updated in runLoop. So all FA data are current.
-    ForceController *force_controller = Model::instance().getForceController();
+    ForceController* force_controller = Model::instance().getForceController();
 
     auto now = steady_clock::now();
 
@@ -404,7 +404,7 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
 
             timed_out = true;
         }
-    } catch (std::out_of_range &ex) {
+    } catch (std::out_of_range& ex) {
         if (_test_timeout[z_index] <= now) {
             SPDLOG_ERROR(
                     "Timeout when testing actuator {} - {} (axis index {}, z index {}, s index {}, i {}) - "
@@ -535,8 +535,8 @@ void BumpTestController::_reset_progress(bool zeroOffsets) {
 }
 
 void BumpTestController::_collect_results() {
-    auto &fa_data = ForceActuatorData::instance();
-    auto &fa_status = ForceActuatorBumpTestStatus::instance();
+    auto& fa_data = ForceActuatorData::instance();
+    auto& fa_status = ForceActuatorBumpTestStatus::instance();
 
     _bump_test_data->add_data(fa_data.xForce, fa_data.yForce, fa_data.zForce, fa_data.primaryCylinderForce,
                               fa_data.secondaryCylinderForce, fa_status.primaryTest, fa_status.secondaryTest);

@@ -33,10 +33,10 @@
 
 using namespace LSST::M1M3::SS;
 
-MirrorLowerController::MirrorLowerController(PositionController *positionController,
-                                             ForceController *forceController,
-                                             SafetyController *safetyController,
-                                             PowerController *powerController) {
+MirrorLowerController::MirrorLowerController(PositionController* positionController,
+                                             ForceController* forceController,
+                                             SafetyController* safetyController,
+                                             PowerController* powerController) {
     SPDLOG_DEBUG("MirrorLowerController: MirrorLowerController()");
     _positionController = positionController;
     _forceController = forceController;

@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 VelocityForceComponent::VelocityForceComponent()
         : ForceComponent("Velocity", &ForceActuatorSettings::instance().VelocityComponentSettings),
           _preclipped_velocity_forces(
-                  [](MTM1M3_logevent_preclippedVelocityForcesC *data) {
+                  [](MTM1M3_logevent_preclippedVelocityForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedVelocityForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -50,8 +50,8 @@ VelocityForceComponent::VelocityForceComponent()
     _appliedVelocityForces = M1M3SSPublisher::instance().getAppliedVelocityForces();
 }
 
-void VelocityForceComponent::applyVelocityForces(const std::vector<float> &x, const std::vector<float> &y,
-                                                 const std::vector<float> &z) {
+void VelocityForceComponent::applyVelocityForces(const std::vector<float>& x, const std::vector<float>& y,
+                                                 const std::vector<float>& z) {
     SPDLOG_TRACE("VelocityForceComponent: applyVelocityForces()");
 
     if (!isEnabled()) {
@@ -87,7 +87,7 @@ void VelocityForceComponent::applyVelocityForcesByAngularVelocity(float angularV
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -113,7 +113,7 @@ void VelocityForceComponent::postEnableDisableActions() {
 void VelocityForceComponent::postUpdateActions() {
     SPDLOG_TRACE("VelocityForceController: postUpdateActions()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool notInRange = false;
     bool clippingRequired = false;

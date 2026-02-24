@@ -39,7 +39,7 @@ class LoweringFaultState : public FaultState {
 public:
     LoweringFaultState();
 
-    States::Type update(UpdateCommand *command) override;
+    States::Type update(UpdateCommand* command) override;
 
     /**
      * Perform actions needed to safe mirror on fault.

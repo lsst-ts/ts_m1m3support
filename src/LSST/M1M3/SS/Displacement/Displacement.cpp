@@ -38,7 +38,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-Displacement::Displacement(SupportFPGAData *fpgaData, SafetyController *safetyController) {
+Displacement::Displacement(SupportFPGAData* fpgaData, SafetyController* safetyController) {
     SPDLOG_DEBUG("Displacement: Displacement()");
     _displacementSensorSettings = &DisplacementSensorSettings::instance();
     _fpgaData = fpgaData;
@@ -102,7 +102,7 @@ void Displacement::processData() {
         // We need to swap the direction of the IMS reading. Tanget sensors are
         // swapped in hardware. We also need to convert the raw sensor values to
         // meters. The sensors raw units are in 100 nanometers - 1/10000.0 mm.
-        double *NOffsets = _displacementSensorSettings->NOffsets.data();
+        double* NOffsets = _displacementSensorSettings->NOffsets.data();
         constexpr double M_TO_RAW = 10000.0 * MILLIMETERS_PER_METER;
         _imsData->rawSensorData[0] = 0.05 - ((_fpgaData->DisplacementRaw1 + NOffsets[0]) / M_TO_RAW);
         _imsData->rawSensorData[1] = ((_fpgaData->DisplacementRaw2 + NOffsets[1]) / M_TO_RAW);
@@ -112,7 +112,7 @@ void Displacement::processData() {
         _imsData->rawSensorData[5] = ((_fpgaData->DisplacementRaw6 + NOffsets[5]) / M_TO_RAW);
         _imsData->rawSensorData[6] = 0.05 - ((_fpgaData->DisplacementRaw7 + NOffsets[6]) / M_TO_RAW);
         _imsData->rawSensorData[7] = ((_fpgaData->DisplacementRaw8 + NOffsets[7]) / M_TO_RAW);
-        int32_t *ports = _displacementSensorSettings->NPorts.data();
+        int32_t* ports = _displacementSensorSettings->NPorts.data();
         _imsData->xPosition =
                 _displacementSensorSettings->ConverterMatrix[0] * _imsData->rawSensorData[ports[0]] +
                 _displacementSensorSettings->ConverterMatrix[1] * _imsData->rawSensorData[ports[1]] +

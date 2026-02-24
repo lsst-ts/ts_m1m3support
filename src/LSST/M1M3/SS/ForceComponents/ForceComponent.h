@@ -70,7 +70,7 @@ public:
      * @param name force component name
      * @param forceComponentSettings
      */
-    ForceComponent(const char *name, ForceComponentSettings *forceComponentSettings);
+    ForceComponent(const char* name, ForceComponentSettings* forceComponentSettings);
     virtual ~ForceComponent();
 
     /**
@@ -78,7 +78,7 @@ public:
      *
      * @return force component name
      */
-    const char *getName() { return _name; }
+    const char* getName() { return _name; }
 
     /**
      * Returns true if the force component is being initialised.
@@ -163,9 +163,9 @@ protected:
     float zOffset[FA_Z_COUNT];
 
 private:
-    ForceComponentSettings *_forceComponentSettings;
+    ForceComponentSettings* _forceComponentSettings;
 
-    const char *_name;
+    const char* _name;
 
     ForceComponentState _state;
 

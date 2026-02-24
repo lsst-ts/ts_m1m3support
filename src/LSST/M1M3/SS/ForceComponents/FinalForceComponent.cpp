@@ -41,7 +41,7 @@ using namespace LSST::M1M3::SS;
 FinalForceComponent::FinalForceComponent()
         : ForceComponent("Final", &ForceActuatorSettings::instance().FinalComponentSettings),
           _preclipped_forces(
-                  [](MTM1M3_logevent_preclippedForcesC *data) {
+                  [](MTM1M3_logevent_preclippedForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -95,7 +95,7 @@ void FinalForceComponent::applyForcesByComponents() {
                       _appliedVelocityForces->zForces[i]);
     }
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     // find disabled FAs quadrants
     std::vector<int> disabledInQuadrants[4];
@@ -181,7 +181,7 @@ void FinalForceComponent::postEnableDisableActions() {
 void FinalForceComponent::postUpdateActions() {
     SPDLOG_TRACE("FinalForceController: postUpdateActions()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool notInRange = false;
     bool clippingRequired = false;

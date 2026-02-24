@@ -49,7 +49,7 @@ namespace SS {
  */
 class SafetyController {
 public:
-    SafetyController(SafetyControllerSettings *safetyControllerSettings);
+    SafetyController(SafetyControllerSettings* safetyControllerSettings);
 
     void clearErrorCode();
 
@@ -183,7 +183,7 @@ public:
 private:
     template <typename... Args>
     void _updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag,
-                         std::string errorReport, Args &&...args) {
+                         std::string errorReport, Args&&... args) {
         bool faultConditionExists = enabledFlag && conditionFlag;
         if (faultConditionExists && _errorCodeData->errorCode == FaultCodes::NoFault) {
             _errorCodeData->errorCode = faultCode;
@@ -193,9 +193,9 @@ private:
 
     void _clearError();
 
-    SafetyControllerSettings *_safetyControllerSettings;
+    SafetyControllerSettings* _safetyControllerSettings;
 
-    MTM1M3_logevent_errorCodeC *_errorCodeData;
+    MTM1M3_logevent_errorCodeC* _errorCodeData;
 
     std::list<int> _ilcCommunicationTimeoutData;
     std::list<int> _forceActuatorFollowingErrorData[FA_COUNT];

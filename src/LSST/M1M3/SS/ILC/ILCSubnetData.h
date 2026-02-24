@@ -47,8 +47,8 @@ class ILCSubnetData {
     Container subnetData[5];
 
 public:
-    ILCSubnetData(HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
-                  HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings);
+    ILCSubnetData(HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
+                  HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
     int32_t getHPCount(int32_t subnetIndex) { return this->subnetData[subnetIndex].HPIndex.size(); }
     ILCMap getHPIndex(int32_t subnetIndex, int32_t hpIndex) {

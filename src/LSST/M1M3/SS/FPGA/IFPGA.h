@@ -48,7 +48,7 @@ public:
     IFPGA() : cRIO::FPGA(cRIO::SS) {}
     virtual ~IFPGA() {}
 
-    static IFPGA &get();
+    static IFPGA& get();
 
     uint16_t getTxCommand(uint8_t bus) override;
     uint16_t getRxCommand(uint8_t bus) override;
@@ -59,14 +59,14 @@ public:
      *
      * @return telemetry data
      */
-    SupportFPGAData *getSupportFPGAData() { return &supportFPGAData; }
+    SupportFPGAData* getSupportFPGAData() { return &supportFPGAData; }
 
     /**
      * Call after pullHealthAndStatus to retrieve HealthAndStatus data.
      *
      * @return HealthAndStatus data
      */
-    HealthAndStatusFPGAData *getHealthAndStatusFPGAData() { return &healthAndStatusFPGAData; }
+    HealthAndStatusFPGAData* getHealthAndStatusFPGAData() { return &healthAndStatusFPGAData; }
 
     /**
      * Wait for outer loop clock interrupt for synchronization between C++ and
@@ -159,7 +159,7 @@ public:
      *
      * @throw NiError on NI error
      */
-    virtual void readU8ResponseFIFO(uint8_t *data, size_t length, uint32_t timeoutInMs) = 0;
+    virtual void readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) = 0;
 
     /**
      * Requests HealthAndStatus data. Response can be read calling
@@ -188,7 +188,7 @@ public:
      *
      * @throw NiError on NI error
      */
-    virtual void readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeoutInMs = 10) = 0;
+    virtual void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) = 0;
 
     /**
      * Reads raw accelerometer FIFO. Waits for new data if no data are available.
@@ -198,7 +198,7 @@ public:
      * 64 are used - that copies NI interface for accessing fixed points
      * @param samples number of samples
      */
-    virtual void readRawAccelerometerFIFO(uint64_t *raw, size_t samples) = 0;
+    virtual void readRawAccelerometerFIFO(uint64_t* raw, size_t samples) = 0;
 
     /**
      * Sets all auxiliary and network buses power (A-D).
@@ -221,8 +221,8 @@ protected:
     HealthAndStatusFPGAData healthAndStatusFPGAData;
 
 private:
-    IFPGA &operator=(const IFPGA &) = delete;
-    IFPGA(const IFPGA &) = delete;
+    IFPGA& operator=(const IFPGA&) = delete;
+    IFPGA(const IFPGA&) = delete;
 };
 
 } /* namespace SS */

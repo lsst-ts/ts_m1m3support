@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 StaticForceComponent::StaticForceComponent()
         : ForceComponent("Static", &ForceActuatorSettings::instance().StaticComponentSettings),
           _preclipped_static_forces(
-                  [](MTM1M3_logevent_preclippedStaticForcesC *data) {
+                  [](MTM1M3_logevent_preclippedStaticForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedStaticForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -50,8 +50,8 @@ StaticForceComponent::StaticForceComponent()
     _appliedStaticForces = M1M3SSPublisher::instance().getEventAppliedStaticForces();
 }
 
-void StaticForceComponent::applyStaticForces(std::vector<float> *x, std::vector<float> *y,
-                                             std::vector<float> *z) {
+void StaticForceComponent::applyStaticForces(std::vector<float>* x, std::vector<float>* y,
+                                             std::vector<float>* z) {
     SPDLOG_DEBUG("StaticForceComponent: applyStaticForces()");
 
     if (!isEnabled()) {
@@ -83,7 +83,7 @@ void StaticForceComponent::postEnableDisableActions() {
 void StaticForceComponent::postUpdateActions() {
     SPDLOG_TRACE("StaticForceController: postUpdateActions()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool notInRange = false;
     bool clippingRequired = false;

@@ -111,8 +111,8 @@ public:
      * @return false if move cannot be perfomed, as not all actuators are in
      * Standby state
      */
-    bool move(const std::vector<int> &steps);
-    bool moveToEncoder(const std::vector<int> &encoderValues);
+    bool move(const std::vector<int>& steps);
+    bool moveToEncoder(const std::vector<int>& encoderValues);
 
     /**
      * Commands mirror to move to new position.
@@ -186,7 +186,7 @@ public:
     void checkLimits(int hp);
 
 private:
-    void _convert_to_steps(int32_t *steps, double x, double y, double z, double rX, double rY, double rZ);
+    void _convert_to_steps(int32_t* steps, double x, double y, double z, double rX, double rY, double rZ);
 
     void _check_following_error(int hp);
 
@@ -197,12 +197,12 @@ private:
 
     void _reset_wait_compression_tension();
 
-    PositionControllerSettings *_position_controller_settings;
-    HardpointActuatorSettings *_hardpoint_actuator_settings;
+    PositionControllerSettings* _position_controller_settings;
+    HardpointActuatorSettings* _hardpoint_actuator_settings;
 
-    MTM1M3_hardpointActuatorDataC *_hardpoint_actuator_data;
-    MTM1M3_logevent_hardpointActuatorStateC *_hardpointActuatorState;
-    MTM1M3_logevent_hardpointActuatorInfoC *_hardpointInfo;
+    MTM1M3_hardpointActuatorDataC* _hardpoint_actuator_data;
+    MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
+    MTM1M3_logevent_hardpointActuatorInfoC* _hardpointInfo;
 
     int32_t _scaledMaxStepsPerLoop[HP_COUNT];
     int32_t _targetEncoderValues[HP_COUNT];
@@ -214,7 +214,7 @@ private:
     wait_hardpoint_t _wait_compression[HP_COUNT];
     uint16_t _raising_lowering_in_range_samples[HP_COUNT];
 
-    SafetyController *_safety_controller;
+    SafetyController* _safety_controller;
 };
 
 } /* namespace SS */

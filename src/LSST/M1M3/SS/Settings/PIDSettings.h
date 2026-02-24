@@ -36,14 +36,14 @@ namespace SS {
 struct PIDSettings : public MTM1M3_logevent_pidSettingsC {
     PIDSettings();
 
-    void load(YAML::Node doc, const char *kind);
+    void load(YAML::Node doc, const char* kind);
 
     void log() { M1M3SSPublisher::instance().logPIDSettings(this); }
 
     PIDParameters getParameters(int index);
 
 private:
-    void _parsePID(const YAML::Node &node, int index);
+    void _parsePID(const YAML::Node& node, int index);
 };
 
 } /* namespace SS */

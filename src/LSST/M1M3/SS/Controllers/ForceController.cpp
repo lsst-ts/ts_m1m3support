@@ -65,14 +65,14 @@ ForceController::ForceController()
           _velocityForceComponent(),
           _finalForceComponent(),
           _preclipped_cylinder_forces(
-                  [](MTM1M3_logevent_preclippedCylinderForcesC *data) {
+                  [](MTM1M3_logevent_preclippedCylinderForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedCylinderForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
                   std::chrono::milliseconds(
                           static_cast<int>(ForceActuatorSettings::instance().preclippedMaxDelay * 1000.0))) {
     SPDLOG_DEBUG("ForceController: ForceController()");
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
     _safetyController = Model::instance().getSafetyController();
 
     _appliedCylinderForces = M1M3SSPublisher::instance().getAppliedCylinderForces();
@@ -102,7 +102,7 @@ ForceController::ForceController()
     for (int i = 0; i < FA_COUNT; i++) {
         _mirrorWeight += df.ZForces[i];
         _zero[i] = 0;
-        ForceActuatorIndicesNeighbors *currentNeighbors = _neighbors + i;
+        ForceActuatorIndicesNeighbors* currentNeighbors = _neighbors + i;
         currentNeighbors->nearCount = 0;
         for (size_t j = 0; j < FA_MAX_NEAR_COUNT; ++j) {
             if (ForceActuatorSettings::instance().Neighbors[i].NearZIDs[j] == 0) {
@@ -289,7 +289,7 @@ void ForceController::zeroAccelerationForces() {
     }
 }
 
-void ForceController::applyActiveOpticForces(const std::vector<float> &z) {
+void ForceController::applyActiveOpticForces(const std::vector<float>& z) {
     SPDLOG_INFO("ForceController: applyActiveOpticForces()");
     if (!_activeOpticForceComponent.isEnabled()) {
         _activeOpticForceComponent.enable();
@@ -311,7 +311,7 @@ void ForceController::applyAzimuthForces() {
     }
 }
 
-void ForceController::updateTMAAzimuthForces(MTMount_azimuthC *tmaAzimuthData) {
+void ForceController::updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData) {
     SPDLOG_TRACE("ForceController: updateTMAAzimuthForces() {:.4f}", tmaAzimuthData->actualPosition);
     if (_azimuthForceComponent.isEnabled()) {
         _azimuthForceComponent.applyAzimuthForcesByAzimuthAngle(tmaAzimuthData->actualPosition);
@@ -383,8 +383,8 @@ void ForceController::zeroElevationForces() {
     }
 }
 
-void ForceController::applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
-                                        const std::vector<float> &z) {
+void ForceController::applyOffsetForces(const std::vector<float>& x, const std::vector<float>& y,
+                                        const std::vector<float>& z) {
     SPDLOG_INFO("ForceController: applyOffsetForces()");
     if (!_offsetForceComponent.isEnabled()) {
         _offsetForceComponent.enable();
@@ -474,7 +474,7 @@ void ForceController::zeroVelocityForces() {
 }
 
 void ForceController::enableDisableForceComponent(int forceComponentEnum, bool enabled) {
-    ForceComponent *forceComponent = NULL;
+    ForceComponent* forceComponent = NULL;
     switch (forceComponentEnum) {
         case MTM1M3::enableDisableForceComponent_AccelerationForce:
             forceComponent = &_accelerationForceComponent;
@@ -528,9 +528,9 @@ void ForceController::_sumAllForces() {
 void ForceController::_convertForcesToSetpoints() {
     SPDLOG_TRACE("ForceController: convertForcesToSetpoints()");
     bool clippingRequired = false;
-    auto &forceActuatorInfo = ForceActuatorInfo::instance();
+    auto& forceActuatorInfo = ForceActuatorInfo::instance();
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int pIndex = 0; pIndex < FA_COUNT; pIndex++) {
         int xIndex = faa_settings.ZIndexToXIndex[pIndex];
@@ -664,7 +664,7 @@ bool ForceController::_checkNearNeighbors() {
     _forceSetpointWarning->anyNearNeighborWarning = false;
     string failed;
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; zIndex++) {
         // ignore check for disabled FA
@@ -726,7 +726,7 @@ bool ForceController::_checkMirrorWeight() {
 bool ForceController::_checkFarNeighbors() {
     SPDLOG_TRACE("ForceController: checkFarNeighbors()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     float globalX = _appliedForces->fx;
     float globalY = _appliedForces->fy;

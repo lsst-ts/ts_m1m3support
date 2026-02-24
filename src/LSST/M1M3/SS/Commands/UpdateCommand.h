@@ -38,13 +38,13 @@ namespace SS {
  */
 class UpdateCommand : public Command {
 public:
-    UpdateCommand(std::mutex *updateMutext);
+    UpdateCommand(std::mutex* updateMutext);
     ~UpdateCommand();
 
     void execute() override;
 
 private:
-    std::mutex *_updateMutex;
+    std::mutex* _updateMutex;
 };
 
 } /* namespace SS */

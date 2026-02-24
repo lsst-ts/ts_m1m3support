@@ -40,8 +40,8 @@ namespace SS {
 class OffsetForceComponent : public ForceComponent {
 public:
     OffsetForceComponent();
-    void applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
-                           const std::vector<float> &z);
+    void applyOffsetForces(const std::vector<float>& x, const std::vector<float>& y,
+                           const std::vector<float>& z);
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
 
@@ -54,10 +54,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_logevent_appliedOffsetForcesC *_appliedOffsetForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedOffsetForcesC* _appliedOffsetForces;
     PreclippedForces<MTM1M3_logevent_preclippedOffsetForcesC> _preclipped_offset_forces;
 };
 

@@ -38,13 +38,13 @@ namespace SS {
 
 ParkedState::ParkedState() : EnabledState("ParkedState") {}
 
-States::Type ParkedState::update(UpdateCommand *command) {
+States::Type ParkedState::update(UpdateCommand* command) {
     SPDLOG_TRACE("ParkedState: update()");
     sendTelemetry();
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ParkedState::raiseM1M3(RaiseM1M3Command *command) {
+States::Type ParkedState::raiseM1M3(RaiseM1M3Command* command) {
     SPDLOG_INFO("ParkedState: raiseM1M3()");
     if (command->getData()->bypassReferencePosition) {
         M1M3SSPublisher::instance().logCommandRejectionWarning(
@@ -57,12 +57,12 @@ States::Type ParkedState::raiseM1M3(RaiseM1M3Command *command) {
     return Model::instance().getSafetyController()->checkSafety(States::RaisingState);
 }
 
-States::Type ParkedState::enterEngineering(EnterEngineeringCommand *command) {
+States::Type ParkedState::enterEngineering(EnterEngineeringCommand* command) {
     SPDLOG_INFO("ParkedState: enterEngineering()");
     return Model::instance().getSafetyController()->checkSafety(States::ParkedEngineeringState);
 }
 
-States::Type ParkedState::disable(DisableCommand *command) {
+States::Type ParkedState::disable(DisableCommand* command) {
     SPDLOG_INFO("ParkedState: disable()");
     return EnabledState::disableMirror();
 }

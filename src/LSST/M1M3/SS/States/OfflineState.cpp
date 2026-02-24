@@ -36,11 +36,11 @@ namespace SS {
 
 OfflineState::OfflineState() : State("OfflineState") {}
 
-States::Type OfflineState::update(UpdateCommand *command) {
+States::Type OfflineState::update(UpdateCommand* command) {
     return rejectCommandInvalidState(command, "Update");
 }
 
-States::Type OfflineState::enterControl(EnterControlCommand *command) {
+States::Type OfflineState::enterControl(EnterControlCommand* command) {
     SPDLOG_INFO("OfflineState: enterControl()");
 
     RaisingLoweringInfo::instance().sendUpdates(true);
@@ -53,7 +53,7 @@ States::Type OfflineState::enterControl(EnterControlCommand *command) {
 #endif
     Model::instance().publishRecommendedSettings();
 
-    auto &digitalInputOutput = DigitalInputOutput::instance();
+    auto& digitalInputOutput = DigitalInputOutput::instance();
     digitalInputOutput.turnAirOff();
     digitalInputOutput.turnCellLightsOff();
     return States::StandbyState;

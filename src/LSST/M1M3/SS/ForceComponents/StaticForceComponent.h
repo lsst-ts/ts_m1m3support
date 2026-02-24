@@ -47,7 +47,7 @@ public:
      * @param y y static forces
      * @param z z static forces
      */
-    void applyStaticForces(std::vector<float> *x, std::vector<float> *y, std::vector<float> *z);
+    void applyStaticForces(std::vector<float>* x, std::vector<float>* y, std::vector<float>* z);
 
     void postEnableDisableActions() override;
 
@@ -55,10 +55,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_logevent_appliedStaticForcesC *_appliedStaticForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_logevent_appliedStaticForcesC* _appliedStaticForces;
     PreclippedForces<MTM1M3_logevent_preclippedStaticForcesC> _preclipped_static_forces;
 };
 

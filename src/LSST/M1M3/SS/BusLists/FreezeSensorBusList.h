@@ -33,13 +33,13 @@ namespace SS {
 
 class FreezeSensorBusList : public BusList {
 public:
-    FreezeSensorBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory);
+    FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     void buildBuffer() override;
     void update() override;
 
 private:
-    MTM1M3_outerLoopDataC *_outerLoopData;
+    MTM1M3_outerLoopDataC* _outerLoopData;
 
     int32_t _freezeSensorCommandIndex[5];
     int32_t _faStatusCommandIndex[5];

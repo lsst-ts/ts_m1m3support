@@ -33,8 +33,8 @@
 
 using namespace LSST::M1M3::SS;
 
-SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData *subnetData,
-                                                         ILCMessageFactory *ilcMessageFactory)
+SetBoostValveDCAGainBusList::SetBoostValveDCAGainBusList(ILCSubnetData* subnetData,
+                                                         ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("SetBoostValveDCAGainBusList: SetBoostValveDCAGainBusList()");
 }
@@ -43,7 +43,7 @@ void SetBoostValveDCAGainBusList::buildBuffer() {
     BusList::buildBuffer();
     SPDLOG_DEBUG("SetBoostValveDCAGainBusList: buildBuffer()");
 
-    auto &forceInfo = ForceActuatorInfo::instance();
+    auto& forceInfo = ForceActuatorInfo::instance();
     for (int subnetIndex = 0; subnetIndex < SUBNET_COUNT; subnetIndex++) {
         this->startSubnet(subnetIndex);
         for (int faIndex = 0; faIndex < this->subnetData->getFACount(subnetIndex); faIndex++) {

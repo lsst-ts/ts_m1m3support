@@ -34,7 +34,7 @@ TurnAirOffCommand::TurnAirOffCommand(int32_t commandID) : Command(commandID) {}
 
 void TurnAirOffCommand::execute() { Context::instance().turnAirOff(this); }
 
-void TurnAirOffCommand::ackInProgress(const char *description, double timeout) {
+void TurnAirOffCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandturnAirOff(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

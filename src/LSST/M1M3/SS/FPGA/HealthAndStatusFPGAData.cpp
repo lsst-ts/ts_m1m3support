@@ -30,7 +30,7 @@ using namespace LSST::M1M3::SS;
 ModbusPort::ModbusPort()
         : errorFlag(0), txBytes(0), txFrames(0), rxBytes(0), rxFrames(0), instructionCount(0) {}
 
-void ModbusPort::fillFromFIFO(uint64_t *buffer) {
+void ModbusPort::fillFromFIFO(uint64_t* buffer) {
     errorFlag = buffer[0];
     txBytes = buffer[1];
     txFrames = buffer[2];

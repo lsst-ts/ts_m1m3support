@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 FaultState::FaultState() : State("FaultState") {}
 FaultState::FaultState(std::string name) : State(name) {}
 
-States::Type FaultState::update(UpdateCommand *command) {
+States::Type FaultState::update(UpdateCommand* command) {
     DigitalInputOutput::instance().toggleMirrorRaisedHB(0, false);
     DigitalInputOutput::instance().toggleSystemOperationalHB(0, false);
     ModelPublisher publishIt{};
@@ -73,7 +73,7 @@ States::Type FaultState::update(UpdateCommand *command) {
     return States::NoStateTransition;
 }
 
-States::Type FaultState::standby(StandbyCommand *command) {
+States::Type FaultState::standby(StandbyCommand* command) {
     SPDLOG_TRACE("FaultState: standby()");
     auto ilc = Model::instance().getILC();
     ilc->writeSetModeStandbyBuffer();

@@ -37,317 +37,317 @@ Context::Context(token) {
     _currentState = States::OfflineState;
 }
 
-void Context::enterControl(EnterControlCommand *command) {
+void Context::enterControl(EnterControlCommand* command) {
     SPDLOG_DEBUG("Context: enterControl()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enterControl(command));
 }
 
-void Context::start(StartCommand *command) {
+void Context::start(StartCommand* command) {
     SPDLOG_DEBUG("Context: start()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->start(command));
 }
 
-void Context::enable(EnableCommand *command) {
+void Context::enable(EnableCommand* command) {
     SPDLOG_DEBUG("Context: enable()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enable(command));
 }
 
-void Context::disable(DisableCommand *command) {
+void Context::disable(DisableCommand* command) {
     SPDLOG_DEBUG("Context: disable()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->disable(command));
 }
 
-void Context::standby(StandbyCommand *command) {
+void Context::standby(StandbyCommand* command) {
     SPDLOG_DEBUG("Context: standby()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->standby(command));
 }
 
-void Context::exitControl(ExitControlCommand *command) {
+void Context::exitControl(ExitControlCommand* command) {
     SPDLOG_DEBUG("Context: exitControl()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->exitControl(command));
 }
 
-void Context::update(UpdateCommand *command) {
+void Context::update(UpdateCommand* command) {
     SPDLOG_TRACE("Context: update()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->update(command));
 }
 
-void Context::setSlewFlag(SetSlewFlagCommand *command) {
+void Context::setSlewFlag(SetSlewFlagCommand* command) {
     SPDLOG_DEBUG("Context: setSlewFlag()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->setSlewFlag(command));
 }
 
-void Context::clearSlewFlag(ClearSlewFlagCommand *command) {
+void Context::clearSlewFlag(ClearSlewFlagCommand* command) {
     SPDLOG_DEBUG("Context: clearSlewFlag()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->clearSlewFlag(command));
 }
 
-void Context::turnAirOn(TurnAirOnCommand *command) {
+void Context::turnAirOn(TurnAirOnCommand* command) {
     SPDLOG_DEBUG("Context: turnAirOn()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->turnAirOn(command));
 }
 
-void Context::turnAirOff(TurnAirOffCommand *command) {
+void Context::turnAirOff(TurnAirOffCommand* command) {
     SPDLOG_DEBUG("Context: turnAirOff()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->turnAirOff(command));
 }
 
-void Context::applyOffsetForces(ApplyOffsetForcesCommand *command) {
+void Context::applyOffsetForces(ApplyOffsetForcesCommand* command) {
     SPDLOG_DEBUG("Context: applyOffsetForces()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->applyOffsetForces(command));
 }
 
-void Context::clearOffsetForces(ClearOffsetForcesCommand *command) {
+void Context::clearOffsetForces(ClearOffsetForcesCommand* command) {
     SPDLOG_DEBUG("Context: clearOffsetForces()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->clearOffsetForces(command));
 }
 
-void Context::raiseM1M3(RaiseM1M3Command *command) {
+void Context::raiseM1M3(RaiseM1M3Command* command) {
     SPDLOG_DEBUG("Context: raiseM1M3()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->raiseM1M3(command));
 }
 
-void Context::lowerM1M3(LowerM1M3Command *command) {
+void Context::lowerM1M3(LowerM1M3Command* command) {
     SPDLOG_DEBUG("Context: lowerM1M3()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->lowerM1M3(command));
 }
 
-void Context::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand *command) {
+void Context::pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command) {
     SPDLOG_DEBUG("Context: pauseM1M3RaisingLowering()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->pauseM1M3RaisingLowering(command));
 }
 
-void Context::resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand *command) {
+void Context::resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command) {
     SPDLOG_DEBUG("Context: resumeRaisingLowering()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->resumeM1M3RaisingLowering(command));
 }
 
-void Context::applyActiveOpticForces(ApplyActiveOpticForcesCommand *command) {
+void Context::applyActiveOpticForces(ApplyActiveOpticForcesCommand* command) {
     SPDLOG_DEBUG("Context: applyActiveOpticForces()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->applyActiveOpticForces(command));
 }
 
-void Context::clearActiveOpticForces(ClearActiveOpticForcesCommand *command) {
+void Context::clearActiveOpticForces(ClearActiveOpticForcesCommand* command) {
     SPDLOG_DEBUG("Context: clearActiveOpticForces()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->clearActiveOpticForces(command));
 }
 
-void Context::enterEngineering(EnterEngineeringCommand *command) {
+void Context::enterEngineering(EnterEngineeringCommand* command) {
     SPDLOG_DEBUG("Context: enterEngineering()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enterEngineering(command));
 }
 
-void Context::exitEngineering(ExitEngineeringCommand *command) {
+void Context::exitEngineering(ExitEngineeringCommand* command) {
     SPDLOG_DEBUG("Context: exitEngineering()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->exitEngineering(command));
 }
 
-void Context::boosterValveOpen(BoosterValveOpenCommand *command) {
+void Context::boosterValveOpen(BoosterValveOpenCommand* command) {
     SPDLOG_DEBUG("Context: boosterValveOpen()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->boosterValveOpen(command));
 }
 
-void Context::boosterValveClose(BoosterValveCloseCommand *command) {
+void Context::boosterValveClose(BoosterValveCloseCommand* command) {
     SPDLOG_DEBUG("Context: boosterValveClose()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->boosterValveClose(command));
 }
 
-void Context::testHardpoint(TestHardpointCommand *command) {
+void Context::testHardpoint(TestHardpointCommand* command) {
     SPDLOG_DEBUG("Context: testHardpoint()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->testHardpoint(command));
 }
 
-void Context::killHardpointTest(KillHardpointTestCommand *command) {
+void Context::killHardpointTest(KillHardpointTestCommand* command) {
     SPDLOG_DEBUG("Context: killHardpointTest()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->killHardpointTest(command));
 }
 
-void Context::moveHardpointActuators(MoveHardpointActuatorsCommand *command) {
+void Context::moveHardpointActuators(MoveHardpointActuatorsCommand* command) {
     SPDLOG_DEBUG("Context: moveHardpointActuators()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->moveHardpointActuators(command));
 }
 
-void Context::enableHardpointChase(EnableHardpointChaseCommand *command) {
+void Context::enableHardpointChase(EnableHardpointChaseCommand* command) {
     SPDLOG_DEBUG("Context: enableHardpointChase()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enableHardpointChase(command));
 }
 
-void Context::disableHardpointChase(DisableHardpointChaseCommand *command) {
+void Context::disableHardpointChase(DisableHardpointChaseCommand* command) {
     SPDLOG_DEBUG("Context: disableHardpointChase()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->disableHardpointChase(command));
 }
 
-void Context::abortRaiseM1M3(AbortRaiseM1M3Command *command) {
+void Context::abortRaiseM1M3(AbortRaiseM1M3Command* command) {
     SPDLOG_DEBUG("Context: abortRaiseM1M3()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->abortRaiseM1M3(command));
 }
 
-void Context::translateM1M3(TranslateM1M3Command *command) {
+void Context::translateM1M3(TranslateM1M3Command* command) {
     SPDLOG_DEBUG("Context: translateM1M3()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->translateM1M3(command));
 }
 
-void Context::stopHardpointMotion(StopHardpointMotionCommand *command) {
+void Context::stopHardpointMotion(StopHardpointMotionCommand* command) {
     SPDLOG_DEBUG("Context: stopHardpointMotion()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->stopHardpointMotion(command));
 }
 
-void Context::storeTMAAzimuthSample(TMAAzimuthSampleCommand *command) {
+void Context::storeTMAAzimuthSample(TMAAzimuthSampleCommand* command) {
     SPDLOG_DEBUG("Context: storeTMAAzimuthSample()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->storeTMAAzimuthSample(command));
 }
 
-void Context::storeTMAElevationSample(TMAElevationSampleCommand *command) {
+void Context::storeTMAElevationSample(TMAElevationSampleCommand* command) {
     SPDLOG_DEBUG("Context: storeTMAElevationSample()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->storeTMAElevationSample(command));
 }
 
-void Context::positionM1M3(PositionM1M3Command *command) {
+void Context::positionM1M3(PositionM1M3Command* command) {
     SPDLOG_DEBUG("Context: positionM1M3()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->positionM1M3(command));
 }
 
-void Context::turnLightsOn(TurnLightsOnCommand *command) {
+void Context::turnLightsOn(TurnLightsOnCommand* command) {
     SPDLOG_DEBUG("Context: turnLightsOn()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->turnLightsOn(command));
 }
 
-void Context::turnLightsOff(TurnLightsOffCommand *command) {
+void Context::turnLightsOff(TurnLightsOffCommand* command) {
     SPDLOG_DEBUG("Context: turnLightsOff()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->turnLightsOff(command));
 }
 
-void Context::turnPowerOn(TurnPowerOnCommand *command) {
+void Context::turnPowerOn(TurnPowerOnCommand* command) {
     SPDLOG_DEBUG("Context: turnPowerOn()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->turnPowerOn(command));
 }
 
-void Context::turnPowerOff(TurnPowerOffCommand *command) {
+void Context::turnPowerOff(TurnPowerOffCommand* command) {
     SPDLOG_DEBUG("Context: turnPowerOff()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->turnPowerOff(command));
 }
 
-void Context::enableHardpointCorrections(EnableHardpointCorrectionsCommand *command) {
+void Context::enableHardpointCorrections(EnableHardpointCorrectionsCommand* command) {
     SPDLOG_DEBUG("Context: enableHardpointCorrections()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enableHardpointCorrections(command));
 }
 
-void Context::disableHardpointCorrections(DisableHardpointCorrectionsCommand *command) {
+void Context::disableHardpointCorrections(DisableHardpointCorrectionsCommand* command) {
     SPDLOG_DEBUG("Context: disableHardpointCorrections()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->disableHardpointCorrections(command));
 }
 
-void Context::runMirrorForceProfile(RunMirrorForceProfileCommand *command) {
+void Context::runMirrorForceProfile(RunMirrorForceProfileCommand* command) {
     SPDLOG_DEBUG("Context: runMirrorForceProfile()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->runMirrorForceProfile(command));
 }
 
-void Context::abortProfile(AbortProfileCommand *command) {
+void Context::abortProfile(AbortProfileCommand* command) {
     SPDLOG_DEBUG("Context: abortProfile()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->abortProfile(command));
 }
 
-void Context::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand *command) {
+void Context::applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command) {
     SPDLOG_DEBUG("Context: applyOffsetForcesByMirrorForce()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->applyOffsetForcesByMirrorForce(command));
 }
 
-void Context::updatePID(UpdatePIDCommand *command) {
+void Context::updatePID(UpdatePIDCommand* command) {
     SPDLOG_DEBUG("Context: updatePID()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->updatePID(command));
 }
 
-void Context::resetPID(ResetPIDCommand *command) {
+void Context::resetPID(ResetPIDCommand* command) {
     SPDLOG_DEBUG("Context: resetPID()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->resetPID(command));
 }
 
-void Context::forceActuatorBumpTest(ForceActuatorBumpTestCommand *command) {
+void Context::forceActuatorBumpTest(ForceActuatorBumpTestCommand* command) {
     SPDLOG_DEBUG("Context: forceActuatorBumpTest()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->forceActuatorBumpTest(command));
 }
 
-void Context::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand *command) {
+void Context::killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command) {
     SPDLOG_DEBUG("Context: killForceActuatorBumpTest()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->killForceActuatorBumpTest(command));
 }
 
-void Context::disableForceActuator(DisableForceActuatorCommand *command) {
+void Context::disableForceActuator(DisableForceActuatorCommand* command) {
     SPDLOG_DEBUG("Context: disableForceActuator({})", command->actuatorIndex);
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->disableForceActuator(command));
 }
 
-void Context::enableForceActuator(EnableForceActuatorCommand *command) {
+void Context::enableForceActuator(EnableForceActuatorCommand* command) {
     SPDLOG_DEBUG("Context: enableForceActuator({})", command->actuatorIndex);
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enableForceActuator(command));
 }
 
-void Context::enableAllForceActuators(EnableAllForceActuatorsCommand *command) {
+void Context::enableAllForceActuators(EnableAllForceActuatorsCommand* command) {
     SPDLOG_DEBUG("Context: enableAllForceActuators()");
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enableAllForceActuators(command));
 }
 
-void Context::enableDisableForceComponent(EnableDisableForceComponentCommand *command) {
+void Context::enableDisableForceComponent(EnableDisableForceComponentCommand* command) {
     SPDLOG_DEBUG("Context: enableDisableForceComponent({} {})", command->getData()->forceComponent,
                  command->getData()->enable);
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->enableDisableForceComponent(command));
 }
 
-void Context::setSlewControllerSettings(SetSlewControllerSettingsCommand *command) {
+void Context::setSlewControllerSettings(SetSlewControllerSettingsCommand* command) {
     SPDLOG_DEBUG("Context: slewControllerSettings({} {})", command->getData()->slewSettings,
                  command->getData()->enableSlewManagement);
-    State *state = StaticStateFactory::get().create(_currentState);
+    State* state = StaticStateFactory::get().create(_currentState);
     _updateCurrentStateIfRequired(state->setSlewControllerSettings(command));
 }
 

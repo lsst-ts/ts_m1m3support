@@ -28,8 +28,8 @@
 
 using namespace LSST::M1M3::SS;
 
-ReadCalibrationBusList::ReadCalibrationBusList(ILCSubnetData *subnetData,
-                                               ILCMessageFactory *ilcMessageFactory)
+ReadCalibrationBusList::ReadCalibrationBusList(ILCSubnetData* subnetData,
+                                               ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReadCalibrationBusList: ReadCalibrationBusList()");
 }

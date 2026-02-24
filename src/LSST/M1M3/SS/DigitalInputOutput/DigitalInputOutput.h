@@ -59,7 +59,7 @@ public:
      * Sets the safety controller.
      * @param[in] safetyController The safety controller.
      */
-    void setSafetyController(SafetyController *safetyController);
+    void setSafetyController(SafetyController* safetyController);
 
     /*!
      * Processes currently available digital input and output data and publish it.
@@ -94,12 +94,12 @@ public:
     void turnCellLightsOff();
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    AirSupplyStatus *_airSupplyStatus;
-    MTM1M3_logevent_airSupplyWarningC *_airSupplyWarning;
-    MTM1M3_logevent_cellLightStatusC *_cellLightStatus;
-    MTM1M3_logevent_cellLightWarningC *_cellLightWarning;
+    AirSupplyStatus* _airSupplyStatus;
+    MTM1M3_logevent_airSupplyWarningC* _airSupplyWarning;
+    MTM1M3_logevent_cellLightStatusC* _cellLightStatus;
+    MTM1M3_logevent_cellLightWarningC* _cellLightWarning;
     InterlockStatus _interlock_status;
 
     uint64_t _lastDOTimestamp;

@@ -34,7 +34,7 @@ namespace SS {
 
 class ChangeILCModeBusList : public BusList {
 public:
-    ChangeILCModeBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory, ILCModes::Type mode,
+    ChangeILCModeBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory, ILCModes::Type mode,
                          ILCModes::Type hmMode);
 
     void buildBuffer() override;

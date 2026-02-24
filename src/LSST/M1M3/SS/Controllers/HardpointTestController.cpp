@@ -37,7 +37,7 @@ namespace LSST {
 namespace M1M3 {
 namespace SS {
 
-HardpointTestController::HardpointTestController(PositionController *positionController) {
+HardpointTestController::HardpointTestController(PositionController* positionController) {
     SPDLOG_DEBUG("HardpointTestController: HardpointTestController()");
 
     _positionController = positionController;

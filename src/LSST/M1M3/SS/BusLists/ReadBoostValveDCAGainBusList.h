@@ -32,7 +32,7 @@ namespace SS {
 
 class ReadBoostValveDCAGainBusList : public BusList {
 public:
-    ReadBoostValveDCAGainBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory);
+    ReadBoostValveDCAGainBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory);
 
     void buildBuffer() override;
 };

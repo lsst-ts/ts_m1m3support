@@ -243,13 +243,13 @@ void FPGA::pullHealthAndStatus() {
     healthAndStatusFPGAData.refresh(buffer);
 }
 
-void FPGA::writeCommandFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
+void FPGA::writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     cRIO::NiThrowError(__PRETTY_FUNCTION__,
                        NiFpga_WriteFifoU16(_session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_CommandFIFO,
                                            data, length, timeoutInMs, &_remaining));
 }
 
-void FPGA::writeRequestFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
+void FPGA::writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     cRIO::NiThrowError(__PRETTY_FUNCTION__,
                        NiFpga_WriteFifoU16(_session, NiFpga_M1M3SupportFPGA_HostToTargetFifoU16_RequestFIFO,
                                            data, length, timeoutInMs, &_remaining));
@@ -262,26 +262,26 @@ void FPGA::writeTimestampFIFO(uint64_t timestamp) {
                                 &timestamp, 1, 0, &_remaining));
 }
 
-void FPGA::readU8ResponseFIFO(uint8_t *data, size_t length, uint32_t timeoutInMs) {
+void FPGA::readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) {
     cRIO::NiThrowError(__PRETTY_FUNCTION__,
                        NiFpga_ReadFifoU8(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU8_U8ResponseFIFO,
                                          data, length, timeoutInMs, &_remaining));
 }
 
-void FPGA::readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) {
+void FPGA::readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) {
     cRIO::NiThrowError(
             __PRETTY_FUNCTION__,
             NiFpga_ReadFifoU16(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU16_U16ResponseFIFO, data,
                                length, timeoutInMs, &_remaining));
 }
 
-void FPGA::waitOnIrqs(uint32_t irqs, uint32_t timeout, bool &timedout, uint32_t *triggered) {
+void FPGA::waitOnIrqs(uint32_t irqs, uint32_t timeout, bool& timedout, uint32_t* triggered) {
     static std::hash<std::thread::id> hasher;
     size_t k = hasher(std::this_thread::get_id());
     NiFpga_IrqContext contex;
     try {
         contex = _contexes.at(k);
-    } catch (std::out_of_range &e) {
+    } catch (std::out_of_range& e) {
         NiFpga_ReserveIrqContext(_session, &contex);
         _contexes[k] = contex;
     }
@@ -305,14 +305,14 @@ void FPGA::writeHealthAndStatusFIFO(uint16_t request, uint16_t param) {
                                 2, 0, &_remaining));
 }
 
-void FPGA::readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeoutInMs) {
+void FPGA::readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs) {
     cRIO::NiThrowError(
             __PRETTY_FUNCTION__,
             NiFpga_ReadFifoU64(_session, NiFpga_M1M3SupportFPGA_TargetToHostFifoU64_HealthAndStatusDataFIFO,
                                data, length, timeoutInMs, &_remaining));
 }
 
-void FPGA::readRawAccelerometerFIFO(uint64_t *raw, size_t samples) {
+void FPGA::readRawAccelerometerFIFO(uint64_t* raw, size_t samples) {
     size_t _rawRemaining = 0;
 
     cRIO::NiThrowError(

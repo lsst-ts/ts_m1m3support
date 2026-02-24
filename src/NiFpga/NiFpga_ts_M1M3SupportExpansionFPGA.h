@@ -24,7 +24,7 @@
 /**
  * The signature of the FPGA bitfile.
  */
-static const char *const NiFpga_ts_M1M3SupportExpansionFPGA_Signature = "83550EEFE36B089CB5745FB593A813FA";
+static const char* const NiFpga_ts_M1M3SupportExpansionFPGA_Signature = "83550EEFE36B089CB5745FB593A813FA";
 
 #if NiFpga_Cpp
 extern "C" {

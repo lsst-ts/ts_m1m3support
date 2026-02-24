@@ -34,8 +34,8 @@ std::string LSST::M1M3::SS::rowToStr(std::vector<std::string> row) {
     return ret;
 }
 
-void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit> *data,
-                                 const std::string &filename) {
+void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data,
+                                 const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document limitTable(fullPath, rapidcsv::LabelParams(), rapidcsv::SeparatorParams(),
@@ -51,21 +51,21 @@ void TableLoader::loadLimitTable(size_t columnsToSkip, std::vector<Limit> *data,
                                       limitTable.GetCell<float>(columnsToSkip + 1, row),
                                       limitTable.GetCell<float>(columnsToSkip + 2, row),
                                       limitTable.GetCell<float>(columnsToSkip + 3, row)));
-            } catch (std::logic_error &er) {
+            } catch (std::logic_error& er) {
                 throw std::runtime_error(fmt::format("{}:{}: cannot parse row (\"{}\"): {}", fullPath, row,
                                                      rowToStr(limitTable.GetRow<std::string>(row)),
                                                      er.what()));
             }
         }
-    } catch (std::ios_base::failure &er) {
+    } catch (std::ios_base::failure& er) {
         throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
 }
 
-void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float> &zLow,
-                                      std::vector<float> &zHigh, std::vector<float> &yLow,
-                                      std::vector<float> &yHigh, std::vector<float> &xLow,
-                                      std::vector<float> &xHigh, const std::string &filename) {
+void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float>& zLow,
+                                      std::vector<float>& zHigh, std::vector<float>& yLow,
+                                      std::vector<float>& yHigh, std::vector<float>& xLow,
+                                      std::vector<float>& xHigh, const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document limitTable(fullPath, rapidcsv::LabelParams(), rapidcsv::SeparatorParams(),
@@ -138,7 +138,7 @@ void TableLoader::loadForceLimitTable(size_t columnsToSkip, std::vector<float> &
                 }
             }
         }
-    } catch (std::ios_base::failure &er) {
+    } catch (std::ios_base::failure& er) {
         throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
 }

@@ -106,12 +106,12 @@ public:
      * @return next state if M1M3's state has changed or States::NoStateTransition
      * for no M1M3's state change
      */
-    virtual States::Type enterControl(EnterControlCommand *command);
-    virtual States::Type start(StartCommand *command);
-    virtual States::Type enable(EnableCommand *command);
-    virtual States::Type disable(DisableCommand *command);
-    virtual States::Type standby(StandbyCommand *command);
-    virtual States::Type exitControl(ExitControlCommand *command);
+    virtual States::Type enterControl(EnterControlCommand* command);
+    virtual States::Type start(StartCommand* command);
+    virtual States::Type enable(EnableCommand* command);
+    virtual States::Type disable(DisableCommand* command);
+    virtual States::Type standby(StandbyCommand* command);
+    virtual States::Type exitControl(ExitControlCommand* command);
 
     /**
      * @brief Called to retrieve telemetry data.
@@ -123,57 +123,57 @@ public:
      *
      * @return new state, or States::NoStateTransition if state doesn't change
      */
-    virtual States::Type update(UpdateCommand *command) = 0;
-    virtual States::Type setSlewFlag(SetSlewFlagCommand *command);
-    virtual States::Type clearSlewFlag(ClearSlewFlagCommand *command);
-    virtual States::Type turnAirOn(TurnAirOnCommand *command);
-    virtual States::Type turnAirOff(TurnAirOffCommand *command);
-    virtual States::Type boosterValveOpen(BoosterValveOpenCommand *command);
-    virtual States::Type boosterValveClose(BoosterValveCloseCommand *command);
-    virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand *command);
-    virtual States::Type clearOffsetForces(ClearOffsetForcesCommand *command);
-    virtual States::Type raiseM1M3(RaiseM1M3Command *command);
-    virtual States::Type lowerM1M3(LowerM1M3Command *command);
-    virtual States::Type pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand *command);
-    virtual States::Type resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand *command);
-    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand *command);
-    virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand *command);
-    virtual States::Type enterEngineering(EnterEngineeringCommand *command);
-    virtual States::Type exitEngineering(ExitEngineeringCommand *command);
-    virtual States::Type testHardpoint(TestHardpointCommand *command);
-    virtual States::Type killHardpointTest(KillHardpointTestCommand *command);
-    virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand *command);
-    virtual States::Type enableHardpointChase(EnableHardpointChaseCommand *command);
-    virtual States::Type disableHardpointChase(DisableHardpointChaseCommand *command);
-    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command *command);
-    virtual States::Type translateM1M3(TranslateM1M3Command *command);
-    virtual States::Type stopHardpointMotion(StopHardpointMotionCommand *command);
-    virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand *command);
-    virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand *command);
-    virtual States::Type positionM1M3(PositionM1M3Command *command);
-    virtual States::Type turnLightsOn(TurnLightsOnCommand *command);
-    virtual States::Type turnLightsOff(TurnLightsOffCommand *command);
-    virtual States::Type turnPowerOn(TurnPowerOnCommand *command);
-    virtual States::Type turnPowerOff(TurnPowerOffCommand *command);
-    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand *command);
-    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand *command);
-    virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand *command);
-    virtual States::Type abortProfile(AbortProfileCommand *command);
-    virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand *command);
-    virtual States::Type updatePID(UpdatePIDCommand *command);
-    virtual States::Type resetPID(ResetPIDCommand *command);
-    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand *command);
-    virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand *command);
-    virtual States::Type disableForceActuator(DisableForceActuatorCommand *command);
-    virtual States::Type enableForceActuator(EnableForceActuatorCommand *command);
-    virtual States::Type enableAllForceActuators(EnableAllForceActuatorsCommand *command);
-    virtual States::Type enableDisableForceComponent(EnableDisableForceComponentCommand *command);
-    virtual States::Type setSlewControllerSettings(SetSlewControllerSettingsCommand *command);
+    virtual States::Type update(UpdateCommand* command) = 0;
+    virtual States::Type setSlewFlag(SetSlewFlagCommand* command);
+    virtual States::Type clearSlewFlag(ClearSlewFlagCommand* command);
+    virtual States::Type turnAirOn(TurnAirOnCommand* command);
+    virtual States::Type turnAirOff(TurnAirOffCommand* command);
+    virtual States::Type boosterValveOpen(BoosterValveOpenCommand* command);
+    virtual States::Type boosterValveClose(BoosterValveCloseCommand* command);
+    virtual States::Type applyOffsetForces(ApplyOffsetForcesCommand* command);
+    virtual States::Type clearOffsetForces(ClearOffsetForcesCommand* command);
+    virtual States::Type raiseM1M3(RaiseM1M3Command* command);
+    virtual States::Type lowerM1M3(LowerM1M3Command* command);
+    virtual States::Type pauseM1M3RaisingLowering(PauseM1M3RaisingLoweringCommand* command);
+    virtual States::Type resumeM1M3RaisingLowering(ResumeM1M3RaisingLoweringCommand* command);
+    virtual States::Type applyActiveOpticForces(ApplyActiveOpticForcesCommand* command);
+    virtual States::Type clearActiveOpticForces(ClearActiveOpticForcesCommand* command);
+    virtual States::Type enterEngineering(EnterEngineeringCommand* command);
+    virtual States::Type exitEngineering(ExitEngineeringCommand* command);
+    virtual States::Type testHardpoint(TestHardpointCommand* command);
+    virtual States::Type killHardpointTest(KillHardpointTestCommand* command);
+    virtual States::Type moveHardpointActuators(MoveHardpointActuatorsCommand* command);
+    virtual States::Type enableHardpointChase(EnableHardpointChaseCommand* command);
+    virtual States::Type disableHardpointChase(DisableHardpointChaseCommand* command);
+    virtual States::Type abortRaiseM1M3(AbortRaiseM1M3Command* command);
+    virtual States::Type translateM1M3(TranslateM1M3Command* command);
+    virtual States::Type stopHardpointMotion(StopHardpointMotionCommand* command);
+    virtual States::Type storeTMAAzimuthSample(TMAAzimuthSampleCommand* command);
+    virtual States::Type storeTMAElevationSample(TMAElevationSampleCommand* command);
+    virtual States::Type positionM1M3(PositionM1M3Command* command);
+    virtual States::Type turnLightsOn(TurnLightsOnCommand* command);
+    virtual States::Type turnLightsOff(TurnLightsOffCommand* command);
+    virtual States::Type turnPowerOn(TurnPowerOnCommand* command);
+    virtual States::Type turnPowerOff(TurnPowerOffCommand* command);
+    virtual States::Type enableHardpointCorrections(EnableHardpointCorrectionsCommand* command);
+    virtual States::Type disableHardpointCorrections(DisableHardpointCorrectionsCommand* command);
+    virtual States::Type runMirrorForceProfile(RunMirrorForceProfileCommand* command);
+    virtual States::Type abortProfile(AbortProfileCommand* command);
+    virtual States::Type applyOffsetForcesByMirrorForce(ApplyOffsetForcesByMirrorForceCommand* command);
+    virtual States::Type updatePID(UpdatePIDCommand* command);
+    virtual States::Type resetPID(ResetPIDCommand* command);
+    virtual States::Type forceActuatorBumpTest(ForceActuatorBumpTestCommand* command);
+    virtual States::Type killForceActuatorBumpTest(KillForceActuatorBumpTestCommand* command);
+    virtual States::Type disableForceActuator(DisableForceActuatorCommand* command);
+    virtual States::Type enableForceActuator(EnableForceActuatorCommand* command);
+    virtual States::Type enableAllForceActuators(EnableAllForceActuatorsCommand* command);
+    virtual States::Type enableDisableForceComponent(EnableDisableForceComponentCommand* command);
+    virtual States::Type setSlewControllerSettings(SetSlewControllerSettingsCommand* command);
 
 protected:
     std::string name;
 
-    States::Type rejectCommandInvalidState(Command *command, std::string cmd_name);
+    States::Type rejectCommandInvalidState(Command* command, std::string cmd_name);
 };
 
 } /* namespace SS */

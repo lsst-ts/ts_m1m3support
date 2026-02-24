@@ -68,16 +68,16 @@ public:
      */
     bool isActuatorDisabled(int32_t actIndex) { return enabledActuators[actIndex] == false; }
 
-    ForcesAndMoments calculateForcesAndMoments(const std::vector<float> &xForces,
-                                               const std::vector<float> &yForces,
-                                               const std::vector<float> &zForces);
+    ForcesAndMoments calculateForcesAndMoments(const std::vector<float>& xForces,
+                                               const std::vector<float>& yForces,
+                                               const std::vector<float>& zForces);
 
     /**
      * Calculates forces and moments only from Z forces.
      *
      * @param zForces
      */
-    ForcesAndMoments calculateForcesAndMoments(const std::vector<float> &zForces);
+    ForcesAndMoments calculateForcesAndMoments(const std::vector<float>& zForces);
     DistributedForces calculateForceFromAngularAcceleration(float angularAccelerationX,
                                                             float angularAccelerationY,
                                                             float angularAccelerationZ);
@@ -176,9 +176,9 @@ public:
     float enableStaticForcesSupportedPercentage;
 
 private:
-    void _loadNearNeighborZTable(const std::string &filename);
-    void _loadNeighborsTable(const std::string &filename);
-    void _loadFollowingErrorTables(const std::string &primaryFilename, const std::string &secondaryFilename);
+    void _loadNearNeighborZTable(const std::string& filename);
+    void _loadNeighborsTable(const std::string& filename);
+    void _loadFollowingErrorTables(const std::string& primaryFilename, const std::string& secondaryFilename);
 
     float _measuredForceWarningRatio;
 };

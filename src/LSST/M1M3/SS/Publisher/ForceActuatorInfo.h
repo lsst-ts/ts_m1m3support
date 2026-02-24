@@ -43,13 +43,13 @@ public:
 
     void log() { M1M3SSPublisher::instance().logForceActuatorInfo(this); }
 
-    void parseServerIDResponse(ModbusBuffer *buffer, const ILCMap &ilc);
+    void parseServerIDResponse(ModbusBuffer* buffer, const ILCMap& ilc);
 
-    void parseBoosterValveDCAGains(ModbusBuffer *buffer, const ILCMap &ilc);
+    void parseBoosterValveDCAGains(ModbusBuffer* buffer, const ILCMap& ilc);
 
-    void parseFAADCScanRate(ModbusBuffer *buffer, const ILCMap &ilc);
-    void parseFACalibration(ModbusBuffer *buffer, const ILCMap &ilc);
-    void parseSetDCAID(ModbusBuffer *buffer, const ILCMap &ilc);
+    void parseFAADCScanRate(ModbusBuffer* buffer, const ILCMap& ilc);
+    void parseFACalibration(ModbusBuffer* buffer, const ILCMap& ilc);
+    void parseSetDCAID(ModbusBuffer* buffer, const ILCMap& ilc);
 };
 
 }  // namespace SS

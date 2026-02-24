@@ -60,8 +60,8 @@ void BoosterValveController::checkAccelerometer() {
 }
 
 void BoosterValveController::_checkFollowingErrorOpen() {
-    auto &forceActuatorData = ForceActuatorData::instance();
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& forceActuatorData = ForceActuatorData::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
     auto trigger = BoosterValveSettings::instance().followingErrorTriggerOpen;
     for (int i = 0; i < FA_COUNT; i++) {
         auto primaryFE = forceActuatorData.primaryCylinderFollowingError[i];
@@ -91,7 +91,7 @@ void BoosterValveController::_checkFollowingErrorOpen() {
 }
 
 void BoosterValveController::_checkFollowingErrorClose() {
-    auto &forceActuatorData = ForceActuatorData::instance();
+    auto& forceActuatorData = ForceActuatorData::instance();
     auto trigger = BoosterValveSettings::instance().followingErrorTriggerClose;
     bool shouldClose = true;
     for (int i = 0; i < FA_COUNT; i++) {

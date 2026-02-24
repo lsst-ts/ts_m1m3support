@@ -30,7 +30,7 @@
 
 using namespace LSST::M1M3::SS;
 
-TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC *data) : Command(-1) {
+TMAElevationSampleCommand::TMAElevationSampleCommand(MTMount_elevationC* data) : Command(-1) {
     memcpy(&_data, data, sizeof(MTMount_elevationC));
 }
 

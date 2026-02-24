@@ -34,10 +34,10 @@ namespace SS {
 
 class EnableHardpointCorrectionsCommand : public Command {
 public:
-    EnableHardpointCorrectionsCommand(int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC *);
+    EnableHardpointCorrectionsCommand(int32_t commandID, MTM1M3_command_enableHardpointCorrectionsC*);
 
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 };

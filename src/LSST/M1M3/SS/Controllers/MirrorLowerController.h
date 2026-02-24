@@ -51,8 +51,8 @@ public:
      * @param safetyController
      * @param powerController
      */
-    MirrorLowerController(PositionController *positionController, ForceController *forceController,
-                          SafetyController *safetyController, PowerController *powerController);
+    MirrorLowerController(PositionController* positionController, ForceController* forceController,
+                          SafetyController* safetyController, PowerController* powerController);
 
     void start();
     void runLoop();
@@ -72,10 +72,10 @@ protected:
     void setStartTimestamp();
 
 private:
-    PositionController *_positionController;
-    ForceController *_forceController;
-    SafetyController *_safetyController;
-    PowerController *_powerController;
+    PositionController* _positionController;
+    ForceController* _forceController;
+    SafetyController* _safetyController;
+    PowerController* _powerController;
 
     double _cachedStartTime;
     double _remaininingTimedout;

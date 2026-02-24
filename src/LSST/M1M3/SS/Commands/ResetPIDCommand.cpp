@@ -30,7 +30,7 @@
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-ResetPIDCommand::ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC *data) : Command(commandID) {
+ResetPIDCommand::ResetPIDCommand(int32_t commandID, MTM1M3_command_resetPIDC* data) : Command(commandID) {
     _data.pid = data->pid;
 }
 
@@ -44,7 +44,7 @@ bool ResetPIDCommand::validate() {
 
 void ResetPIDCommand::execute() { Context::instance().resetPID(this); }
 
-void ResetPIDCommand::ackInProgress(const char *description, double timeout) {
+void ResetPIDCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandresetPID(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

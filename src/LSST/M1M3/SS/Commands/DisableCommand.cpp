@@ -34,7 +34,7 @@ DisableCommand::DisableCommand(int32_t commandID) : Command(commandID) {}
 
 void DisableCommand::execute() { Context::instance().disable(this); }
 
-void DisableCommand::ackInProgress(const char *description, double timeout) {
+void DisableCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommanddisable(getCommandID(), ACK_INPROGRESS, description, timeout);
 }
 

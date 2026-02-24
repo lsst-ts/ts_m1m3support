@@ -35,7 +35,7 @@ namespace SS {
 ProfileHardpointCorrectionState::ProfileHardpointCorrectionState()
         : EnabledState("ProfileHardpointCorrectionState") {}
 
-States::Type ProfileHardpointCorrectionState::update(UpdateCommand *command) {
+States::Type ProfileHardpointCorrectionState::update(UpdateCommand* command) {
     SPDLOG_TRACE("ProfileHardpointCorrectionState: update()");
     MirrorForceProfileRecord force = Model::instance().getProfileController()->getMirrorForceProfileData();
     Model::instance().getForceController()->applyOffsetForcesByMirrorForces(
@@ -47,7 +47,7 @@ States::Type ProfileHardpointCorrectionState::update(UpdateCommand *command) {
     return Model::instance().getSafetyController()->checkSafety(States::NoStateTransition);
 }
 
-States::Type ProfileHardpointCorrectionState::abortProfile(AbortProfileCommand *command) {
+States::Type ProfileHardpointCorrectionState::abortProfile(AbortProfileCommand* command) {
     SPDLOG_INFO("ProfileHardpointCorrectionState: abortProfile()");
     Model::instance().getForceController()->zeroOffsetForces();
     return Model::instance().getSafetyController()->checkSafety(States::ActiveEngineeringState);

@@ -45,11 +45,11 @@ void ForceActuatorBumpTestStatus::reset(bool send_data) {
     }
 }
 
-float ForceActuatorBumpTestStatus::minimal_tested_distance(int index, int &min_actuator_id) {
+float ForceActuatorBumpTestStatus::minimal_tested_distance(int index, int& min_actuator_id) {
     float min_distance = std::numeric_limits<float>::infinity();
     min_actuator_id = -1;
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int i = 0; i < FA_COUNT; i++) {
         if (i == index) {
@@ -78,7 +78,7 @@ float ForceActuatorBumpTestStatus::minimal_tested_distance(int index, int &min_a
 }
 
 void ForceActuatorBumpTestStatus::trigger_bump_test(int z_index, bool test_primary, bool test_secondary) {
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     auto secondary_index = faa_settings.ZIndexToSecondaryCylinderIndex[z_index];
 

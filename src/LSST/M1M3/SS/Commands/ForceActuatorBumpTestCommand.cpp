@@ -33,7 +33,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 ForceActuatorBumpTestCommand::ForceActuatorBumpTestCommand(int32_t commandID,
-                                                           MTM1M3_command_forceActuatorBumpTestC *data)
+                                                           MTM1M3_command_forceActuatorBumpTestC* data)
         : Command(commandID), index(0), cylinders(0) {
     memcpy(&_data, data, sizeof(MTM1M3_command_forceActuatorBumpTestC));
 }
@@ -77,7 +77,7 @@ bool ForceActuatorBumpTestCommand::validate() {
 
 void ForceActuatorBumpTestCommand::execute() { Context::instance().forceActuatorBumpTest(this); }
 
-void ForceActuatorBumpTestCommand::ackInProgress(const char *description, double timeout) {
+void ForceActuatorBumpTestCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandforceActuatorBumpTest(getCommandID(), ACK_INPROGRESS, description,
                                                                 timeout);
 }

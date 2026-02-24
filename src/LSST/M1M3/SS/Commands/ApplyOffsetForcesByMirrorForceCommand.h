@@ -35,12 +35,12 @@ namespace SS {
 class ApplyOffsetForcesByMirrorForceCommand : public Command {
 public:
     ApplyOffsetForcesByMirrorForceCommand(int32_t commandID,
-                                          MTM1M3_command_applyOffsetForcesByMirrorForceC *data);
+                                          MTM1M3_command_applyOffsetForcesByMirrorForceC* data);
 
-    MTM1M3_command_applyOffsetForcesByMirrorForceC *getData() { return &_data; }
+    MTM1M3_command_applyOffsetForcesByMirrorForceC* getData() { return &_data; }
 
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

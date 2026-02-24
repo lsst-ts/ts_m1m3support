@@ -28,7 +28,7 @@
 
 using namespace LSST::M1M3::SS;
 
-ForceComponent::ForceComponent(const char *name, ForceComponentSettings *forceComponentSettings)
+ForceComponent::ForceComponent(const char* name, ForceComponentSettings* forceComponentSettings)
         : _forceComponentSettings(forceComponentSettings) {
     _name = name;
     _state = INITIALISING;

@@ -36,7 +36,7 @@ ForceActuatorWarning::ForceActuatorWarning() {
     _shouldSend = false;
 }
 
-void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer *buffer, int32_t dataIndex) {
+void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer* buffer, int32_t dataIndex) {
     uint16_t ilcStatus = buffer->readU16();
     uint16_t ilcFaults = buffer->readU16();
 
@@ -81,7 +81,7 @@ void ForceActuatorWarning::parseFAServerStatusResponse(ModbusBuffer *buffer, int
     _shouldSend = true;
 }
 
-void ForceActuatorWarning::parseStatus(ModbusBuffer *buffer, int32_t dataIndex,
+void ForceActuatorWarning::parseStatus(ModbusBuffer* buffer, int32_t dataIndex,
                                        const int32_t broadcastCounter) {
     uint8_t ilcStatus = buffer->readU8();
 
@@ -100,7 +100,7 @@ void ForceActuatorWarning::parseStatus(ModbusBuffer *buffer, int32_t dataIndex,
     _shouldSend = true;
 }
 
-void ForceActuatorWarning::parseDCAStatus(ModbusBuffer *buffer, int32_t dataIndex) {
+void ForceActuatorWarning::parseDCAStatus(ModbusBuffer* buffer, int32_t dataIndex) {
     uint16_t dcaStatus = buffer->readU16();
     if (_lastDCAStatus[dataIndex] == dcaStatus) {
         return;

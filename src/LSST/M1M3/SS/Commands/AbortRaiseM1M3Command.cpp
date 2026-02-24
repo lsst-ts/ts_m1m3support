@@ -30,12 +30,12 @@
 using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
-AbortRaiseM1M3Command::AbortRaiseM1M3Command(int32_t commandID, MTM1M3_command_abortRaiseM1M3C *)
+AbortRaiseM1M3Command::AbortRaiseM1M3Command(int32_t commandID, MTM1M3_command_abortRaiseM1M3C*)
         : Command(commandID) {}
 
 void AbortRaiseM1M3Command::execute() { Context::instance().abortRaiseM1M3(this); }
 
-void AbortRaiseM1M3Command::ackInProgress(const char *description, double timeout) {
+void AbortRaiseM1M3Command::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandabortRaiseM1M3(getCommandID(), ACK_INPROGRESS, description,
                                                          timeout);
 }

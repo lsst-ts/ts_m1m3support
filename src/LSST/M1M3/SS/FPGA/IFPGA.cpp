@@ -35,7 +35,7 @@
 
 using namespace LSST::M1M3::SS;
 
-IFPGA &IFPGA::get() {
+IFPGA& IFPGA::get() {
 #ifdef SIMULATOR
     static SimulatedFPGA simulatedfpga;
     return simulatedfpga;

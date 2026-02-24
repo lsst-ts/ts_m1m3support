@@ -45,7 +45,7 @@ public:
     IExpansionFPGA() {}
     virtual ~IExpansionFPGA() {}
 
-    static IExpansionFPGA &get();
+    static IExpansionFPGA& get();
 
     void setResource(bool enabled, std::string resource) {
         _disabled = !enabled;
@@ -105,7 +105,7 @@ public:
      *
      * @throw NiError on NI error
      */
-    virtual void readSlot1(float *data) = 0;
+    virtual void readSlot1(float* data) = 0;
 
     /**
      * Reads 32 bitfield of DIO status. The reported values are:
@@ -135,15 +135,15 @@ public:
      *
      * @throw NiError on NI error
      */
-    virtual void readSlot2(uint32_t *data) = 0;
+    virtual void readSlot2(uint32_t* data) = 0;
 
 protected:
     bool _disabled;
     std::string _fpga_resource;
 
 private:
-    IExpansionFPGA &operator=(const IExpansionFPGA &) = delete;
-    IExpansionFPGA(const IExpansionFPGA &) = delete;
+    IExpansionFPGA& operator=(const IExpansionFPGA&) = delete;
+    IExpansionFPGA(const IExpansionFPGA&) = delete;
 };
 
 } /* namespace SS */

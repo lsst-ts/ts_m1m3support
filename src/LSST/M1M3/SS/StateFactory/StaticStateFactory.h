@@ -51,13 +51,13 @@ class StaticStateFactory {
 public:
     StaticStateFactory();
 
-    static StaticStateFactory &get();
+    static StaticStateFactory& get();
 
-    State *create(States::Type state);
+    State* create(States::Type state);
 
 private:
-    StaticStateFactory &operator=(const StaticStateFactory &) = delete;
-    StaticStateFactory(const StaticStateFactory &) = delete;
+    StaticStateFactory& operator=(const StaticStateFactory&) = delete;
+    StaticStateFactory(const StaticStateFactory&) = delete;
 
     OfflineState _offlineState;
     StandbyState _standbyState;

@@ -57,7 +57,7 @@ public:
      *
      * @param data MTMount_azimuth data
      */
-    void updateTMAAzimuth(MTMount_azimuthC *data);
+    void updateTMAAzimuth(MTMount_azimuthC* data);
 
     /**
      * Updates elevation data to match current TMA data. Should be called on
@@ -65,7 +65,7 @@ public:
      *
      * @param data MTMount_elevation data
      */
-    void updateTMAElevation(MTMount_elevationC *data);
+    void updateTMAElevation(MTMount_elevationC* data);
 
     /**
      * Returns mirror elevation. Uses either telescope provided data, or internal
@@ -81,9 +81,9 @@ public:
      * Returns mirror angular X, Y and Z velocities. Those are calculated from
      * azimuth and elevation velocities.
      */
-    void getMirrorAngularVelocities(double &x, double &y, double &z);
+    void getMirrorAngularVelocities(double& x, double& y, double& z);
 
-    void getMirrorAngularAccelerations(double &ax, double &ay, double &az);
+    void getMirrorAngularAccelerations(double& ax, double& ay, double& az);
 
     /**
      * Returns elevation sin.

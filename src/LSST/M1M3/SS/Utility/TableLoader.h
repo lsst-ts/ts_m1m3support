@@ -45,18 +45,18 @@ std::string rowToStr(std::vector<std::string> row);
 class TableLoader {
 public:
     template <typename t>
-    static void loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t> *data,
-                          const std::string &filename);
-    static void loadLimitTable(size_t columnsToSkip, std::vector<Limit> *data, const std::string &filename);
-    static void loadForceLimitTable(size_t columnsToSkip, std::vector<float> &zLow, std::vector<float> &zHigh,
-                                    std::vector<float> &yLow, std::vector<float> &yHigh,
-                                    std::vector<float> &xLow, std::vector<float> &xHigh,
-                                    const std::string &filename);
+    static void loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t>* data,
+                          const std::string& filename);
+    static void loadLimitTable(size_t columnsToSkip, std::vector<Limit>* data, const std::string& filename);
+    static void loadForceLimitTable(size_t columnsToSkip, std::vector<float>& zLow, std::vector<float>& zHigh,
+                                    std::vector<float>& yLow, std::vector<float>& yHigh,
+                                    std::vector<float>& xLow, std::vector<float>& xHigh,
+                                    const std::string& filename);
 };
 
 template <typename t>
-void TableLoader::loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t> *data,
-                            const std::string &filename) {
+void TableLoader::loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vector<t>* data,
+                            const std::string& filename) {
     std::string fullPath = SettingReader::instance().getTablePath(filename);
     try {
         rapidcsv::Document table(fullPath, rapidcsv::LabelParams(), rapidcsv::SeparatorParams(),
@@ -70,14 +70,14 @@ void TableLoader::loadTable(size_t columnsToSkip, size_t columnsToKeep, std::vec
             for (size_t column = columnsToSkip; column < columnsToSkip + columnsToKeep; column++) {
                 try {
                     data->push_back(table.GetCell<t>(column, row));
-                } catch (std::logic_error &er) {
+                } catch (std::logic_error& er) {
                     throw std::runtime_error(fmt::format("{}:{}:{}: cannot parse {}: {}", fullPath, row,
                                                          column, table.GetCell<std::string>(column, row),
                                                          er.what()));
                 }
             }
         }
-    } catch (std::ios_base::failure &er) {
+    } catch (std::ios_base::failure& er) {
         throw std::runtime_error(fmt::format("Cannot read CSV {}: {}", fullPath, er.what()));
     }
 }

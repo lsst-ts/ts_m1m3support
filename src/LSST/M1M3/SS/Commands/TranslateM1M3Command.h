@@ -34,12 +34,12 @@ namespace SS {
 
 class TranslateM1M3Command : public Command {
 public:
-    TranslateM1M3Command(int32_t commandID, MTM1M3_command_translateM1M3C *data);
+    TranslateM1M3Command(int32_t commandID, MTM1M3_command_translateM1M3C* data);
 
-    MTM1M3_command_translateM1M3C *getData() { return &_data; }
+    MTM1M3_command_translateM1M3C* getData() { return &_data; }
 
     void execute() override;
-    void ackInProgress(const char *description, double timeout) override;
+    void ackInProgress(const char* description, double timeout) override;
     void ackComplete() override;
     void ackFailed(std::string reason) override;
 

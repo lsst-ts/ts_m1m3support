@@ -7,6 +7,8 @@ Version History
 v2.18.0
 -------
 
+* Report detailed statistics during bump tests - forceActuatorBumpTestsStatistics.
+* Simulator settings (to disable annoying M1M3 faults).
 * Apply static forces as M1M3 is being raised.
 
 v2.17.1

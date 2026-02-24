@@ -113,7 +113,7 @@ void Gyro::processData() {
     // TODO: Handle limits, push to safety controller
     SPDLOG_TRACE("Gyro: processData()");
     bool tryLogWarning = false;
-    SupportFPGAData *fpgaData = IFPGA::get().getSupportFPGAData();
+    SupportFPGAData* fpgaData = IFPGA::get().getSupportFPGAData();
     if (fpgaData->GyroErrorTimestamp > _lastErrorTimestamp) {
         _lastErrorTimestamp = fpgaData->GyroErrorTimestamp;
         _errorCleared = false;

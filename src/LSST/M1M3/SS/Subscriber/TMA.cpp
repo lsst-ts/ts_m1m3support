@@ -65,7 +65,7 @@ void TMA::checkTimestamps(bool checkAzimuth, bool checkElevation) {
     }
 }
 
-void TMA::updateTMAAzimuth(MTMount_azimuthC *data) {
+void TMA::updateTMAAzimuth(MTMount_azimuthC* data) {
     SPDLOG_TRACE("TMA: updateTMAAzimuth({})", data->actualPosition);
 
     if (_last_azimuth_data.timestamp != 0) {
@@ -79,7 +79,7 @@ void TMA::updateTMAAzimuth(MTMount_azimuthC *data) {
     Model::instance().getForceController()->updateTMAAzimuthForces(data);
 }
 
-void TMA::updateTMAElevation(MTMount_elevationC *data) {
+void TMA::updateTMAElevation(MTMount_elevationC* data) {
     SPDLOG_TRACE("TMA: updateTMAElevation({})", data->actualPosition);
 
     if (_last_elevation_data.timestamp != 0) {
@@ -105,7 +105,7 @@ double TMA::getElevation(bool forceTelescope) {
     }
 }
 
-void TMA::getMirrorAngularVelocities(double &x, double &y, double &z) {
+void TMA::getMirrorAngularVelocities(double& x, double& y, double& z) {
     if (ForceActuatorSettings::instance().useGyroscope) {
         auto gyroData = M1M3SSPublisher::instance().getGyroData();
         x = gyroData->angularVelocityX * D2RAD;
@@ -118,7 +118,7 @@ void TMA::getMirrorAngularVelocities(double &x, double &y, double &z) {
     }
 }
 
-void TMA::getMirrorAngularAccelerations(double &ax, double &ay, double &az) {
+void TMA::getMirrorAngularAccelerations(double& ax, double& ay, double& az) {
     if (ForceActuatorSettings::instance().useAccelerometers) {
         auto accelerometer = M1M3SSPublisher::instance().getAccelerometerData();
         ax = accelerometer->angularAccelerationX * D2RAD;

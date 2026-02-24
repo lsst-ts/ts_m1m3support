@@ -31,7 +31,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 ApplyOffsetForcesByMirrorForceCommand::ApplyOffsetForcesByMirrorForceCommand(
-        int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC *data)
+        int32_t commandID, MTM1M3_command_applyOffsetForcesByMirrorForceC* data)
         : Command(commandID) {
     _data.xForce = data->xForce;
     _data.yForce = data->yForce;
@@ -45,7 +45,7 @@ void ApplyOffsetForcesByMirrorForceCommand::execute() {
     Context::instance().applyOffsetForcesByMirrorForce(this);
 }
 
-void ApplyOffsetForcesByMirrorForceCommand::ackInProgress(const char *description, double timeout) {
+void ApplyOffsetForcesByMirrorForceCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandapplyOffsetForcesByMirrorForce(getCommandID(), ACK_INPROGRESS,
                                                                          description, timeout);
 }

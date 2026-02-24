@@ -45,7 +45,7 @@ BalanceForceComponent::BalanceForceComponent()
           _my(4, SettingReader::instance().getPIDSettings(false).getParameters(4)),
           _mz(5, SettingReader::instance().getPIDSettings(false).getParameters(5)),
           _preclipped_balance_forces(
-                  [](MTM1M3_logevent_preclippedBalanceForcesC *data) {
+                  [](MTM1M3_logevent_preclippedBalanceForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedBalanceForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -56,8 +56,8 @@ BalanceForceComponent::BalanceForceComponent()
     _appliedBalanceForces = M1M3SSPublisher::instance().getAppliedBalanceForces();
 }
 
-void BalanceForceComponent::applyBalanceForces(const std::vector<float> &x, const std::vector<float> &y,
-                                               const std::vector<float> &z, bool check) {
+void BalanceForceComponent::applyBalanceForces(const std::vector<float>& x, const std::vector<float>& y,
+                                               const std::vector<float>& z, bool check) {
     SPDLOG_TRACE("BalanceForceComponent: applyBalanceForces()");
 
     if (check && !isEnabled()) {
@@ -101,7 +101,7 @@ void BalanceForceComponent::applyBalanceForcesByMirrorForces(float xForce, float
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -132,7 +132,7 @@ bool BalanceForceComponent::applyFreezedForces() {
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -152,7 +152,7 @@ bool BalanceForceComponent::applyFreezedForces() {
 
 void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
     SPDLOG_DEBUG("BalanceForceComponent: updatePID({})", id);
-    PID *pid = _idToPID(id);
+    PID* pid = _idToPID(id);
     if (pid != NULL) {
         pid->updateParameters(parameters);
     }
@@ -160,7 +160,7 @@ void BalanceForceComponent::updatePID(int id, PIDParameters parameters) {
 
 void BalanceForceComponent::resetPID(int id) {
     SPDLOG_DEBUG("BalanceForceComponent: resetPID()");
-    PID *pid = _idToPID(id);
+    PID* pid = _idToPID(id);
     if (pid != NULL) {
         pid->restoreInitialParameters();
     }
@@ -210,7 +210,7 @@ void BalanceForceComponent::postUpdateActions() {
     _appliedBalanceForces->timestamp = M1M3SSPublisher::instance().getTimestamp();
     _preclipped_balance_forces.timestamp = _appliedBalanceForces->timestamp;
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -271,7 +271,7 @@ void BalanceForceComponent::postUpdateActions() {
     M1M3SSPublisher::instance().logAppliedBalanceForces();
 }
 
-PID *BalanceForceComponent::_idToPID(int id) {
+PID* BalanceForceComponent::_idToPID(int id) {
     switch (id) {
         case 0:
             return &_fx;

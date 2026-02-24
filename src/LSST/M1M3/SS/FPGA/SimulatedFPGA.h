@@ -67,30 +67,30 @@ public:
     void pullTelemetry() override;
     void pullHealthAndStatus() override;
 
-    void writeCommandFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) override;
-    void writeRequestFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) override;
+    void writeCommandFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
+    void writeRequestFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
     void writeTimestampFIFO(uint64_t timestamp) override;
-    void readU8ResponseFIFO(uint8_t *data, size_t length, uint32_t timeoutInMs) override;
-    void readU16ResponseFIFO(uint16_t *data, size_t length, uint32_t timeoutInMs) override;
+    void readU8ResponseFIFO(uint8_t* data, size_t length, uint32_t timeoutInMs) override;
+    void readU16ResponseFIFO(uint16_t* data, size_t length, uint32_t timeoutInMs) override;
 
-    void waitOnIrqs(uint32_t irqs, uint32_t timeout, bool &timedout, uint32_t *triggered = NULL) override {
+    void waitOnIrqs(uint32_t irqs, uint32_t timeout, bool& timedout, uint32_t* triggered = NULL) override {
         timedout = false;
     }
     void ackIrqs(uint32_t irqs) override {}
     uint32_t getIrq(uint8_t bus) override { return 0; }
 
     void writeHealthAndStatusFIFO(uint16_t request, uint16_t param = 0) override;
-    void readHealthAndStatusFIFO(uint64_t *data, size_t length, uint32_t timeoutInMs = 10) override;
+    void readHealthAndStatusFIFO(uint64_t* data, size_t length, uint32_t timeoutInMs = 10) override;
 
-    void readRawAccelerometerFIFO(uint64_t *raw, size_t samples) override;
+    void readRawAccelerometerFIFO(uint64_t* raw, size_t samples) override;
 
 private:
     std::thread _monitorMountElevationThread;
     std::mutex _elevationReadWriteLock;
     SAL_MTMount _mgrMTMount;
 
-    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
-    HardpointActuatorSettings *_hardpointActuatorSettings;
+    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    HardpointActuatorSettings* _hardpointActuatorSettings;
 
     const int _start_encoders[HP_COUNT] = {1030, 64100, 26384, 1143, 65600, 23546};
 
@@ -104,12 +104,12 @@ private:
     std::queue<uint16_t> _subnetEResponse;
 
     std::queue<uint16_t> _crcVector;
-    void _writeModbus(std::queue<uint16_t> *response, uint16_t data);
-    void _writeModbus16(std::queue<uint16_t> *reponse, int16_t data);
-    void _writeModbus32(std::queue<uint16_t> *reponse, int32_t data);
-    void _writeModbusFloat(std::queue<uint16_t> *response, float data);
-    void _writeModbusCRC(std::queue<uint16_t> *response);
-    void _writeHP_ILCStatus(std::queue<uint16_t> *response, int index);
+    void _writeModbus(std::queue<uint16_t>* response, uint16_t data);
+    void _writeModbus16(std::queue<uint16_t>* reponse, int16_t data);
+    void _writeModbus32(std::queue<uint16_t>* reponse, int32_t data);
+    void _writeModbusFloat(std::queue<uint16_t>* response, float data);
+    void _writeModbusCRC(std::queue<uint16_t>* response);
+    void _writeHP_ILCStatus(std::queue<uint16_t>* response, int index);
 
     void _monitorElevation(void);
 
@@ -130,7 +130,7 @@ private:
 
     float _getAirPressure();
 
-    void _fill_HP_status(int address, int function, int steps, std::queue<uint16_t> *response);
+    void _fill_HP_status(int address, int function, int steps, std::queue<uint16_t>* response);
 
     uint64_t _error_counter;
 };

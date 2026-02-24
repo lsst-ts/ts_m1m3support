@@ -91,7 +91,7 @@
 
 #include <NiFpga_M1M3SupportFPGA.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     if (argc == 1) {
         std::cerr << "Decodes raw DC accelerometer output. Needs at least one file "
                      "as argument."
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
             int i = 0;
             while (!file.eof()) {
                 uint64_t data;
-                file.read(reinterpret_cast<char *>(&data) + 5, 3);
+                file.read(reinterpret_cast<char*>(&data) + 5, 3);
                 data = be64toh(data);
                 std::cout << NiFpga_ConvertFromFxpToFloat(
                         NiFpga_M1M3SupportFPGA_TargetToHostFifoFxp_RawAccelerometer_TypeInfo, data);
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
                     std::cout << ",";
                 }
             }
-        } catch (const std::ios_base::failure &e) {
+        } catch (const std::ios_base::failure& e) {
             if (file.eof()) {
                 continue;
             }

@@ -495,3 +495,9 @@ ILCApplicationSettings:
 ExpansionFPGAApplicationSettings:
   Enabled: True
   Resource: rio://139.229.178.185/RIO
+
+simulator:
+  simulate_mirror_movement: false
+  following_error_disable_state: false
+  following_error_raising: false
+  fail_bump_tests: true

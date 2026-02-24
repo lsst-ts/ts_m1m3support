@@ -68,27 +68,27 @@ public:
     Model(token);
     virtual ~Model();
 
-    inline Displacement *getDisplacement() { return _displacement; }
-    inline Inclinometer *getInclinometer() { return _inclinometer; }
-    inline SSILCs *getILC() { return _ilc; }
-    inline ForceController *getForceController() { return _forceController; }
-    inline SafetyController *getSafetyController() { return _safetyController; }
-    inline PositionController *getPositionController() { return _positionController; }
-    inline Accelerometer *getAccelerometer() { return _accelerometer; }
-    inline PowerController *getPowerController() { return _powerController; }
-    inline MirrorRaiseController *getMirrorRaiseController() { return _mirrorRaiseController; }
-    inline MirrorLowerController *getMirrorLowerController() { return _mirrorLowerController; }
-    inline Gyro *getGyro() { return _gyro; }
-    inline ProfileController *getProfileController() { return &_profileController; }
-    inline BumpTestController *getBumpTestController() { return &_bumpTestController; }
-    inline HardpointTestController *getHardpointTestController() { return _hardpointTestController; }
-    inline SlewController *getSlewController() { return &_slewController; }
+    inline Displacement* getDisplacement() { return _displacement; }
+    inline Inclinometer* getInclinometer() { return _inclinometer; }
+    inline SSILCs* getILC() { return _ilc; }
+    inline ForceController* getForceController() { return _forceController; }
+    inline SafetyController* getSafetyController() { return _safetyController; }
+    inline PositionController* getPositionController() { return _positionController; }
+    inline Accelerometer* getAccelerometer() { return _accelerometer; }
+    inline PowerController* getPowerController() { return _powerController; }
+    inline MirrorRaiseController* getMirrorRaiseController() { return _mirrorRaiseController; }
+    inline MirrorLowerController* getMirrorLowerController() { return _mirrorLowerController; }
+    inline Gyro* getGyro() { return _gyro; }
+    inline ProfileController* getProfileController() { return &_profileController; }
+    inline BumpTestController* getBumpTestController() { return &_bumpTestController; }
+    inline HardpointTestController* getHardpointTestController() { return _hardpointTestController; }
+    inline SlewController* getSlewController() { return &_slewController; }
 
     void setCachedTimestamp(double timestamp) { this->_cachedTimestamp = timestamp; }
     double getCachedTimestamp() { return _cachedTimestamp; }
 
-    void loadSettings(const char *settingsToApply);
-    void initialize(StartCommand *command);
+    void loadSettings(const char* settingsToApply);
+    void initialize(StartCommand* command);
 
     void publishStateChange(States::Type newState);
     void publishRecommendedSettings();
@@ -98,28 +98,28 @@ public:
     void waitForExitControl();
 
 private:
-    Model &operator=(const Model &) = delete;
-    Model(const Model &) = delete;
+    Model& operator=(const Model&) = delete;
+    Model(const Model&) = delete;
 
     void _populateHardpointActuatorInfo(
-            HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings);
+            HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings);
     void _populateHardpointMonitorInfo(
-            HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings);
+            HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings);
 
-    Displacement *_displacement;
-    Inclinometer *_inclinometer;
-    SSILCs *_ilc;
-    ForceController *_forceController;
-    SafetyController *_safetyController;
-    PositionController *_positionController;
-    Accelerometer *_accelerometer;
-    PowerController *_powerController;
-    MirrorRaiseController *_mirrorRaiseController;
-    MirrorLowerController *_mirrorLowerController;
-    Gyro *_gyro;
+    Displacement* _displacement;
+    Inclinometer* _inclinometer;
+    SSILCs* _ilc;
+    ForceController* _forceController;
+    SafetyController* _safetyController;
+    PositionController* _positionController;
+    Accelerometer* _accelerometer;
+    PowerController* _powerController;
+    MirrorRaiseController* _mirrorRaiseController;
+    MirrorLowerController* _mirrorLowerController;
+    Gyro* _gyro;
     ProfileController _profileController;
     BumpTestController _bumpTestController;
-    HardpointTestController *_hardpointTestController;
+    HardpointTestController* _hardpointTestController;
     SlewController _slewController;
 
     std::mutex _mutex;

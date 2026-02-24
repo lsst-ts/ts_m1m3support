@@ -32,7 +32,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 EnableForceActuatorCommand::EnableForceActuatorCommand(int32_t commandID,
-                                                       MTM1M3_command_enableForceActuatorC *data)
+                                                       MTM1M3_command_enableForceActuatorC* data)
         : Command(commandID) {
     actuatorId = data->actuatorId;
     actuatorIndex = -1;
@@ -49,7 +49,7 @@ bool EnableForceActuatorCommand::validate() {
 
 void EnableForceActuatorCommand::execute() { Context::instance().enableForceActuator(this); }
 
-void EnableForceActuatorCommand::ackInProgress(const char *description, double timeout) {
+void EnableForceActuatorCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandenableForceActuator(getCommandID(), ACK_INPROGRESS, description,
                                                               timeout);
 }

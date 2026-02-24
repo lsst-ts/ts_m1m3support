@@ -28,8 +28,8 @@
 
 using namespace LSST::M1M3::SS;
 
-ReportADCScanRateBusList::ReportADCScanRateBusList(ILCSubnetData *subnetData,
-                                                   ILCMessageFactory *ilcMessageFactory)
+ReportADCScanRateBusList::ReportADCScanRateBusList(ILCSubnetData* subnetData,
+                                                   ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("ReportADCScanRateBusList: ReportADCScanRateBusList()");
 }

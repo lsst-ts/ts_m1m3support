@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 OffsetForceComponent::OffsetForceComponent()
         : ForceComponent("Offset", &ForceActuatorSettings::instance().OffsetComponentSettings),
           _preclipped_offset_forces(
-                  [](MTM1M3_logevent_preclippedOffsetForcesC *data) {
+                  [](MTM1M3_logevent_preclippedOffsetForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedOffsetForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -51,8 +51,8 @@ OffsetForceComponent::OffsetForceComponent()
     zeroOffsetForces();
 }
 
-void OffsetForceComponent::applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
-                                             const std::vector<float> &z) {
+void OffsetForceComponent::applyOffsetForces(const std::vector<float>& x, const std::vector<float>& y,
+                                             const std::vector<float>& z) {
     SPDLOG_DEBUG("OffsetForceComponent: applyOffsetForces()");
 
     if (!isEnabled()) {
@@ -88,7 +88,7 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -135,7 +135,7 @@ void OffsetForceComponent::postEnableDisableActions() {
 void OffsetForceComponent::postUpdateActions() {
     SPDLOG_TRACE("OffsetForceController: postUpdateActions()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool notInRange = false;
     bool clippingRequired = false;

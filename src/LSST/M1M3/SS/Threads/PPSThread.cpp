@@ -37,7 +37,7 @@ void PPSThread::run() {
     while (_keepRunning) {
         try {
             IFPGA::get().waitForPPS(2500);
-        } catch (std::runtime_error &er) {
+        } catch (std::runtime_error& er) {
             SPDLOG_WARN("PPSThread: Failed to receive pps: {}", er.what());
             continue;
         }

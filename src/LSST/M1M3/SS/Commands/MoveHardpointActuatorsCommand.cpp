@@ -31,7 +31,7 @@ using namespace LSST::cRIO::SAL;
 using namespace LSST::M1M3::SS;
 
 MoveHardpointActuatorsCommand::MoveHardpointActuatorsCommand(int32_t commandID,
-                                                             MTM1M3_command_moveHardpointActuatorsC *data)
+                                                             MTM1M3_command_moveHardpointActuatorsC* data)
         : Command(commandID) {
     for (int i = 0; i < 6; i++) {
         _data.steps[i] = data->steps[i];
@@ -51,7 +51,7 @@ bool MoveHardpointActuatorsCommand::validate() {
 
 void MoveHardpointActuatorsCommand::execute() { Context::instance().moveHardpointActuators(this); }
 
-void MoveHardpointActuatorsCommand::ackInProgress(const char *description, double timeout) {
+void MoveHardpointActuatorsCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandmoveHardpointActuators(getCommandID(), ACK_INPROGRESS, description,
                                                                  timeout);
 }

@@ -66,7 +66,7 @@ void ExpansionFPGA::open() {
     NiOpen("/var/lib/M1M3support", NiFpga_ts_M1M3SupportExpansionFPGA, _fpga_resource.c_str(),
            NiFpga_OpenAttribute_NoRun, &(_session));
 
-    auto &heartbeat = Heartbeat::instance();
+    auto& heartbeat = Heartbeat::instance();
     heartbeat.tryToggle();
 
     NiThrowError(__PRETTY_FUNCTION__, "NiFpga_Download", NiFpga_Download(_session));
@@ -105,7 +105,7 @@ void ExpansionFPGA::sample() {
                  NiFpga_WriteBool(_session, NiFpga_ts_M1M3SupportExpansionFPGA_ControlBool_Sample, true));
 }
 
-void ExpansionFPGA::readSlot1(float *data) {
+void ExpansionFPGA::readSlot1(float* data) {
     if (_disabled) {
         return;
     }
@@ -114,7 +114,7 @@ void ExpansionFPGA::readSlot1(float *data) {
                                      data, 6));
 }
 
-void ExpansionFPGA::readSlot2(uint32_t *data) {
+void ExpansionFPGA::readSlot2(uint32_t* data) {
     if (_disabled) {
         return;
     }

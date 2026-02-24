@@ -35,9 +35,9 @@ class ProfileController {
 public:
     ProfileController();
 
-    void setupMirrorForceProfile(const std::vector<float> &xForce, const std::vector<float> &yForce,
-                                 const std::vector<float> &zForce, const std::vector<float> &xMoment,
-                                 const std::vector<float> &yMoment, const std::vector<float> &zMoment);
+    void setupMirrorForceProfile(const std::vector<float>& xForce, const std::vector<float>& yForce,
+                                 const std::vector<float>& zForce, const std::vector<float>& xMoment,
+                                 const std::vector<float>& yMoment, const std::vector<float>& zMoment);
     bool incMirrorForceProfile();
     MirrorForceProfileRecord getMirrorForceProfileData();
 

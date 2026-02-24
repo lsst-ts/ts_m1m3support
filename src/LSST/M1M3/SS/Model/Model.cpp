@@ -54,9 +54,9 @@
 using namespace std;
 using namespace LSST::M1M3::SS;
 
-extern const char *CONFIG_SCHEMA_VERSION;
-extern const char *CONFIG_URL;
-extern const char *GIT_HASH;
+extern const char* CONFIG_SCHEMA_VERSION;
+extern const char* CONFIG_URL;
+extern const char* GIT_HASH;
 
 Model::Model(token) {
     SPDLOG_DEBUG("Model: Model()");
@@ -92,10 +92,10 @@ Model::~Model() {
     delete _gyro;
 }
 
-void Model::loadSettings(const char *settingsToApply) {
+void Model::loadSettings(const char* settingsToApply) {
     SPDLOG_INFO("Model: loadSettings({})", settingsToApply);
 
-    auto &_settingReader = SettingReader::instance();
+    auto& _settingReader = SettingReader::instance();
 
     _settingReader.configure(settingsToApply);
 
@@ -103,9 +103,9 @@ void Model::loadSettings(const char *settingsToApply) {
 
     _settingReader.load();
 
-    HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings =
+    HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings =
             _settingReader.getHardpointActuatorApplicationSettings();
-    HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings =
+    HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings =
             _settingReader.getHardpointMonitorApplicationSettings();
 
     _populateHardpointActuatorInfo(hardpointActuatorApplicationSettings);
@@ -165,7 +165,7 @@ void Model::loadSettings(const char *settingsToApply) {
     SPDLOG_INFO("Model: Creating gyro");
     _gyro = new Gyro();
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     // apply disabled FA from setting
     for (int i = 0; i < FA_COUNT; i++) {
@@ -180,7 +180,7 @@ void Model::loadSettings(const char *settingsToApply) {
     SPDLOG_INFO("Model: Settings applied");
 }
 
-void Model::initialize(StartCommand *command) {
+void Model::initialize(StartCommand* command) {
     ExpansionFPGAApplicationSettings::instance().initialize(command);
 }
 
@@ -188,16 +188,16 @@ void Model::publishStateChange(States::Type newState) {
     SPDLOG_DEBUG("Model: publishStateChange({:d})", static_cast<int>(newState));
     uint64_t state = (uint64_t)newState;
     double timestamp = M1M3SSPublisher::instance().getTimestamp();
-    MTM1M3_logevent_summaryStateC *summaryStateData = M1M3SSPublisher::instance().getEventSummaryState();
+    MTM1M3_logevent_summaryStateC* summaryStateData = M1M3SSPublisher::instance().getEventSummaryState();
     summaryStateData->summaryState = (int32_t)((state & 0xFFFFFFFF00000000) >> 32);
     M1M3SSPublisher::instance().logSummaryState();
-    auto &detailed_state = DetailedState::instance();
+    auto& detailed_state = DetailedState::instance();
     detailed_state.timestamp = timestamp;
     detailed_state.set(state & 0x00000000FFFFFFFF);
 }
 
 void Model::publishRecommendedSettings() {
-    MTM1M3_logevent_configurationsAvailableC *data =
+    MTM1M3_logevent_configurationsAvailableC* data =
             M1M3SSPublisher::instance().getEventConfigurationsAvailable();
     data->overrides = LSST::cRIO::join(SettingReader::instance().getAvailableConfigurations());
     data->version = GIT_HASH;
@@ -212,7 +212,7 @@ void Model::publishRecommendedSettings() {
 
 void Model::publishOuterLoop(std::chrono::nanoseconds executionTime) {
     SPDLOG_TRACE("Model: publishOuterLoop()");
-    MTM1M3_outerLoopDataC *data = M1M3SSPublisher::instance().getOuterLoopData();
+    MTM1M3_outerLoopDataC* data = M1M3SSPublisher::instance().getOuterLoopData();
     data->timestamp = M1M3SSPublisher::instance().getTimestamp();
     data->executionTime = executionTime.count() / 1000000000.0;
     M1M3SSPublisher::instance().putOuterLoopData();
@@ -226,10 +226,10 @@ void Model::waitForExitControl() {
 }
 
 void Model::_populateHardpointActuatorInfo(
-        HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings) {
-    PositionControllerSettings *positionControllerSettings = &PositionControllerSettings::instance();
+        HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings) {
+    PositionControllerSettings* positionControllerSettings = &PositionControllerSettings::instance();
     SPDLOG_DEBUG("Model: populateHardpointActuatorInfo()");
-    MTM1M3_logevent_hardpointActuatorInfoC *hardpointInfo =
+    MTM1M3_logevent_hardpointActuatorInfoC* hardpointInfo =
             M1M3SSPublisher::instance().getEventHardpointActuatorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointActuatorTableRow row = hardpointActuatorApplicationSettings->Table[i];
@@ -244,9 +244,9 @@ void Model::_populateHardpointActuatorInfo(
 }
 
 void Model::_populateHardpointMonitorInfo(
-        HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings) {
+        HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings) {
     SPDLOG_DEBUG("Model: populateHardpointMonitorInfo()");
-    MTM1M3_logevent_hardpointMonitorInfoC *hardpointMonitorInfo =
+    MTM1M3_logevent_hardpointMonitorInfoC* hardpointMonitorInfo =
             M1M3SSPublisher::instance().getEventHardpointMonitorInfo();
     for (int i = 0; i < HP_COUNT; i++) {
         HardpointMonitorTableRow row = hardpointMonitorApplicationSettings->Table[i];

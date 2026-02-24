@@ -30,7 +30,7 @@
 
 using namespace LSST::M1M3::SS;
 
-FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData *subnetData, ILCMessageFactory *ilcMessageFactory)
+FreezeSensorBusList::FreezeSensorBusList(ILCSubnetData* subnetData, ILCMessageFactory* ilcMessageFactory)
         : BusList(subnetData, ilcMessageFactory) {
     SPDLOG_DEBUG("FreezeSensorBusList: FreezeSensorBusList()");
     _outerLoopData = M1M3SSPublisher::instance().getOuterLoopData();

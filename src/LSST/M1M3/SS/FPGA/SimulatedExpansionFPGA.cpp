@@ -42,7 +42,7 @@ void SimulatedExpansionFPGA::finalize() { SPDLOG_DEBUG("SimulatedExpansionFPGA: 
 
 void SimulatedExpansionFPGA::sample() {}
 
-void SimulatedExpansionFPGA::readSlot1(float *data) {
+void SimulatedExpansionFPGA::readSlot1(float* data) {
     data[0] = 1.0 + getRndPM1() * 0.5;
     data[1] = 1.0 + getRndPM1() * 0.5;
     data[2] = 1.0 + getRndPM1() * 0.5;
@@ -51,4 +51,4 @@ void SimulatedExpansionFPGA::readSlot1(float *data) {
     data[5] = 1.0 + getRndPM1() * 0.5;
 }
 
-void SimulatedExpansionFPGA::readSlot2(uint32_t *data) {}
+void SimulatedExpansionFPGA::readSlot2(uint32_t* data) {}

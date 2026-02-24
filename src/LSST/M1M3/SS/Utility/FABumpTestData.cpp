@@ -85,9 +85,9 @@ FABumpTestData::~FABumpTestData() {
     }
 }
 
-void FABumpTestData::add_data(const float_v &x_forces, const float_v &y_forces, const float_v &z_forces,
-                              const float_v &primary_forces, const float_v &secondary_forces,
-                              const int_v &primary_states, const int_v &secondary_states) {
+void FABumpTestData::add_data(const float_v& x_forces, const float_v& y_forces, const float_v& z_forces,
+                              const float_v& primary_forces, const float_v& secondary_forces,
+                              const int_v& primary_states, const int_v& secondary_states) {
     std::lock_guard<std::mutex> lock(_g_mutex);
 
     for (size_t c = 0; c < FA_COUNT; c++) {
@@ -133,7 +133,7 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type) {
         return BumpTestStatus::NO_DATA;
     }
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
     auto y_index = faa_settings.ZIndexToYIndex[z_index];
     auto x_index = faa_settings.ZIndexToXIndex[z_index];
     auto s_index = faa_settings.ZIndexToSecondaryCylinderIndex[z_index];
@@ -154,7 +154,7 @@ BumpTestStatus FABumpTestData::test_actuator(int z_index, int test_type) {
         }
     }
 
-    auto &fa_settings = ForceActuatorSettings::instance();
+    auto& fa_settings = ForceActuatorSettings::instance();
 
     float error = fa_settings.bumpTestTestedError;
     float warning = fa_settings.bumpTestTestedWarning;
@@ -176,7 +176,7 @@ void FABumpTestData::test_mirror(int test_type, BumpTestStatus (&results)[FA_COU
     }
 }
 
-float *FABumpTestData::get_data(int axis_index, int test_type) {
+float* FABumpTestData::get_data(int axis_index, int test_type) {
     switch (test_type) {
         case MTM1M3::MTM1M3_shared_BumpTestType_X:
             return _x_forces[axis_index];
@@ -202,7 +202,7 @@ BumpTestStatistics FABumpTestData::statistics(int fa_index, int axis_index, int 
 
     BumpTestStatistics stat;
 
-    float *data = get_data(axis_index, test_type);
+    float* data = get_data(axis_index, test_type);
 
     if (empty() == true) {
         throw std::runtime_error("Cannot compute statistics of empty data.");
@@ -276,7 +276,7 @@ BumpTestStatus in_rms(float error_rms, float error, float warning) {
 }
 
 float FABumpTestData::get_expected_force(int axis_index, int test_type) {
-    auto &pub = M1M3SSPublisher::instance();
+    auto& pub = M1M3SSPublisher::instance();
     switch (test_type) {
         case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
             return pub.getAppliedCylinderForces()->primaryCylinderForces[axis_index];
@@ -296,10 +296,10 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
                                          float error, float warning) {
     BumpTestStatistics stat;
 
-    BumpTestStatus *p_state = _primary_results + z_index;
+    BumpTestStatus* p_state = _primary_results + z_index;
     *p_state = BumpTestStatus::PASSED;
 
-    BumpTestStatus *s_state = NULL;
+    BumpTestStatus* s_state = NULL;
     if (s_index != -1) {
         s_state = _secondary_results + s_index;
         *s_state = BumpTestStatus::PASSED;
@@ -350,10 +350,10 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
 
 BumpTestStatus FABumpTestData::_test_min_max(int x_index, int y_index, int z_index, int s_index,
                                              int test_type, float error, float warning) {
-    BumpTestStatus *p_state = _primary_results + z_index;
+    BumpTestStatus* p_state = _primary_results + z_index;
     *p_state = BumpTestStatus::PASSED;
 
-    BumpTestStatus *s_state = NULL;
+    BumpTestStatus* s_state = NULL;
     if (s_index != -1) {
         s_state = _secondary_results + s_index;
         *s_state = BumpTestStatus::PASSED;

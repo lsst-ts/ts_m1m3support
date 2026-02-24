@@ -39,7 +39,7 @@ TEST_CASE("Constant_PID", "[PID]") {
     m1m3SAL->setDebugLevel(0);
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
-    PID *pids[6];
+    PID* pids[6];
     PIDParameters pparams;
     pparams.Timestep = 1;
     pparams.P = 1;
@@ -71,7 +71,7 @@ TEST_CASE("PID_convergence", "[PID]") {
     m1m3SAL->setDebugLevel(0);
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
-    PID *pids[6];
+    PID* pids[6];
     PIDParameters pparams;
     pparams.Timestep = 0.1;
     pparams.P = 0.5;

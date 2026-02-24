@@ -18,12 +18,12 @@ endif
 
 CRIOCPP := ../ts_cRIOcpp/
 
-PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog fmt --cflags $(silence))
+PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog fmt avro-cpp --cflags $(silence))
 
 SAL_CPPFLAGS += $(PKG_CPPFLAGS)  \
 	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src \
 	-I${SAL_WORK_DIR}/include -I${CRIOCPP} -I. \
-	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include -I${LSST_SAL_PREFIX}/include/avro
+	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include 
 LIBS += $(PKG_LIBS) -ldl -lpthread -L/usr/lib64/boost${BOOST_RELEASE} -lboost_filesystem -lboost_iostreams \
 	-lboost_program_options -lboost_system \
 	${SAL_WORK_DIR}/lib/libSAL_MTMount.a ${SAL_WORK_DIR}/lib/libSAL_MTM1M3.a \
@@ -39,7 +39,7 @@ CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
 ifdef SIMULATOR
   C := gcc -Wall ${c_opts}
   CPP += -DSIMULATOR
-  PKG_LIBS += $(shell pkg-config spdlog --libs $(silence))
+  PKG_LIBS += $(shell pkg-config spdlog avro-cpp --libs $(silence))
 else
   C := gcc -Wall -fmessage-length=0 ${c_opts}
   CPP += -fmessage-length=0

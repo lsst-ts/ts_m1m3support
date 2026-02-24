@@ -40,7 +40,7 @@ namespace SS {
  */
 class HardpointTestController : public MTM1M3_logevent_hardpointTestStatusC {
 public:
-    HardpointTestController(PositionController *positionController);
+    HardpointTestController(PositionController* positionController);
 
     /**
      * Starts hardpoint test.
@@ -79,10 +79,10 @@ public:
 private:
     bool _runHardpointLoop(int hardpointIndex);
 
-    PositionController *_positionController;
-    HardpointActuatorSettings *_hardpointActuatorSettings;
-    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
-    MTM1M3_logevent_hardpointActuatorStateC *_hardpointActuatorState;
+    PositionController* _positionController;
+    HardpointActuatorSettings* _hardpointActuatorSettings;
+    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    MTM1M3_logevent_hardpointActuatorStateC* _hardpointActuatorState;
 };
 
 }  // namespace SS

@@ -164,9 +164,7 @@ newTable = []
 for mainRow in table:
     newRow = (mainRow[0], [])  # type:ignore
     for subRow in table:
-        distance = math.sqrt(
-            (subRow[1] - mainRow[1]) ** 2 + (subRow[2] - mainRow[2]) ** 2
-        )
+        distance = math.sqrt((subRow[1] - mainRow[1]) ** 2 + (subRow[2] - mainRow[2]) ** 2)
         newRow[1].append([subRow[0], distance])
     newRow[1].sort(key=lambda x: x[1])
     newTable.append(newRow)

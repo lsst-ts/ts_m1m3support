@@ -45,8 +45,8 @@ namespace SS {
 class ThermalForceComponent : public ForceComponent {
 public:
     ThermalForceComponent();
-    void applyThermalForces(const std::vector<float> &x, const std::vector<float> &y,
-                            const std::vector<float> &z);
+    void applyThermalForces(const std::vector<float>& x, const std::vector<float>& y,
+                            const std::vector<float>& z);
     void applyThermalForcesByMirrorTemperature(float temperature);
 
     void postEnableDisableActions() override;
@@ -55,10 +55,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_appliedThermalForcesC *_appliedThermalForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_appliedThermalForcesC* _appliedThermalForces;
     PreclippedForces<MTM1M3_logevent_preclippedThermalForcesC> _preclipped_thermal_forces;
 };
 

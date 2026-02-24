@@ -39,7 +39,7 @@ using namespace LSST::M1M3::SS;
 AzimuthForceComponent::AzimuthForceComponent()
         : ForceComponent("Azimuth", &ForceActuatorSettings::instance().AzimuthComponentSettings),
           _preclipped_azimuth_forces(
-                  [](MTM1M3_logevent_preclippedAzimuthForcesC *data) {
+                  [](MTM1M3_logevent_preclippedAzimuthForcesC* data) {
                       M1M3SSPublisher::instance().logPreclippedAzimuthForces(data);
                   },
                   ForceActuatorSettings::instance().preclippedIgnoreChanges,
@@ -50,8 +50,8 @@ AzimuthForceComponent::AzimuthForceComponent()
     _appliedAzimuthForces = M1M3SSPublisher::instance().getAppliedAzimuthForces();
 }
 
-void AzimuthForceComponent::applyAzimuthForces(const std::vector<float> &x, const std::vector<float> &y,
-                                               const std::vector<float> &z) {
+void AzimuthForceComponent::applyAzimuthForces(const std::vector<float>& x, const std::vector<float>& y,
+                                               const std::vector<float>& z) {
     SPDLOG_TRACE("AzimuthForceComponent: applyAzimuthForces()");
 
     if (!isEnabled()) {
@@ -82,7 +82,7 @@ void AzimuthForceComponent::applyAzimuthForcesByAzimuthAngle(float azimuthAngle)
     std::vector<float> yForces(FA_Y_COUNT, 0);
     std::vector<float> zForces(FA_Z_COUNT, 0);
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     for (int zIndex = 0; zIndex < FA_COUNT; ++zIndex) {
         int xIndex = faa_settings.ZIndexToXIndex[zIndex];
@@ -108,7 +108,7 @@ void AzimuthForceComponent::postEnableDisableActions() {
 void AzimuthForceComponent::postUpdateActions() {
     SPDLOG_TRACE("AzimuthForceController: postUpdateActions()");
 
-    auto &faa_settings = ForceActuatorApplicationSettings::instance();
+    auto& faa_settings = ForceActuatorApplicationSettings::instance();
 
     bool notInRange = false;
     bool clippingRequired = false;

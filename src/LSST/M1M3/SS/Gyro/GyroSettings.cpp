@@ -39,7 +39,7 @@ void GyroSettings::load(YAML::Node doc) {
         angularVelocityOffset[1] = doc["AngularVelocityYOffset"].as<float>();
         angularVelocityOffset[2] = doc["AngularVelocityZOffset"].as<float>();
         AxesMatrix = doc["AxesMatrix"].as<std::vector<double>>();
-    } catch (YAML::Exception &ex) {
+    } catch (YAML::Exception& ex) {
         throw std::runtime_error(fmt::format("YAML Loading GyroSettings: {}", ex.what()));
     }
 

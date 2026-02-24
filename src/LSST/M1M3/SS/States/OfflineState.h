@@ -39,8 +39,8 @@ class OfflineState : public State {
 public:
     OfflineState();
 
-    States::Type update(UpdateCommand *command) override;
-    States::Type enterControl(EnterControlCommand *command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type enterControl(EnterControlCommand* command) override;
 };
 
 } /* namespace SS */

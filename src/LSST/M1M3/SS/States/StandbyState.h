@@ -41,9 +41,9 @@ class StandbyState : public State {
 public:
     StandbyState();
 
-    States::Type update(UpdateCommand *command) override;
-    States::Type start(StartCommand *command) override;
-    States::Type exitControl(ExitControlCommand *command) override;
+    States::Type update(UpdateCommand* command) override;
+    States::Type start(StartCommand* command) override;
+    States::Type exitControl(ExitControlCommand* command) override;
 };
 
 } /* namespace SS */

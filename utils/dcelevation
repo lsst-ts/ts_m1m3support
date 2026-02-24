@@ -62,9 +62,7 @@ class DCAccelerometersElevation:
             accelerometers = await self.load_dcaccelerometers(start, end)
             inclinometer = await self.load_inclinometer(start, end)
 
-            raw = accelerometers.merge(
-                inclinometer, how="outer", left_index=True, right_index=True
-            )
+            raw = accelerometers.merge(inclinometer, how="outer", left_index=True, right_index=True)
             self.interpolated = raw.interpolate(method="time")
             self.interpolated.dropna(inplace=True)
 
@@ -92,12 +90,9 @@ class DCAccelerometersElevation:
             def f(x: float) -> float:
                 return poly(x)
 
-            self.interpolated[f"fit{axis}"] = self.interpolated[
-                "inclinometerAngle"
-            ].apply(f)
+            self.interpolated[f"fit{axis}"] = self.interpolated["inclinometerAngle"].apply(f)
             self.interpolated[f"residuals{axis}"] = (
-                self.interpolated[f"angularAcceleration{axis}"]
-                + self.interpolated[f"fit{axis}"]
+                self.interpolated[f"angularAcceleration{axis}"] + self.interpolated[f"fit{axis}"]
             )
             print(self.interpolated[f"residuals{axis}"].describe())
 
@@ -116,9 +111,7 @@ class DCAccelerometersElevation:
                 coef[ax] += conf
 
         print("Copy to settings:")
-        print(
-            f"  #{' ' if set_new else ' added '}fit from ./utils/dcelevation {start.isot} {end.isot}"
-        )
+        print(f"  #{' ' if set_new else ' added '}fit from ./utils/dcelevation {start.isot} {end.isot}")
         print(f"  XElevationPoly: [{','.join(map(str, coef['X']))}]")
         print(f"  YElevationPoly: [{','.join(map(str, coef['Y']))}]")
         print(f"  ZElevationPoly: [{','.join(map(str, coef['Z']))}]")
@@ -145,9 +138,7 @@ class DCAccelerometersElevation:
             end,
         )
         if ret.empty:
-            raise RuntimeError(
-                f"Cannot find any accelerometer data in {start.isot} - {end.isot} range."
-            )
+            raise RuntimeError(f"Cannot find any accelerometer data in {start.isot} - {end.isot} range.")
         return ret
 
     async def load_inclinometer(self, start: Time, end: Time) -> pd.DataFrame:
@@ -169,9 +160,7 @@ class DCAccelerometersElevation:
             end,
         )
         if ret.empty:
-            raise RuntimeError(
-                f"Cannot find any inclinometer data in {start.isot} - {end.isot} range."
-            )
+            raise RuntimeError(f"Cannot find any inclinometer data in {start.isot} - {end.isot} range.")
         return ret
 
     def plot_fit(self) -> None:
@@ -185,21 +174,15 @@ class DCAccelerometersElevation:
         self.interpolated.plot(y="inclinometerAngle", ax=axes[0], style="x")
 
         for i, ax in enumerate("XYZ"):
-            self.interpolated.plot(
-                y=f"angularAcceleration{ax}", ax=axes[1 + i * 2], style="."
-            )
-            self.interpolated.plot(
-                y=f"residuals{ax}", ax=axes[1 + i * 2 + 1], style="."
-            )
+            self.interpolated.plot(y=f"angularAcceleration{ax}", ax=axes[1 + i * 2], style=".")
+            self.interpolated.plot(y=f"residuals{ax}", ax=axes[1 + i * 2 + 1], style=".")
 
         plt.show()
 
 
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Update dependency of DC accelerometers versus elevation"
-    )
+    parser = argparse.ArgumentParser(description="Update dependency of DC accelerometers versus elevation")
     parser.add_argument(
         "start_time",
         type=Time,
@@ -220,9 +203,7 @@ def parse_arguments() -> argparse.Namespace:
         default="usdf_efd",
         help="EFD name. Defaults to usdf_efd",
     )
-    parser.add_argument(
-        "--plot", default=False, action="store_true", help="Plot graphs during"
-    )
+    parser.add_argument("--plot", default=False, action="store_true", help="Plot graphs during")
     parser.add_argument(
         "--config",
         type=Path,

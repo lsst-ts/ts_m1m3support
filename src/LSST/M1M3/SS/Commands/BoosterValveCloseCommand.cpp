@@ -34,7 +34,7 @@ BoosterValveCloseCommand::BoosterValveCloseCommand(int32_t commandID) : Command(
 
 void BoosterValveCloseCommand::execute() { Context::instance().boosterValveClose(this); }
 
-void BoosterValveCloseCommand::ackInProgress(const char *description, double timeout) {
+void BoosterValveCloseCommand::ackInProgress(const char* description, double timeout) {
     M1M3SSPublisher::instance().ackCommandboosterValveClose(getCommandID(), ACK_INPROGRESS, description,
                                                             timeout);
 }

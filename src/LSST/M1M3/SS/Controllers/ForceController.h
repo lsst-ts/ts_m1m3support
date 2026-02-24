@@ -137,7 +137,7 @@ public:
      *
      * @param tmaElevationData
      */
-    void updateTMAElevationData(MTMount_elevationC *tmaElevationData);
+    void updateTMAElevationData(MTMount_elevationC* tmaElevationData);
 
     /**
      * Tests following error on all actuaturs. Reports any violation into
@@ -167,11 +167,11 @@ public:
     bool applyAccelerationForces();
     void zeroAccelerationForces();
 
-    void applyActiveOpticForces(const std::vector<float> &z);
+    void applyActiveOpticForces(const std::vector<float>& z);
     void zeroActiveOpticForces();
 
     void applyAzimuthForces();
-    void updateTMAAzimuthForces(MTMount_azimuthC *tmaAzimuthData);
+    void updateTMAAzimuthForces(MTMount_azimuthC* tmaAzimuthData);
     void zeroAzimuthForces();
 
     bool applyBalanceForces();
@@ -196,8 +196,8 @@ public:
     void applyElevationForces();
     void zeroElevationForces();
 
-    void applyOffsetForces(const std::vector<float> &x, const std::vector<float> &y,
-                           const std::vector<float> &z);
+    void applyOffsetForces(const std::vector<float>& x, const std::vector<float>& y,
+                           const std::vector<float>& z);
     void applyOffsetForcesByMirrorForces(float xForce, float yForce, float zForce, float xMoment,
                                          float yMoment, float zMoment);
     void zeroOffsetForces();
@@ -221,7 +221,7 @@ public:
 
     void enableDisableForceComponent(int forceComponentEnum, bool enabled);
 
-    FinalForceComponent *get_final_force_component() { return &_finalForceComponent; }
+    FinalForceComponent* get_final_force_component() { return &_finalForceComponent; }
 
 private:
     void _sumAllForces();
@@ -234,7 +234,7 @@ private:
 
     static double constexpr _sqrt2 = 1.4142135623730950488016887242097;
 
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
     AccelerationForceComponent _accelerationForceComponent;
     ActiveOpticForceComponent _activeOpticForceComponent;
@@ -247,18 +247,18 @@ private:
     VelocityForceComponent _velocityForceComponent;
     FinalForceComponent _finalForceComponent;
 
-    MTM1M3_appliedCylinderForcesC *_appliedCylinderForces;
-    MTM1M3_appliedForcesC *_appliedForces;
-    MTM1M3_logevent_forceActuatorStateC *_forceActuatorState;
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
+    MTM1M3_appliedCylinderForcesC* _appliedCylinderForces;
+    MTM1M3_appliedForcesC* _appliedForces;
+    MTM1M3_logevent_forceActuatorStateC* _forceActuatorState;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
     PreclippedCylinderForces<MTM1M3_logevent_preclippedCylinderForcesC> _preclipped_cylinder_forces;
 
-    MTM1M3_inclinometerDataC *_inclinometerData;
-    MTM1M3_pidDataC *_pidData;
-    MTM1M3_logevent_pidInfoC *_pidInfo;
-    MTM1M3_hardpointActuatorDataC *_hardpointActuatorData;
-    MTM1M3_accelerometerDataC *_accelerometerData;
-    MTM1M3_gyroDataC *_gyroData;
+    MTM1M3_inclinometerDataC* _inclinometerData;
+    MTM1M3_pidDataC* _pidData;
+    MTM1M3_logevent_pidInfoC* _pidInfo;
+    MTM1M3_hardpointActuatorDataC* _hardpointActuatorData;
+    MTM1M3_accelerometerDataC* _accelerometerData;
+    MTM1M3_gyroDataC* _gyroData;
 
     ForceActuatorIndicesNeighbors _neighbors[FA_COUNT];
 

@@ -37,8 +37,8 @@ namespace SS {
 class VelocityForceComponent : public ForceComponent {
 public:
     VelocityForceComponent();
-    void applyVelocityForces(const std::vector<float> &x, const std::vector<float> &y,
-                             const std::vector<float> &z);
+    void applyVelocityForces(const std::vector<float>& x, const std::vector<float>& y,
+                             const std::vector<float>& z);
     void applyVelocityForcesByAngularVelocity(float angularVelocityX, float angularVelocityY,
                                               float angularVelocityZ);
 
@@ -48,10 +48,10 @@ protected:
     void postUpdateActions() override;
 
 private:
-    SafetyController *_safetyController;
+    SafetyController* _safetyController;
 
-    MTM1M3_logevent_forceSetpointWarningC *_forceSetpointWarning;
-    MTM1M3_appliedVelocityForcesC *_appliedVelocityForces;
+    MTM1M3_logevent_forceSetpointWarningC* _forceSetpointWarning;
+    MTM1M3_appliedVelocityForcesC* _appliedVelocityForces;
     PreclippedForces<MTM1M3_logevent_preclippedVelocityForcesC> _preclipped_velocity_forces;
 };
 

@@ -25,7 +25,7 @@
 #include <BoosterValveStatus.h>
 #include <M1M3SSPublisher.h>
 
-extern const char *VERSION;
+extern const char* VERSION;
 
 using namespace LSST::M1M3::SS;
 
@@ -38,94 +38,94 @@ void M1M3SSPublisher::setSAL(std::shared_ptr<SAL_MTM1M3> m1m3SAL) {
     _m1m3SAL = m1m3SAL;
 
     SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Telemetry");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_accelerometerData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_forceActuatorData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_gyroData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_hardpointActuatorData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_hardpointMonitorData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_imsData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_inclinometerData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_outerLoopData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_pidData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_powerSupplyData");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedAccelerationForces");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedAzimuthForces");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedBalanceForces");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedCylinderForces");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedElevationForces");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedForces");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedThermalForces");
-    _m1m3SAL->salTelemetryPub((char *)"MTM1M3_appliedVelocityForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_accelerometerData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_forceActuatorData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_gyroData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_hardpointActuatorData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_hardpointMonitorData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_imsData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_inclinometerData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_outerLoopData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_pidData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_powerSupplyData");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedAccelerationForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedAzimuthForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedBalanceForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedCylinderForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedElevationForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedThermalForces");
+    _m1m3SAL->salTelemetryPub((char*)"MTM1M3_appliedVelocityForces");
 
     SPDLOG_DEBUG("M1M3SSPublisher: Initializing SAL Events");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_accelerometerSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_accelerometerWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_airSupplyStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_airSupplyWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_appliedActiveOpticForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_appliedOffsetForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_appliedStaticForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_boosterValveSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_boosterValveStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_configurationsAvailable");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_configurationApplied");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_cellLightStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_cellLightWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_commandRejectionWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_detailedState");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_displacementSensorSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_displacementSensorWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_enabledForceActuators");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_errorCode");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorBumpTestStatistics");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorBumpTestStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorFollowingErrorCounter");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorForceWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorInfo");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorState");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceActuatorWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceControllerState");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_forceSetpointWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_gyroSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_gyroWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointActuatorInfo");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointActuatorSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointActuatorState");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointActuatorWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointMonitorInfo");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointMonitorState");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointMonitorWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_hardpointTestStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_heartbeat");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_ilcWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_inclinometerSensorWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_inclinometerSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_interlockStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_interlockWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_logLevel");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_pidInfo");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_pidSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_positionControllerSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_powerStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_powerSupplyStatus");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_powerWarning");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedAccelerationForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedActiveOpticForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedAzimuthForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedBalanceForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedCylinderForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedElevationForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedOffsetForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedStaticForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedThermalForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_preclippedVelocityForces");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_raisingLoweringInfo");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_simulationMode");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_slewControllerSettings");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_softwareVersions");
-    _m1m3SAL->salEventPub((char *)"MTM1M3_logevent_summaryState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_accelerometerWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_airSupplyWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedActiveOpticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedOffsetForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_appliedStaticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_boosterValveSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_boosterValveStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationsAvailable");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_configurationApplied");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_cellLightStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_cellLightWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_commandRejectionWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_detailedState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_displacementSensorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_enabledForceActuators");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_errorCode");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatistics");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorBumpTestStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorFollowingErrorCounter");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorForceWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceActuatorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceControllerState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_forceSetpointWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_gyroWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointActuatorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorState");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointMonitorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_hardpointTestStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_heartbeat");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_ilcWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSensorWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_inclinometerSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_interlockWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_logLevel");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_pidSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_positionControllerSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerSupplyStatus");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_powerWarning");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAccelerationForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedActiveOpticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedAzimuthForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedBalanceForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedCylinderForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedElevationForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedOffsetForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedStaticForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedThermalForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_preclippedVelocityForces");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_raisingLoweringInfo");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_simulationMode");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_slewControllerSettings");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_softwareVersions");
+    _m1m3SAL->salEventPub((char*)"MTM1M3_logevent_summaryState");
 }
 
 void M1M3SSPublisher::reset() {
@@ -373,7 +373,7 @@ void M1M3SSPublisher::tryLogErrorCode() {
 }
 
 void M1M3SSPublisher::logForceActuatorBumpTestStatistics(int actuator_id, int test_type, int stage,
-                                                         float settle_time, const BumpTestStatistics &stat) {
+                                                         float settle_time, const BumpTestStatistics& stat) {
     MTM1M3_logevent_forceActuatorBumpTestStatisticsC data;
     data.actuatorId = actuator_id;
     data.testType = test_type;
@@ -1062,7 +1062,7 @@ void M1M3SSPublisher::tryLogSummaryState() {
 #define ACK_COMMAND(command)                                                                               \
     void M1M3SSPublisher::ackCommand##command(int32_t commandID, int32_t ackCode, std::string description, \
                                               double timeout) {                                            \
-        _m1m3SAL->ackCommand_##command(commandID, ackCode, 0, (char *)description.c_str(), timeout);       \
+        _m1m3SAL->ackCommand_##command(commandID, ackCode, 0, (char*)description.c_str(), timeout);        \
     }
 
 ACK_COMMAND(setLogLevel)

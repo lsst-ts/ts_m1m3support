@@ -52,10 +52,10 @@
 
 using namespace LSST::M1M3::SS;
 
-SSILCs::SSILCs(PositionController *positionController,
-               HardpointActuatorApplicationSettings *hardpointActuatorApplicationSettings,
-               HardpointMonitorApplicationSettings *hardpointMonitorApplicationSettings,
-               SafetyController *safetyController)
+SSILCs::SSILCs(PositionController* positionController,
+               HardpointActuatorApplicationSettings* hardpointActuatorApplicationSettings,
+               HardpointMonitorApplicationSettings* hardpointMonitorApplicationSettings,
+               SafetyController* safetyController)
         : _subnetData(hardpointActuatorApplicationSettings, hardpointMonitorApplicationSettings),
           _ilcMessageFactory(),
           _responseParser(&_subnetData, safetyController),
@@ -492,7 +492,7 @@ uint8_t SSILCs::_subnetToTxAddress(uint8_t subnet) {
     }
 }
 
-void SSILCs::_writeBusList(BusList *busList) {
+void SSILCs::_writeBusList(BusList* busList) {
     IFPGA::get().writeCommandFIFO(busList->getBuffer(), busList->getLength(), 0);
     _responseParser.incExpectedResponses(busList->getExpectedFAResponses(), busList->getExpectedHPResponses(),
                                          busList->getExpectedHMResponses());

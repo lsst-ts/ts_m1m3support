@@ -50,7 +50,7 @@ void AccelerometerSettings::load(YAML::Node doc) {
             accelerometerOffset[i] = accNode["Offset"].as<float>();
             scalar[i] = accNode["Scalar"].as<float>();
         }
-        auto loadElevationPoly = [doc](std::string axis, double *poly) {
+        auto loadElevationPoly = [doc](std::string axis, double* poly) {
             std::string name = axis + "ElevationPoly";
             auto vect = doc[name].as<std::vector<float>>();
             if (vect.size() != 3) {
@@ -65,7 +65,7 @@ void AccelerometerSettings::load(YAML::Node doc) {
         loadElevationPoly("Y", yElevationPoly);
         loadElevationPoly("Z", zElevationPoly);
         dump_path = doc["RawDumpPath"].as<std::string>(dump_path);
-    } catch (YAML::Exception &ex) {
+    } catch (YAML::Exception& ex) {
         throw std::runtime_error(fmt::format("YAML Loading AccelerometerSettings: {}", ex.what()));
     }
 
