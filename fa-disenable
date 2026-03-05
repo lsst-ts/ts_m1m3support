@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+#source /etc/default/ts-M1M3supportd
+#CONFIG_FILE=$M1M3_SUPPORT_CONFIG/v1/_init.yaml
+CONFIG_FILE=SettingFiles/v1/_init.yaml
+
+TMPFILE=$(mktemp /tmp/fa-disenble.XXXXXXXX) || exit 1
+
+grep "  DisabledActuators:" $CONFIG_FILE | sed 's/.*\[\(.*\)\].*/\1/' | tr ',' '\n' > $TMPFILE
+if [ $? != 0 ]; then
+  echo "Invalid configuration file - $CONFIG_FILE"
+  exit 1
+fi
+
+fa_in() {
+  grep "^$1$" $TMPFILE > /dev/null && return 0 || return 1
+}
+
+only_print=0
+not_write=0
+
+while getopts "d:e:phn" arg; do
+  case $arg in
+    d)
+      fa=$OPTARG
+      if fa_in $fa; then
+	echo "FA $fa is already disabled. No changes performed."
+	exit 2
+      fi
+      echo $fa >> $TMPFILE
+      echo "Disabled FA $fa."
+      ;;
+    e)
+      fa=$OPTARG
+      if fa_in $fa; then
+        outfile=$(mktemp /tmp/fa-out.XXXXXXX) || exit 1
+        grep -v "^$fa$" $TMPFILE > $outfile
+        TMPFILE=$outfile	
+        echo "Enabled FA $fa."
+      else
+	echo "FA $fa is not disabled. No changes performed."
+	exit 3
+      fi
+      ;;
+    p)
+      only_print=1
+      ;;
+    n)
+      not_write=1
+      ;;
+    h)
+      cat <<EOF
+Disables and enables the M1M3 Force Actuator (FA) in the M1M3 CSC config file.
+Parameters:
+  -e <FAID> .. enable given FA
+  -d <FAID> .. disable given FA
+  -h        .. prints this help
+  -n        .. do not save changes (dry run)
+  -p        .. prints disabled FA (default)
+EOF
+  esac
+done
+
+count=0
+
+OUT=$(cat $TMPFILE | sort -n | \
+while read line; do
+  if [ -z $line ]; then
+    continue
+  fi
+  if [ $count == 0 ]; then
+    echo -n $line
+    count=1
+  else
+    echo -n ",$line"
+  fi
+done)
+
+if [ $OPTIND == 1 ]; then
+  only_print=1
+  echo "Run $0 -h for help. Now it will only prints disabled FAs."
+fi
+
+if [ $only_print == 1 ]; then
+  if [ -z $OUT ]; then
+    echo "All FAs are currently enabled."
+  else
+    echo "Currently disabled: $OUT"
+  fi
+  exit 0
+fi
+
+if [ -z $OUT ]; then
+  echo "All FAs enabled."
+else
+  echo "New enabled FAs: $OUT"
+fi
+
+if [ $not_write == 1 ]; then
+  exit 0
+fi
+
+sed -i "s/  DisabledActuators:.*/  DisabledActuators: [$OUT]/" $CONFIG_FILE
