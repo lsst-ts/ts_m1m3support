@@ -64,6 +64,7 @@ ts-M1M3support_$(VERSION)_x64.ipk: ts-M1M3supportd m1m3sscli
 	${co}mkdir -p ipk/control
 	${co}cp ts-M1M3supportd ipk/data/usr/sbin/ts-M1M3supportd
 	${co}cp m1m3sscli ipk/data/usr/sbin/m1m3sscli
+	${co}cp fa-disenable ipk/data/usr/sbin/fa-disenable
 	${co}cp init ipk/data/etc/init.d/ts-M1M3support
 	${co}cp default_M1M3support ipk/data/etc/default/M1M3support
 	${co}cp -r SettingFiles/* ipk/data/var/lib/M1M3support

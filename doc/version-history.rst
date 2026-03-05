@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.18.1
+-------
+
+* Added fa-disenable script.
+
 v2.18.0
 -------
 
