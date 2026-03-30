@@ -205,12 +205,17 @@ ForceActuatorSettings:
     MaxRateOfChange: 315.0
     NearZeroValue: 1.0
   BumpTest:
+    # Force offset for push (positive) bump test. Must be in (0, 222] range.
+    PushForce: 210
+    # Force offset for pull (negative) bump test. Must be in [-222, 0) range.
+    PullForce: -210
     TestedTolerances:
       Warning: 2.5
       Error: 5
     NonTestedTolerances:
       Warning: 5.2
       Error: 6
+    # Time (in seconds) for the bump test forces to settle down, if the FA RMS aren't below that
     SettleTime: 3.5
     Measurements: 100
     MinimalDistance: 4

@@ -31,13 +31,15 @@
 #include "ForceController.h"
 #include "M1M3SSPublisher.h"
 #include "Model.h"
+#include "Range.h"
 #include "SettingReader.h"
 
 using namespace std::chrono;
 using namespace MTM1M3;
 using namespace LSST::M1M3::SS;
 
-BumpTestController::BumpTestController() : _test_force(222), _bump_test_data(NULL) {
+BumpTestController::BumpTestController()
+        : _test_push_force(10), _test_pull_force(-10), _bump_test_data(NULL) {
     SPDLOG_DEBUG("BumpTestController: BumpTestController()");
 
     ForceActuatorBumpTestStatus::instance().reset();
@@ -55,6 +57,11 @@ int BumpTestController::setBumpTestActuator(int actuator_id, bool cylinders, boo
                                             bool test_secondary) {
     _test_settle_time =
             milliseconds(static_cast<int>(ForceActuatorSettings::instance().bumpTestSettleTime * 1000));
+
+    auto& fa_settings = ForceActuatorSettings::instance();
+
+    _test_push_force = Range::CoerceIntoRange(0.0f, 222.0f, fa_settings.bumpTestPushForce);
+    _test_pull_force = Range::CoerceIntoRange(-222.0f, 0.0f, fa_settings.bumpTestPullForce);
 
     SettingReader::instance().getSafetyControllerSettings()->ForceController.enterBumpTesting();
 
@@ -452,11 +459,11 @@ bool BumpTestController::_run_axis(int axis_index, int z_index, int s_index, int
 
             switch (stage) {
                 case MTM1M3_shared_BumpTest_Triggered:
-                    force_controller->applyActuatorOffset(axis, axis_index, _test_force);
+                    force_controller->applyActuatorOffset(axis, axis_index, _test_push_force);
                     stage = MTM1M3_shared_BumpTest_TestingPositive;
                     break;
                 case MTM1M3_shared_BumpTest_TestingPositiveWait:
-                    force_controller->applyActuatorOffset(axis, axis_index, -_test_force);
+                    force_controller->applyActuatorOffset(axis, axis_index, _test_pull_force);
                     stage = MTM1M3_shared_BumpTest_TestingNegative;
                     break;
                 case MTM1M3_shared_BumpTest_TestingNegativeWait:
