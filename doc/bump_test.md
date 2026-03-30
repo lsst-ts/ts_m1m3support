@@ -15,40 +15,101 @@ and measure forces before the mirror is raised.
 
 * **Safety:** Ensure no personnel are working inside the mirror cell during the
   test. Qualified engineers with appropriate training can be in the cell,
-checking for possible actuators leaks.
+  checking for possible actuators leaks.
+
+## Configuration
+
+The force applied during push and pulls can be configured under
+ForceActuatorSettings|BumpTest in the configuration file. Default value is 222
+N for push and -222 N for pull force. Also warning and error levels for RMS
+values can be adjusted in the configuration file. See the following snippet for
+details. Values from the file are referenced in 'text', such as 'PushForce'.
+
+```
+ForceActuatorSettings:
+  # Force Actuator Bump Tests values.
+  BumpTest:
+    # Force offset for push (positive) bump test. Must be in (0, 222] range.
+    PushForce: 210
+    # Force offset for pull (negative) bump test. Must be in [-222, 0) range.
+    PullForce: -210
+    # Tolerances for FA being tested.
+    TestedTolerances:
+      # Warning tolerance for FAs that are bump tested.
+      Warning: 2.5
+      # Error tolerance for FAs that are bump tested.
+      Error: 5
+    # Tolerances for FA not tested. Used for discovering deviations from 0 N
+    # force the units shall measure, when the FA is not being tested.
+    NonTestedTolerances:
+      # Warning tolerance for FAs that are not bump tested.
+      Warning: 5.2
+      # Error tolerance for FAs that are not bump tested.
+      Error: 6
+    # Time (in seconds) for the bump test forces to settle down. If the FA RMS
+    # aren't settled before timeout expires, a bump test error is signaled.
+    SettleTime: 3.5
+    # Number of measurements the RMS is calculated. The systems runs in 50 Hz
+    # loop, so there are 50 measurements per second.
+    Measurements: 100
+    # Minimal distance for FA being parallel bump tests (tested at the same
+    # time). In meters, minimal allowed is 2 meters.
+    MinimalDistance: 4
+```
 
 ## Execution
 
 The test is initiated via the `forceActuatorBumpTest` SAL command. It can be run on
 a single actuator, a specific cylinder, or cycled through the entire array.
 
-1. **Phase 1 (Push):** Apply +222 N force.
+1. **Phase 1 (Push):** Apply 'PushForce' force.
 
-2. **Phase 2 (Pull):** Apply -222 N force.
+2. **Phase 2 (Pull):** Apply 'PullForce' force.
 
 3. **Monitoring:** The CSC monitors the load cell feedback against the
    commanded value.
 
+As tests can be run in parallel, multiple FAs can be tested at the same time.
+The algorithm threads differently FAs that are being tested and non-tested FAs.
+
+FAs being tested must produce desired force output, within margin
+'TestedTolerances' margins.
+
+Non-tested FAs are required to stay at 0 N measured force during test
+execution. When a FA ends test phase, non-tested FAs statistics RMS are checked.
+
+Usually up to 4 FAs tests are running in parallel. The number depends on
+'MinimalDistance' and the algorithm selecting FAs to tests. A trivial greedy
+algorithm is implemented in *ts_m1m3_utils* *BumpTestRunner* class.
+
 ## Acceptance Criteria
 
-A test is marked as **PASSED** (State 6) if:
+A test is marked as **PASSED** (State 6) if all the following conditions are
+met:
 
-* The following error RMS of the measured force is within **±5 N** of the
-  target.
+* The Force Actuator being tested following error RMS stays within the
+  'TestedTolerances/Error' for 'Measurements' seconds within 'SettleTime'
+  seconds window from the time actuator forces were changed.
 
-* The error stays within the tolerance for the duration of the measurement
-  window in the `SettleTime` window.
+* Non-tested force actuators following error RMS is outside of
+  'NonTestedTolerances/Error' in the last 'Measurements' period.
 
-A test is marked as **FAILED** (State 7 and above) if:
+Thus, a test is marked as **FAILED** (State 7 and above) if any of the following
+conditions is met:
 
-* The deviation exceeds 5 N.
+* The tested force actuator following error RMS does not drop below
+  'TestedTolerances/Error' and stays in limits for 'Measurements' measurements
+  within the 'SettleTime' period.
 
-* The actuator fails to reach the target force within the `SettleTime` period.
-
-* Non-tested force actuators following error RMS is outside of **±6 N** in the
-  last `Measurements` period.
+* Non-tested force actuators following error RMS is outside of
+  'NonTestedTolerances/Error' in the last 'Measurements' period, counted from
+  the time the FA passed the test.
 
 ## Handling Failures
+
+* **Other FA Failure:** Best detected in EUI (M1M3GUI), or
+  forceActuatorBumpTestStatistics events. EUI shows under statistics tab force
+  actuators which caused test to fail.
 
 * **Single Failure:** Often caused by transient pneumatic lag or stiction.
   Clear the fault and re-run the test for that specific actuator.
@@ -59,15 +120,25 @@ A test is marked as **FAILED** (State 7 and above) if:
 * **Telemetry Check:** Review the EFD topic
   `lsst.sal.MTM1M3.logevent_logMessage` for strings containing "Failed FA" to
 see the exact measured deviation (e.g., "measured force plus (215.3) is too far
-222±5").
+from 222±5").
 
 ## Data Access
 
 * **Status:** `lsst.sal.MTM1M3.logevent_forceActuatorBumpTestStatus`
 
+Querying this for FA bump test state TESTINGPOSITIVE state is the easiest
+way to find out when the bump tests started. Within 60 seconds of this tests
+shall come a message with PASSED status, or some of the FAILED status.
+
 * **Statistics:** `lsst.sal.MTM1M3.logevent_forceActuatorBumpTestStatistics`
 
+Contains tests statistics. That shall be queried for minimal, maximal, average
+and RMS of the forces during the tests.
+
 * **Force Data:** `lsst.sal.MTM1M3.forceActuatorData`
+
+Contains raw data. Can be looked for detailed informations about the force
+measured by the FAs during the tests.
 
 # M1M3 Force Actuator Bump Test Algorithm
 
@@ -302,3 +373,8 @@ collected, the testing period can begin.
 
 Number of measurements to test. Length of the circular buffer, holding last
 n-values to compute test statistics.
+
+## MinimalDistance
+
+Minimal distance for FA being parallel bump tests (tested at the same time). In
+meters, minimal allowed is 2 meters.

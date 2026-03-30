@@ -4,6 +4,11 @@
 Version History
 ===============
 
+v2.19.0
+------
+
+* Configurable bump test pull and push forces.
+
 v2.18.1
 -------
 
