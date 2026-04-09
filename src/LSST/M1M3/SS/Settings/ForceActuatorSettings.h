@@ -57,6 +57,9 @@ class ForceActuatorSettings : public MTM1M3_logevent_forceActuatorSettingsC,
 public:
     ForceActuatorSettings(token);
 
+    static constexpr float DEFAULT_PUSH_FORCE = 222;
+    static constexpr float DEFAULT_PULL_FORCE = -222;
+
     void load(YAML::Node doc);
 
     /**

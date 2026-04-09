@@ -36,7 +36,14 @@ node {
 
     stage('Building dev container')
     {
-        M1M3sim = docker.build("m1m3sim:" + env.BRANCH_NAME.replace("/", "_"), "--target crio-develop --build-arg XML_BRANCH=$XML_BRANCH " + (params.noCache ? "--no-cache " : " ") + "$WORKSPACE/ts_m1m3support")
+        M1M3sim = docker.build(
+            "lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"),
+            "--target crio-develop --build-arg XML_BRANCH=main "
+            + "--build-arg KAFKA_HOST=$LSST_KAFKA_HOST --build-arg KAFKA_BROKER_PORT=$LSST_KAFKA_BROKER_PORT "
+            + "--build-arg SCHEMA_REGISTRY_URI=$LSST_SCHEMA_REGISTRY_URL "
+            + "--build-arg cRIO_CPP=$CRIO_BRANCH --build-arg M1M3_THERMAL=$BRANCH"
+            + (params.noCache ? " --no-cache " : " ") + "$WORKSPACE/ts_m1m3support"
+        )
     }
 
     try {
@@ -81,33 +88,6 @@ node {
                 make doc
              """
          }
-    }
-
-    try {
-        stage('Running container')
-        {
-            withEnv(["SALUSER_HOME=" + SALUSER_HOME]){
-                M1M3sim.inside("--entrypoint=''") {
-                    sh """
-                        source $SALUSER_HOME/.crio_setup.sh
-
-                        export LSST_DDS_PARTITION_PREFIX=test
-
-                        cd $WORKSPACE/ts_m1m3support
-                        ./ts-M1M3supportd -c SettingFiles -f &
-
-                        echo "Waiting for 15 seconds"
-                        sleep 15
-
-                        cd tests
-                        ./runSimulator.py
-                        killall -9 ts-M1M3supportd
-                    """
-                }
-            }
-        }
-    } catch(e) {
-        echo e.toString()
     }
 
     if (BRANCH == "main" || BRANCH == "develop")

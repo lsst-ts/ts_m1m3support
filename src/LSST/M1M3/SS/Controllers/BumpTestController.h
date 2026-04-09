@@ -85,7 +85,8 @@ public:
     BumpTestStatus z_status[FA_COUNT];
 
 private:
-    float _test_force;
+    float _test_push_force;
+    float _test_pull_force;
 
     std::chrono::milliseconds _test_settle_time;
     std::chrono::time_point<std::chrono::steady_clock> _test_start[FA_COUNT];

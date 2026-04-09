@@ -39,7 +39,11 @@ using namespace LSST::M1M3::SS;
 
 ForceActuatorNeighbors::ForceActuatorNeighbors() {}
 
-ForceActuatorSettings::ForceActuatorSettings(token) { measuredWarningPercentage = 90; }
+ForceActuatorSettings::ForceActuatorSettings(token) {
+    bumpTestPushForce = 10;
+    bumpTestPullForce = -10;
+    measuredWarningPercentage = 90;
+}
 
 void load_bump_test_limits(YAML::Node node, float& warning, float& error) {
     warning = node["Warning"].as<float>();
@@ -197,6 +201,25 @@ void ForceActuatorSettings::load(YAML::Node doc) {
 
     preclippedIgnoreChanges = doc["PreclippedIgnoreChanges"].as<float>();
     preclippedMaxDelay = doc["PreclippedMaxDelay"].as<float>();
+
+    bumpTestPushForce = bumpTest["PushForce"].as<float>(DEFAULT_PUSH_FORCE);
+    bumpTestPullForce = bumpTest["PullForce"].as<float>(DEFAULT_PULL_FORCE);
+
+    if (bumpTestPushForce <= 0 || bumpTestPushForce > 222) {
+        auto msg =
+                fmt::format("Bump Test push (positive) force offset must be in (0, 222] range - is {:.2f} N.",
+                            bumpTestPushForce);
+        bumpTestPushForce = 1;
+        bumpTestPullForce = -1;
+        throw std::runtime_error(msg);
+    }
+    if (bumpTestPullForce >= 0 || bumpTestPullForce < -222) {
+        auto msg = fmt::format(
+                "Bump Test pull (negative) force offset must be in [-222, 0) range - is {:.2f} N.",
+                bumpTestPullForce);
+        bumpTestPullForce = -1;
+        throw std::runtime_error(msg);
+    }
 
     bumpTestSettleTime = bumpTest["SettleTime"].as<float>(3.0);
     bumpTestMeasurements = bumpTest["Measurements"].as<int>(10);

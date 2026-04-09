@@ -204,15 +204,32 @@ ForceActuatorSettings:
   FinalForceComponent:
     MaxRateOfChange: 315.0
     NearZeroValue: 1.0
+  # Force Actuator Bump Tests values.
   BumpTest:
+    # Force offset for push (positive) bump test. Must be in (0, 222] range.
+    PushForce: 210
+    # Force offset for pull (negative) bump test. Must be in [-222, 0) range.
+    PullForce: -210
+    # Tolerances for FA being tested.
     TestedTolerances:
+      # Warning tolerance for FAs that are bump tested.
       Warning: 2.5
+      # Error tolerance for FAs that are bump tested.
       Error: 5
+    # Tolerances for FA not tested. Used for discovering deviations from 0 N
+    # force the units shall measure, when the FA is not being tested.
     NonTestedTolerances:
+      # Warning tolerance for FAs that are not bump tested.
       Warning: 5.2
+      # Error tolerance for FAs that are not bump tested.
       Error: 6
+    # Time (in seconds) for the bump test forces to settle down, if the FA RMS aren't below that
     SettleTime: 3.5
+    # Number of measurements the RMS is calculated. The systems runs in 50 Hz
+    # loop, so there are 50 measurements per second.
     Measurements: 100
+    # Minimal distance for FA being parallel bump tests (tested at the same
+    # time). In meters, minimal allowed is 2 meters.
     MinimalDistance: 4
   # Minimal force change (in N, for forceMagnitude) to force logging of preclipped forces.
   PreclippedIgnoreChanges: 200

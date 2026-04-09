@@ -1,6 +1,9 @@
 FROM lsstts/develop-env:develop AS crio-develop
 
 USER root
+
+RUN rm -rf  /home/saluser/repos/ts_sal/include/avro/
+
 RUN cd /opt/lsst/tssw/ && git clone https://github.com/apache/avro 
 
 RUN source /home/saluser/.setup_salobj.sh && cd /opt/lsst/tssw/avro/lang/c \
