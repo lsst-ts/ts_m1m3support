@@ -1,25 +1,10 @@
 FROM lsstts/develop-env:develop AS crio-develop
 
-USER root
-
-RUN rm -rf  /home/saluser/repos/ts_sal/include/avro/
-
-RUN cd /opt/lsst/tssw/ && git clone https://github.com/apache/avro 
-
-RUN source /home/saluser/.setup_salobj.sh && cd /opt/lsst/tssw/avro/lang/c \
-    && cmake . && make && make install \
-    && cd ../c++ && cmake . && make && make install
-
-RUN cd /opt/lsst/tssw/ && git clone https://github.com/confluentinc/libserdes 
-
-COPY libserdes.patch /opt/lsst/tssw/libserdes
-RUN source /home/saluser/.setup_salobj.sh && cd /opt/lsst/tssw/libserdes \
-    && patch -p1 < libserdes.patch
-
-RUN source /home/saluser/.setup_salobj.sh \
-    && export CPATH="/usr/local/include" \
-    && export LIBRARY_PATH="/usr/local/lib64:/opt/lsst/tssw/ts_sal/lib" \
-    && cd /opt/lsst/tssw/libserdes && ./configure && make && make install
+# Avro (C++) and libschemaregistry are provided by the base image at
+# LSST_SAL_PREFIX (/opt/lsst/tssw/ts_sal); SAL generated code links against
+# them (OSW-2238). No local avro/libserdes builds: a second copy of those
+# libraries on the include/link paths is what caused the version clashes
+# this Dockerfile previously worked around.
 
 USER saluser
 ARG XML_BRANCH=develop
@@ -48,8 +33,6 @@ export LSST_TOPIC_SUBNAME=sal\\n\
 export LSST_KAFKA_BROKER_ADDR="broker:29092"\\n\
 export LSST_SCHEMA_REGISTRY_URL="http://schema-registry:8081"\\n\
 \\n\
-export LSST_SAL_PREFIX=/usr/local\\n\
-\\n\
 export LSST_KAFKA_HOST=${LSST_KAFKA_BROKER_ADDR%:*}\\n\
 export LSST_KAFKA_BROKER_PORT=${LSST_KAFKA_BROKER_ADDR##*:}\\n\
 export LSST_KAFKA_PREFIX=sal\\n\
@@ -57,9 +40,7 @@ export LSST_KAFKA_LOCAL_SCHEMAS=$SAL_WORK_DIR\\n\
 \\n\
 export TS_CONFIG_OCS_DIR=/lsst/ts_config_ocs/\\n\
 \\n\
-export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig\\n\
-\\n\
-export LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/opt/lsst/tssw/ts_sal/lib\\n\
+export LIBRARY_PATH=/opt/lsst/tssw/ts_sal/lib\\n\
 \\n\
 source /home/saluser/.setup_salobj.sh \
 source /opt/lsst/tssw/ts_sal/setupKafka.env \
@@ -68,8 +49,6 @@ setup ts_idl -t current \\n\
 setup ts_sal -t current \\n\
 setup ts_salobj -t current \\n\
 setup ts_xml -t current \\n\
-\\n\
-export CPATH=\"/usr/local/include\"\\n\
 \\n\
 export SAL_DIR=/opt/lsst/tssw/ts_sal/lsstsal/scripts
 
