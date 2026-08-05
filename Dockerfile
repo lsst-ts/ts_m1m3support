@@ -1,4 +1,4 @@
-FROM lsstts/develop-env:develop AS crio-develop
+FROM ts-dockerhub.lsst.org/deploy-crio:c0045 AS crio-develop
 
 # Avro (C++) and libschemaregistry are provided by the base image at
 # LSST_SAL_PREFIX (/opt/lsst/tssw/ts_sal); SAL generated code links against
@@ -10,67 +10,39 @@ USER saluser
 ARG XML_BRANCH=develop
 WORKDIR /home/saluser
 
-RUN source ~/.setup_salobj.sh \
-    && mamba install -y readline yaml-cpp catch2 spdlog texlive-core ghostscript 
+ARG KAFKA_HOST=
+ARG KAFKA_BROKER_PORT=
+ARG SCHEMA_REGISTRY_URI=
 
-RUN source ~/.setup_salobj.sh \
-    && echo > .crio_setup.sh -e \
-echo "Configuring cRIO development environment" \\n\
-export SAL_HOME=/opt/lsst/tssw/ts_sal/lsstsal\\n\
-export SAL_WORK_DIR=/home/saluser/repos/ts_sal/test\\n\
-export LSST_KAFKA_PREFIX=sal\\n\
-export LSST_KAFKA_SECURITY_MECHANISM=SCRAM-SHA-512\\n\
-export LSST_KAFKA_CLASSDIR=/opt/lsst/tssw/ts_sal/lib\\n\
-export LSST_KAFKA_HOST=broker\\n\
-export LSST_KAFKA_IP=\\n\
-export LSST_KAFKA_LOCAL_SCHEMAS=/opt/lsst/tssw/ts_sal/test\\n\
-export LSST_KAFKA_BROKER_PORT=29092\\n\
-export LSST_KAFKA_BROKER_ADDR=broker:29092\\n\
-export LSST_KAFKA_SECURITY_PROTOCOL=SASL_SSL\\n\
-export AVRO_RELEASE=1.11.3\\n\
-export LSST_TOPIC_SUBNAME=sal\\n\
+RUN [ -z $KAFKA_HOST -o -z $KAFKA_BROKER_PORT ] || echo >> .crio_setup.sh -e \
 \\n\
-export LSST_KAFKA_BROKER_ADDR="broker:29092"\\n\
-export LSST_SCHEMA_REGISTRY_URL="http://schema-registry:8081"\\n\
-\\n\
-export LSST_KAFKA_HOST=${LSST_KAFKA_BROKER_ADDR%:*}\\n\
-export LSST_KAFKA_BROKER_PORT=${LSST_KAFKA_BROKER_ADDR##*:}\\n\
-export LSST_KAFKA_PREFIX=sal\\n\
-export LSST_KAFKA_LOCAL_SCHEMAS=$SAL_WORK_DIR\\n\
-\\n\
-export TS_CONFIG_OCS_DIR=/lsst/ts_config_ocs/\\n\
-\\n\
-export LIBRARY_PATH=/opt/lsst/tssw/ts_sal/lib\\n\
-\\n\
-source /home/saluser/.setup_salobj.sh \
-source /opt/lsst/tssw/ts_sal/setupKafka.env \
-\\n\
-setup ts_idl -t current \\n\
-setup ts_sal -t current \\n\
-setup ts_salobj -t current \\n\
-setup ts_xml -t current \\n\
-\\n\
-export SAL_DIR=/opt/lsst/tssw/ts_sal/lsstsal/scripts
+export LSST_KAFKA_BROKER_ADDR="${KAFKA_HOST}:${KAFKA_BROKER_PORT}"\\n\
+export LSST_KAFKA_HOST=${KAFKA_HOST}\\n\
+export LSST_KAFKA_BROKER_PORT=${KAFKA_BROKER_PORT}
 
-RUN source ~/.crio_setup.sh \
-    && cd $TS_XML_DIR \
+RUN [ -z $SCHEMA_REGISTRY_URI ] || echo >> .crio_setup.sh -e \
+\\n\
+export LSST_SCHEMA_REGISTRY_URL=${SCHEMA_REGISTRY_URI}
+
+RUN source ~/.crio_setup.sh && cd $TS_XML_DIR \
     && git fetch && git checkout $XML_BRANCH && git pull \
     && pip install .
 
 RUN source ~/.crio_setup.sh \
-    && salgeneratorKafka generate cpp MTM1M3 \
-    && salgeneratorKafka generate cpp MTMount
+    && MAKEFLAGS="-j$(nproc)" LIBSCHEMAREGISTRY_VCPKG_LIB=/opt/vcpkg/installed/x64-linux/lib salgeneratorKafka generate cpp MTM1M3 \
+    && MAKEFLAGS="-j$(nproc)" LIBSCHEMAREGISTRY_VCPKG_LIB=/opt/vcpkg/installed/x64-linux/lib salgeneratorKafka generate cpp MTMount
 
-ARG cRIO_CPP=v1.16.0
+ARG cRIO_CPP=v1.16.1
 ARG M1M3_SUPPORT=develop
 ARG TARGET=simulator
 
 RUN source ~/.crio_setup.sh \
-    && git clone --branch $cRIO_CPP https://github.com/lsst-ts/ts_cRIOcpp \
-    && cd ts_cRIOcpp && make
+    && cd ts_cRIOcpp && git fetch && git checkout $cRIO_CPP \
+    && make clean && make -j$(nproc)
 
 RUN source ~/.crio_setup.sh \
     && git clone --branch $M1M3_SUPPORT https://github.com/lsst-ts/ts_m1m3support \
-    && cd ts_m1m3support && make $TARGET
+    && cd ts_m1m3support \
+    && PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/lsst/software/stack/miniconda/share/pkgconfig LIBSCHEMAREGISTRY_VCPKG_LIB=/opt/vcpkg/installed/x64-linux/lib make -j$(nproc) SIMULATOR=1 $TARGET
 
 SHELL ["/bin/bash", "-lc"]

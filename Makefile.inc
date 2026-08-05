@@ -7,7 +7,7 @@ ifndef VERBOSE
 endif
 
 # change as needed
-c_opts := -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE 
+c_opts := -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE -DSPDLOG_FMT_EXTERNAL
 
 ifdef DEBUG
   c_opts += -g
@@ -18,38 +18,47 @@ endif
 
 CRIOCPP := ../ts_cRIOcpp/
 
-# avro-cpp headers/libs come from the SAL prefix (no avro-cpp.pc there),
-# via -I${LSST_SAL_PREFIX}/include and -lavrocpp below.
-PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog fmt --cflags $(silence))
+PKG_CPPFLAGS := $(shell pkg-config yaml-cpp spdlog fmt avro-cpp --cflags $(silence))
 
 # libschemaregistry replaces libserdes (OSW-2238). It is a static archive
 # whose transitive deps (abseil, cpr, curl, compression) must be linked
 # explicitly; --start-group/--end-group lets the linker resolve their
 # cross-references regardless of order. ssl/crypto/lz4 come from the
 # image's shared libs.
-LIBSCHEMAREGISTRY_VCPKG_LIB ?= ${LSST_SAL_PREFIX}/lib
-LIBSCHEMAREGISTRY_LDLIBS = -Wl,--start-group ${LSST_SAL_PREFIX}/lib/libschemaregistry.a $(wildcard ${LIBSCHEMAREGISTRY_VCPKG_LIB}/libabsl_*.a) ${LIBSCHEMAREGISTRY_VCPKG_LIB}/libcpr.a ${LIBSCHEMAREGISTRY_VCPKG_LIB}/libcurl.a ${LIBSCHEMAREGISTRY_VCPKG_LIB}/libz.a ${LIBSCHEMAREGISTRY_VCPKG_LIB}/libbz2.a ${LIBSCHEMAREGISTRY_VCPKG_LIB}/liblzma.a ${LIBSCHEMAREGISTRY_VCPKG_LIB}/libzstd.a -Wl,--end-group
-
 SAL_CPPFLAGS += $(PKG_CPPFLAGS)  \
 	-I${SAL_WORK_DIR}/MTM1M3/cpp/src -I${SAL_WORK_DIR}/MTMount/cpp/src \
 	-I${SAL_WORK_DIR}/include -I${CRIOCPP} -I. \
-	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include 
+	-I${SAL_HOME}/include -I${LSST_SDK_INSTALL}/include -I${SAL_HOME}/include -I${LSST_SAL_PREFIX}/include -I${LSST_SAL_PREFIX}/include/avro
+LIBSCHEMAREGISTRY_VCPKG_LIB ?= /opkg/vcpkg/installed/x86-linux/lib
+LIBSCHEMAREGISTRY_LDLIBS = \
+    -Wl,--start-group \
+    $(LSST_SAL_PREFIX)/lib/libschemaregistry.a \
+    $(wildcard $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libabsl_*.a) \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libcpr.a \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libcurl.a \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libssl.a \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libcrypto.a \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libz.a \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libbz2.a \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/liblzma.a \
+    $(LIBSCHEMAREGISTRY_VCPKG_LIB)/libzstd.a \
+    -Wl,--end-group
+
 LIBS += $(PKG_LIBS) -ldl -lpthread -L/usr/lib64/boost${BOOST_RELEASE} -lboost_filesystem -lboost_iostreams \
-	-lboost_program_options -lboost_system -lsnappy \
+	-lboost_program_options -lboost_system \
 	${SAL_WORK_DIR}/lib/libSAL_MTMount.a ${SAL_WORK_DIR}/lib/libSAL_MTM1M3.a \
-	-L${LSST_SAL_PREFIX}/lib -L${SAL_WORK_DIR}/lib $(LIBSCHEMAREGISTRY_LDLIBS) -lrdkafka++ -lrdkafka -lavrocpp -lsasl2 -lssl -lcrypto -llz4
+	-L${LSST_SAL_PREFIX}/lib -L${SAL_WORK_DIR}/lib $(LIBSCHEMAREGISTRY_LDLIBS) -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson -lsasl2
 LIBS_FLAGS += -L${LSST_SAL_PREFIX}/lib
 
-PKG_LIBS := \
-        $(shell pkg-config yaml-cpp --libs $(silence))
+PKG_LIBS := $(shell pkg-config yaml-cpp spdlog fmt --libs $(silence))
 
-CPP := g++ -std=c++17 -Wall -fPIE ${c_opts}
+CPP := g++ -std=c++20 -Wall -fPIE ${c_opts}
 
 # compile x86 simulator or real cRIO stuff
 ifdef SIMULATOR
   C := gcc -Wall ${c_opts}
   CPP += -DSIMULATOR
-  PKG_LIBS += $(shell pkg-config spdlog --libs $(silence))
+  PKG_LIBS += $(shell pkg-config spdlog avro-cpp --libs $(silence)) -L /usr/local/lib
 else
   C := gcc -Wall -fmessage-length=0 ${c_opts}
   CPP += -fmessage-length=0
@@ -57,8 +66,8 @@ else
 endif
 
 LIBS += $(PKG_LIBS) -ldl -lpthread -L/usr/lib64/boost${BOOST_RELEASE} -lboost_filesystem -lboost_iostreams \
-	-lboost_program_options -lboost_system -lsnappy \
-	-L${LSST_SAL_PREFIX}/lib -lrdkafka++ -lrdkafka -lavrocpp
+	-lboost_program_options -lboost_system \
+	-L${LSST_SAL_PREFIX}/lib -lcurl -lrdkafka++ -lrdkafka -lavrocpp -lavro -ljansson
 
 VERSION := $(shell git describe --tags --dirty 2>/dev/null || echo "unknown:non-git")
 GIT_HASH := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown-non-git")

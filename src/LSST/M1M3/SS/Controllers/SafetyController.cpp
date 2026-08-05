@@ -294,17 +294,20 @@ void SafetyController::forceControllerNotifySafetyLimit(bool conditionFlag) {
 
 void SafetyController::forceControllerNotifyXMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerXMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag, failed);
+                    _safetyControllerSettings->ForceController.FaultOnXMomentLimit, conditionFlag, "{}",
+                    failed);
 }
 
 void SafetyController::forceControllerNotifyYMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerYMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag, failed);
+                    _safetyControllerSettings->ForceController.FaultOnYMomentLimit, conditionFlag, "{}",
+                    failed);
 }
 
 void SafetyController::forceControllerNotifyZMomentLimit(bool conditionFlag, std::string failed) {
     _updateOverride(FaultCodes::ForceControllerZMomentLimit,
-                    _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag, failed);
+                    _safetyControllerSettings->ForceController.FaultOnZMomentLimit, conditionFlag, "{}",
+                    failed);
 }
 
 void SafetyController::forceControllerNotifyNearNeighborCheck(bool conditionFlag, std::string failed,
@@ -395,23 +398,20 @@ void SafetyController::forceControllerNotifyForceClipping(bool conditionFlag) {
 
 void SafetyController::forceControllerNotifyMeasuredXForceLimit(int actuatorId, float xForce,
                                                                 bool conditionFlag) {
-    _updateOverride(
-            FaultCodes::ForceControllerMeasuredXForceLimit, true, conditionFlag,
-            fmt::format("Force actuator X {} measured force ({} N) outside limits", actuatorId, xForce));
+    _updateOverride(FaultCodes::ForceControllerMeasuredXForceLimit, true, conditionFlag,
+                    "Force actuator X {} measured force ({} N) outside limits", actuatorId, xForce);
 }
 
 void SafetyController::forceControllerNotifyMeasuredYForceLimit(int actuatorId, float yForce,
                                                                 bool conditionFlag) {
-    _updateOverride(
-            FaultCodes::ForceControllerMeasuredYForceLimit, true, conditionFlag,
-            fmt::format("Force actuator Y {} measured force ({} N) outside limits", actuatorId, yForce));
+    _updateOverride(FaultCodes::ForceControllerMeasuredYForceLimit, true, conditionFlag,
+                    "Force actuator Y {} measured force ({} N) outside limits", actuatorId, yForce);
 }
 
 void SafetyController::forceControllerNotifyMeasuredZForceLimit(int actuatorId, float zForce,
                                                                 bool conditionFlag) {
-    _updateOverride(
-            FaultCodes::ForceControllerMeasuredZForceLimit, true, conditionFlag,
-            fmt::format("Force actuator Z {} measured force ({} N) outside limits", actuatorId, zForce));
+    _updateOverride(FaultCodes::ForceControllerMeasuredZForceLimit, true, conditionFlag,
+                    "Force actuator Z {} measured force ({} N) outside limits", actuatorId, zForce);
 }
 
 void SafetyController::positionControllerNotifyLimitLow(int hp, bool conditionFlag) {
