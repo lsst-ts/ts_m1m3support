@@ -257,7 +257,7 @@ void runFPGAs(std::shared_ptr<SAL_MTM1M3> m1m3SAL, std::shared_ptr<SAL_MTMount> 
             write(retPipe, ex.what(), strlen(ex.what()));
             close(retPipe);
         }
-        SPDLOG_CRITICAL("Error starting.stopping or joining threads: {)", ex.what());
+        SPDLOG_CRITICAL("Error starting.stopping or joining threads: {}", ex.what());
     }
 }
 

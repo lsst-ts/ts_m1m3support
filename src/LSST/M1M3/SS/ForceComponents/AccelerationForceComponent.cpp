@@ -80,7 +80,7 @@ void AccelerationForceComponent::applyAccelerationForcesByAngularAccelerations(f
                                                                                float angularAccelerationZ) {
     SPDLOG_TRACE(
             "AccelerationForceComponent: "
-            "applyAccelerationForcesByAngularAccelerations(P:.1f}, {.1f}, {.1f})",
+            "applyAccelerationForcesByAngularAccelerations({:.1f}, {:.1f}, {:.1f})",
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);
     DistributedForces forces = ForceActuatorSettings::instance().calculateForceFromAngularAcceleration(
             angularAccelerationX, angularAccelerationY, angularAccelerationZ);

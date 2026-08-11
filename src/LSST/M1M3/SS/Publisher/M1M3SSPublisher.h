@@ -219,8 +219,8 @@ public:
     void logCommandRejectionWarning();
     void logCommandRejectionWarning(std::string command, std::string reason);
     template <typename... Args>
-    void commandFailed(std::string command, std::string const& format, Args const&... args) {
-        std::string reason = fmt::format(format, args...);
+    void commandFailed(std::string command, std::format_string<Args...> format, Args&&... args) {
+        std::string reason = std::format(format, std::forward<Args>(args)...);
         logCommandRejectionWarning(command, reason);
         throw std::runtime_error(reason);
     }

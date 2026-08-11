@@ -4,30 +4,32 @@
 Version History
 ===============
 
+.. towncrier release notes start
+
 v2.19.0
-------
+=======
 
 * Configurable bump test pull and push forces.
 
 v2.18.1
--------
+=======
 
 * Added fa-disenable script.
 
 v2.18.0
--------
+=======
 
 * Report detailed statistics during bump tests - forceActuatorBumpTestsStatistics.
 * Simulator settings (to disable annoying M1M3 faults).
 * Apply static forces as M1M3 is being raised.
 
 v2.17.1
--------
+=======
 
 * Fix excessive logevent_ilcWarning publishing
 
 v2.17.0
--------
+=======
 
 * Allow parallel M1M3 force actuators bump tests
 * Continue a bump test after detecting its failure
@@ -36,19 +38,19 @@ v2.17.0
 * Limit interlockStatus and preclippedForces events messages
 
 v2.16.0
--------
+=======
 
 * Option to build for Kafka-SAL
 
 v2.15.9
--------
+=======
 
 * Reject command with AOS forces above limits
 * Return error on attempt to bump test disabled FA
 * Removing FA from disabled in config file removes it from disabled on next CSC start
 
 v2.15.8
--------
+=======
 
 * VelocityXYTable for inertia velocity/centrifugal force fit
 * Gyroscopic velocities are reported in deg/sec, and used as rad/sec in
@@ -57,16 +59,16 @@ v2.15.8
 * daa-test and saa-test m1m3sscli commands
 
 v2.15.7
--------
+=======
 * Improved IRQ handling messages
 
 v2.15.6
--------
+=======
 * Improvements in FPGA IRQ timeout detection
 * Unit fixes - DC accelerometers in m/sec^2, IMS axial offsets in m
 
 v2.15.5
--------
+=======
 
 * fixed signs in IMS transformations
 * correctly parse ILC calibration data during startup
@@ -74,26 +76,26 @@ v2.15.5
 * New MPU interface
 
 v2.15.4
--------
+=======
 
 * Fix simulator build (spdlog include issue)
 
 v2.15.3
--------
+=======
 
 * m1m3sscli set-dca-gain and dca-gain commands
 * changed IRQ timeouts
 * Adjust to new cRIOcpp version
 
 v2.15.2
--------
+=======
 
 * utils dcelevation, dcrawdump utilities
 * Read and store raw DC accelerometer data
 * Reject requests to change slew controller settings if slew flags is active
 
 v2.15.1
--------
+=======
 
 * Moved DataTypes to cRIOcpp, ILCWarning singleton
 * Use cRIO/SAL/Command.h ACK_ constants
@@ -104,12 +106,12 @@ v2.15.1
 * Fixed cRIOcpp version
 
 v2.15.0
--------
+=======
 
 * Raising and lowering can be paused and resumed
 
 v2.14.0
--------
+=======
 
 * SlewController settings
 * Command to chaneg SlewController settings on-fly
@@ -118,39 +120,39 @@ v2.14.0
 * pre-commit hooks
 
 v2.13.0
--------
+=======
 
 * Set and ClearSlewFlag commands
 * Command to enable/disable force components
 
 v2.12.4
--------
+=======
 * Calculations of mirror accelerations from TMA velocities (changes)
 * DC Accelerometer FPGA code improvements
 
 v2.12.3
--------
+=======
 
 * Fixed DC Accelerometers calculations
 
 v2.12.2
--------
+=======
 
 * Distribute disabled FA forces into their quadrants - allow force balancing to be activated
 
 v2.12.1
--------
+=======
 
 * Don't test FA following error in disabled state
 
 v2.12.0
--------
+=======
 
 * Configuration is stored in standard LSST configuration format
 * Sends proper messages during CSC initialization
 
 v2.11.0
--------
+=======
 
 * Don't turn on lights on startup
 * Booster valve automatic activation (based on accelerometers/following error)

@@ -183,11 +183,11 @@ public:
 private:
     template <typename... Args>
     void _updateOverride(FaultCodes::Type faultCode, bool enabledFlag, bool conditionFlag,
-                         std::string errorReport, Args&&... args) {
+                         std::format_string<Args...> errorReport, Args&&... args) {
         bool faultConditionExists = enabledFlag && conditionFlag;
         if (faultConditionExists && _errorCodeData->errorCode == FaultCodes::NoFault) {
             _errorCodeData->errorCode = faultCode;
-            _errorCodeData->errorReport = fmt::format(errorReport, args...);
+            _errorCodeData->errorReport = std::format(errorReport, std::forward<Args>(args)...);
         }
     }
 

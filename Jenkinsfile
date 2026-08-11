@@ -21,62 +21,40 @@ properties(
 node {
     def SALUSER_HOME = "/home/saluser"
     def BRANCH = (env.CHANGE_BRANCH != null) ? env.CHANGE_BRANCH : env.BRANCH_NAME
-    // branches requiring changes in XML from default develop branch
-    def XML_BRANCH = BRANCH in ["main", "tickets/DM-39576"] ? BRANCH : "develop"
-    def CRIO_BRANCH = BRANCH in ["main", "tickets/DM-42413", "tickets/DM-42443"] ? BRANCH : "develop"
+    def SAME_CRIO_BRANCH = ["main"]
+    def CRIO_BRANCH=(BRANCH in SAME_CRIO_BRANCH) ? BRANCH : "develop"
+
     stage('Cloning sources')
     {
-        dir("ts_cRIOcpp") {
-            git branch: CRIO_BRANCH, url: 'https://github.com/lsst-ts/ts_cRIOcpp'
-        }
         dir("ts_m1m3support") {
-            git branch: BRANCH, url: 'https://github.com/lsst-ts/ts_m1m3support'
+            checkout scm
         }
     }
 
-    stage('Building dev container')
+    stage('Building dev container (with tests)')
     {
         M1M3sim = docker.build(
             "lsstts/mtm1m3_sim:" + env.BRANCH_NAME.replace("/", "_"),
             "--target crio-develop --build-arg XML_BRANCH=main "
             + "--build-arg KAFKA_HOST=$LSST_KAFKA_HOST --build-arg KAFKA_BROKER_PORT=$LSST_KAFKA_BROKER_PORT "
             + "--build-arg SCHEMA_REGISTRY_URI=$LSST_SCHEMA_REGISTRY_URL "
-            + "--build-arg cRIO_CPP=$CRIO_BRANCH --build-arg M1M3_THERMAL=$BRANCH"
+            + "--build-arg cRIO_CPP=$CRIO_BRANCH --build-arg M1M3_SUPPORT=$BRANCH "
+            + "--build-arg TARGET=junit "
             + (params.noCache ? " --no-cache " : " ") + "$WORKSPACE/ts_m1m3support"
         )
     }
 
-    try {
-        stage("Running tests")
-        {
-            withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
-                 M1M3sim.inside("--entrypoint=''") {
-                     if (params.clean) {
-                     sh """
-                        cd $WORKSPACE/ts_cRIOcpp
-                        make clean
-                        cd $WORKSPACE/ts_m1m3support
-                        make clean
-                     """
-                     }
-                     sh """
-                        source $SALUSER_HOME/.crio_setup.sh
-        
-                        cd $WORKSPACE/ts_cRIOcpp
-                        make
-        
-                        cd $WORKSPACE/ts_m1m3support
-
-                        make SIMULATOR=1
-                        LSST_DDS_PARTITION_PREFIX=test make SIMULATOR=1 junit || true
-                     """
-                 }
-            }
-
-            junit 'ts_m1m3support/tests/*.xml'
+    stage("Copying test results")
+    {
+        withEnv(["SALUSER_HOME=" + SALUSER_HOME]) {
+             M1M3sim.inside("--entrypoint=''") {
+                 sh """
+                    cp -v $SALUSER_HOME/ts_m1m3support/tests/*.xml $WORKSPACE/ts_m1m3support/tests
+                 """
+             }
         }
-    } catch(e) {
-        echo e.toString()
+
+        junit 'ts_m1m3support/tests/*.xml'
     }
 
     stage('Build documentation')
@@ -84,7 +62,9 @@ node {
          M1M3sim.inside("--entrypoint=''") {
              sh """
                 source $SALUSER_HOME/.crio_setup.sh
-                cd $WORKSPACE/ts_m1m3support
+
+                mamba install -y doxygen
+                cd $SALUSER_HOME/ts_m1m3support
                 make doc
              """
          }

@@ -106,7 +106,7 @@ void OffsetForceComponent::applyOffsetForcesByMirrorForces(float xForce, float y
 }
 
 void OffsetForceComponent::applyActuatorOffset(char axis, int index, float offset) {
-    SPDLOG_DEBUG("OffsetForceComponent: applyActuatorOffset({}, {}, {:1.f}", axis, index, offset);
+    SPDLOG_DEBUG("OffsetForceComponent: applyActuatorOffset({}, {}, {:.1f}", axis, index, offset);
     switch (axis) {
         case 'X':
             xTarget[index] = offset;
