@@ -23,13 +23,39 @@
 
 #include <catch2/catch_all.hpp>
 
+#include <SAL_MTM1M3.h>
+
+#include <ForceActuatorSettings.h>
+#include <M1M3SSPublisher.h>
+#include <Model.h>
 #include <SettingReader.h>
 
+using namespace Catch::Matchers;
 using namespace LSST::M1M3::SS;
 
-TEST_CASE("List available settingsi", "[SettingReader]") {
+TEST_CASE("List available settings", "[SettingReader]") {
+    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
+
     SettingReader::instance().setRootPath("../SettingFiles/");
+
     auto configs = SettingReader::instance().getAvailableConfigurations();
-    REQUIRE(configs.front() == "");
-    REQUIRE(configs.size() == 0);
+    CHECK(configs.size() == 0);
+}
+
+TEST_CASE("ForceActuatorSettings", "[SettingReader]") {
+    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
+
+    SettingReader::instance().setRootPath("../SettingFiles/");
+
+    REQUIRE_NOTHROW(Model::instance().loadSettings("Default"));
+
+    auto& fa_settings = ForceActuatorSettings::instance();
+
+    CHECK_THAT(fa_settings.bumpTestTestedError, WithinAbs(5, 1e-3));
+    CHECK_THAT(fa_settings.bumpTestTestedWarning, WithinAbs(2.5, 1e-3));
+
+    CHECK_THAT(fa_settings.bumpTestNonTestedError, WithinAbs(6, 1e-3));
+    CHECK_THAT(fa_settings.bumpTestNonTestedWarning, WithinAbs(5.2, 1e-3));
 }

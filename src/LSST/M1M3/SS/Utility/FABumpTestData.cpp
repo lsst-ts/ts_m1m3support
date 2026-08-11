@@ -309,6 +309,7 @@ BumpTestStatus FABumpTestData::_test_rms(int x_index, int y_index, int z_index, 
         case MTM1M3::MTM1M3_shared_BumpTestType_Primary:
             stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Primary);
             *p_state = in_rms(stat.error_rms, error, warning);
+            break;
         case MTM1M3::MTM1M3_shared_BumpTestType_Z:
             stat = statistics(z_index, z_index, MTM1M3::MTM1M3_shared_BumpTestType_Z);
             *p_state = in_rms(stat.error_rms, error, warning);

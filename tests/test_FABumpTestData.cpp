@@ -33,12 +33,21 @@
 
 #include <FABumpTestData.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <Model.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;
 
 TEST_CASE("fromRaw", "[FABumpTestData]") {
     constexpr int size = 10;
+
+    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
+
+    SettingReader::instance().setRootPath("../SettingFiles");
+
+    CHECK_NOTHROW(Model::instance().loadSettings("Default"));
 
     FABumpTestData data(size);
 
@@ -69,15 +78,23 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
 
     CHECK(data.test_actuator(1, MTM1M3::MTM1M3_shared_BumpTestType_Y) == BumpTestStatus::PASSED);
 
-    std::vector<float> warnings(FA_COUNT, 0.15);
-    for (int i = 0; i < size; i++) {
+    std::vector<float> warnings(FA_COUNT, 3.15);
+    for (size_t i = 0; i < size; i++) {
         std::vector<float> x(FA_COUNT, sin(M_PI * static_cast<float>(i) / size / 2) * 0.21);
         std::vector<float> y(FA_COUNT, -0.15 + sin(M_PI * static_cast<float>(i) / size / 2) * 0.1);
         CHECK_NOTHROW(data.add_data(x, y, zeros, warnings, zeros, states, states));
     }
 
-    CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary) ==
-          BumpTestStatus::OVERSHOOT_WARNING);
+    for (size_t i = 0; i < size; i++) {
+        CHECK_THAT(data.get_data(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary)[i], WithinAbs(3.15, 1e-3));
+    }
+
+    auto stat_primary = data.statistics(0, 0, MTM1M3::MTM1M3_shared_BumpTestType_Primary, 0);
+    CHECK_THAT(stat_primary.min, WithinAbs(3.15, 1e-3));
+    CHECK_THAT(stat_primary.max, WithinAbs(3.15, 1e-3));
+    CHECK_THAT(stat_primary.error_rms, WithinAbs(3.15, 1e-3));
+
+    CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary) == BumpTestStatus::RMS_WARNING);
 
     CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_X) == BumpTestStatus::INVALID_ACTUATOR);
 
@@ -85,7 +102,7 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
     CHECK_THAT(stat_x.max, WithinAbs(0.207414553, 1e-3));
     CHECK_THAT(stat_x.error_rms, WithinAbs(0.140872285, 1e-3));
 
-    CHECK(data.test_actuator(147, MTM1M3::MTM1M3_shared_BumpTestType_X) == BumpTestStatus::OVERSHOOT_WARNING);
+    CHECK(data.test_actuator(147, MTM1M3::MTM1M3_shared_BumpTestType_X) == BumpTestStatus::PASSED);
 
     auto stat = data.statistics(0, 0, MTM1M3::MTM1M3_shared_BumpTestType_Y, 0);
     CHECK_THAT(stat.min, WithinAbs(-0.15, 1e-3));

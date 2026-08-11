@@ -52,6 +52,13 @@ public:
      */
     float minimal_tested_distance(int actuator_id, int& min_actuator_id);
 
+    /**
+     * Start new bump tests.
+     *
+     * @param z_index Actuator Z index (0-155).
+     * @param test_primary When true, primary (Z) force will be tested.
+     * @param test_secondary When true, secondary (X or Y) force will be tested.
+     */
     void trigger_bump_test(int z_index, bool test_primary, bool test_secondary);
 
     /**
