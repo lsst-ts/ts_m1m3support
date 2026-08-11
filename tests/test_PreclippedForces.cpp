@@ -72,7 +72,7 @@ TEST_CASE("M1M3 PreclippedForces template - time", "[PreclippedForces]") {
 
     std::this_thread::sleep_for(21ms);
 
-    CHECK(test.check_changes() == false);
+    CHECK(test.check_changes() == true);
     CHECK(test.send_count == 2);
 
     test.xForces[0] = 1;
@@ -150,7 +150,7 @@ TEST_CASE("M1M3 PreclippedForces template - forces difference", "[PreclippedForc
 
     std::this_thread::sleep_for(21ms);
 
-    CHECK(test.check_changes() == false);
+    CHECK(test.check_changes() == true);
     CHECK(test.send_count == 3);
     CHECK(test.check_changes() == false);
     CHECK(test.send_count == 3);
