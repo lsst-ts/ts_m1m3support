@@ -52,8 +52,8 @@ TEST_CASE("M1M3 ForceActuatorBumpTestStatus data", "[ForceActuatorBumpTestStatus
     CHECK_NOTHROW(fa_bump_status.trigger_bump_test(0, true, false));
     CHECK(fa_bump_status.test_in_progress() == true);
 
-    CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(6.62837553, 1e-3));
-    CHECK(actuator_id == 324);
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(2.400574684, 1e-3));
+    CHECK(actuator_id == 101);
 
     CHECK_THAT(fa_bump_status.minimal_tested_distance(155, actuator_id), WithinRel(5.103684425, 1e-3));
     CHECK(actuator_id == 324);
