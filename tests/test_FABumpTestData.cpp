@@ -33,16 +33,32 @@
 
 #include <FABumpTestData.h>
 #include <ForceActuatorApplicationSettings.h>
+#include <Model.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;
 
-TEST_CASE("fromRaw", "[FABumpTestData]") {
+std::vector<float> zeros(FA_COUNT, 0);
+
+std::vector<float> warnings_positive(FA_COUNT, +3.15);
+std::vector<float> warnings_negative(FA_COUNT, -3.15);
+
+std::vector<float> errors_positive(FA_COUNT, +5.15);
+std::vector<float> errors_negative(FA_COUNT, -5.15);
+
+TEST_CASE("Warnings", "[FABumpTestData]") {
     constexpr int size = 10;
+
+    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
+
+    SettingReader::instance().setRootPath("../SettingFiles");
+
+    CHECK_NOTHROW(Model::instance().loadSettings("Default"));
 
     FABumpTestData data(size);
 
-    std::vector<float> zeros(FA_COUNT, 0);
     std::vector<int> states(FA_COUNT, MTM1M3::MTM1M3_shared_BumpTest_TestingPositive);
 
     CHECK(data.empty() == true);
@@ -69,15 +85,22 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
 
     CHECK(data.test_actuator(1, MTM1M3::MTM1M3_shared_BumpTestType_Y) == BumpTestStatus::PASSED);
 
-    std::vector<float> warnings(FA_COUNT, 0.15);
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
         std::vector<float> x(FA_COUNT, sin(M_PI * static_cast<float>(i) / size / 2) * 0.21);
         std::vector<float> y(FA_COUNT, -0.15 + sin(M_PI * static_cast<float>(i) / size / 2) * 0.1);
-        CHECK_NOTHROW(data.add_data(x, y, zeros, warnings, zeros, states, states));
+        CHECK_NOTHROW(data.add_data(x, y, zeros, warnings_positive, zeros, states, states));
     }
 
-    CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary) ==
-          BumpTestStatus::OVERSHOOT_WARNING);
+    for (size_t i = 0; i < size; i++) {
+        CHECK_THAT(data.get_data(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary)[i], WithinAbs(3.15, 1e-3));
+    }
+
+    auto stat_primary = data.statistics(0, 0, MTM1M3::MTM1M3_shared_BumpTestType_Primary, 0);
+    CHECK_THAT(stat_primary.min, WithinAbs(3.15, 1e-3));
+    CHECK_THAT(stat_primary.max, WithinAbs(3.15, 1e-3));
+    CHECK_THAT(stat_primary.error_rms, WithinAbs(3.15, 1e-3));
+
+    CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary) == BumpTestStatus::RMS_WARNING);
 
     CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_X) == BumpTestStatus::INVALID_ACTUATOR);
 
@@ -85,7 +108,7 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
     CHECK_THAT(stat_x.max, WithinAbs(0.207414553, 1e-3));
     CHECK_THAT(stat_x.error_rms, WithinAbs(0.140872285, 1e-3));
 
-    CHECK(data.test_actuator(147, MTM1M3::MTM1M3_shared_BumpTestType_X) == BumpTestStatus::OVERSHOOT_WARNING);
+    CHECK(data.test_actuator(147, MTM1M3::MTM1M3_shared_BumpTestType_X) == BumpTestStatus::PASSED);
 
     auto stat = data.statistics(0, 0, MTM1M3::MTM1M3_shared_BumpTestType_Y, 0);
     CHECK_THAT(stat.min, WithinAbs(-0.15, 1e-3));
@@ -121,5 +144,51 @@ TEST_CASE("fromRaw", "[FABumpTestData]") {
         CHECK_THAT(stat.max, WithinAbs(0, 1e-6));
         CHECK_THAT(stat.average, WithinAbs(-0.06303332, 1e-6));
         CHECK_THAT(stat.error_rms, WithinAbs(0.073386133, 1e-3));
+    }
+
+    for (size_t i = 0; i < size / 2; i++) {
+        std::vector<float> x(FA_COUNT, sin(M_PI * static_cast<float>(i) / size / 2) * 0.21);
+        std::vector<float> y(FA_COUNT, -0.15 + sin(M_PI * static_cast<float>(i) / size / 2) * 0.1);
+        CHECK_NOTHROW(data.add_data(x, y, zeros, warnings_negative, zeros, states, states));
+    }
+
+    for (size_t i = 0; i < size / 2; i++) {
+        std::vector<float> x(FA_COUNT, sin(M_PI * static_cast<float>(i) / size / 2) * 0.21);
+        std::vector<float> y(FA_COUNT, -0.15 + sin(M_PI * static_cast<float>(i) / size / 2) * 0.1);
+        CHECK_NOTHROW(data.add_data(x, y, zeros, warnings_positive, zeros, states, states));
+    }
+
+    for (size_t i = 0; i < FA_COUNT; i++) {
+        CHECK(data.test_actuator(i, MTM1M3::MTM1M3_shared_BumpTestType_Primary) ==
+              BumpTestStatus::RMS_WARNING);
+    }
+}
+
+TEST_CASE("Errors", "[FABumpTestData]") {
+    constexpr int size = 10;
+
+    std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
+    M1M3SSPublisher::instance().setSAL(m1m3SAL);
+
+    SettingReader::instance().setRootPath("../SettingFiles");
+
+    CHECK_NOTHROW(Model::instance().loadSettings("Default"));
+
+    FABumpTestData data(size);
+
+    std::vector<int> states(FA_COUNT, MTM1M3::MTM1M3_shared_BumpTest_TestingPositive);
+
+    CHECK(data.empty() == true);
+
+    for (size_t i = 0; i < size; i++) {
+        CHECK(data.size() == i);
+        CHECK(data.test_actuator(0, MTM1M3::MTM1M3_shared_BumpTestType_Primary) == BumpTestStatus::NO_DATA);
+        CHECK_NOTHROW(data.add_data(errors_positive, zeros, zeros, zeros, zeros, states, states));
+    }
+
+    for (size_t i = 0; i < FA_COUNT; i++) {
+        if (ForceActuatorApplicationSettings::instance().ZIndexToXIndex[i] != -1) {
+            CHECK(data.test_actuator(i, MTM1M3::MTM1M3_shared_BumpTestType_X) == BumpTestStatus::RMS_ERROR);
+        }
     }
 }

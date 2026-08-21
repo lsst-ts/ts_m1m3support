@@ -29,6 +29,8 @@
 
 #include <ForceActuatorBumpTestStatus.h>
 #include <M1M3SSPublisher.h>
+#include <Model.h>
+#include <SettingReader.h>
 
 using namespace LSST::M1M3::SS;
 using namespace Catch::Matchers;
@@ -37,22 +39,26 @@ TEST_CASE("M1M3 ForceActuatorBumpTestStatus data", "[ForceActuatorBumpTestStatus
     std::shared_ptr<SAL_MTM1M3> m1m3SAL = std::make_shared<SAL_MTM1M3>();
     M1M3SSPublisher::instance().setSAL(m1m3SAL);
 
+    SettingReader::instance().setRootPath("../SettingFiles/");
+
+    REQUIRE_NOTHROW(Model::instance().loadSettings("Default"));
+
     auto& fa_bump_status = ForceActuatorBumpTestStatus::instance();
 
     int actuator_id;
     CHECK(fa_bump_status.minimal_tested_distance(10, actuator_id) == std::numeric_limits<float>::infinity());
     CHECK(fa_bump_status.test_in_progress() == false);
 
-    CHECK_NOTHROW(fa_bump_status.trigger_bump_test(101, true, false));
+    CHECK_NOTHROW(fa_bump_status.trigger_bump_test(0, true, false));
     CHECK(fa_bump_status.test_in_progress() == true);
 
-    CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(6.62837553, 1e-3));
-    CHECK(actuator_id == 324);
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(2.400574684, 1e-3));
+    CHECK(actuator_id == 101);
 
     CHECK_THAT(fa_bump_status.minimal_tested_distance(155, actuator_id), WithinRel(5.103684425, 1e-3));
     CHECK(actuator_id == 324);
 
-    CHECK_NOTHROW(fa_bump_status.trigger_bump_test(437, true, true));
+    CHECK_NOTHROW(fa_bump_status.trigger_bump_test(149, true, true));
 
     CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(1.76155436, 1e-3));
     CHECK(actuator_id == 102);
