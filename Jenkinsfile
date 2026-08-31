@@ -64,6 +64,7 @@ node {
                 source $SALUSER_HOME/.crio_setup.sh
 
                 mamba install -y doxygen
+                pip install ltd-conveyor
                 cd $SALUSER_HOME/ts_m1m3support
                 make doc
              """
