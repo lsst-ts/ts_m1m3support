@@ -8,24 +8,13 @@ src/version.c
 *.o
 *.obj
 
-# Precompiled Headers
-*.gch
-*.pch
-
 # Compiled Static libraries
-*.lai
 *.la
 *.a
 *.lib
 
 # Executables
-*.exe
 *.out
-*.app
-
-# Metadata
-*.aliases
-*.lvlps
 
 ts-M1M3supportd
 m1m3sscli
@@ -33,10 +22,6 @@ m1m3sscli
 tests/test_*
 !tests/test_*.cpp
 
-# log files
-MTM1M3_*
-ospl-error.log
-ospl-info.log
 .pre-commit-config.yaml
 .clang-format
 .flake8
@@ -44,3 +29,4 @@ ospl-info.log
 .mypy.ini
 .ruff.toml
 towncrier.toml
+.LICENSE.txt
