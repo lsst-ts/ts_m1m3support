@@ -1,4 +1,4 @@
-FROM ts-dockerhub.lsst.org/deploy-crio:c0045 AS crio-develop
+FROM ts-dockerhub.lsst.org/deploy-crio:c0045 AS setup
 
 # Avro (C++) and libschemaregistry are provided by the base image at
 # LSST_SAL_PREFIX (/opt/lsst/tssw/ts_sal); SAL generated code links against
@@ -24,17 +24,23 @@ RUN [ -z $SCHEMA_REGISTRY_URI ] || echo >> .crio_setup.sh -e \
 \\n\
 export LSST_SCHEMA_REGISTRY_URL=${SCHEMA_REGISTRY_URI}
 
+RUN echo >> .crio_setup.sh -e \
+export PKG_CONFIG_PATH=\$PKG_CONFIG_PATH:/opt/lsst/software/stack/miniconda/share/pkgconfig\\n\
+export LIBSCHEMAREGISTRY_VCPKG_LIB=/opt/vcpkg/installed/x64-linux/lib
+
 RUN source ~/.crio_setup.sh && cd $TS_XML_DIR \
     && git fetch && git checkout $XML_BRANCH && git pull \
     && pip install .
 
 RUN source ~/.crio_setup.sh \
-    && MAKEFLAGS="-j$(nproc)" LIBSCHEMAREGISTRY_VCPKG_LIB=/opt/vcpkg/installed/x64-linux/lib salgeneratorKafka generate cpp MTM1M3 \
-    && MAKEFLAGS="-j$(nproc)" LIBSCHEMAREGISTRY_VCPKG_LIB=/opt/vcpkg/installed/x64-linux/lib salgeneratorKafka generate cpp MTMount
+    && MAKEFLAGS="-j$(nproc)" salgeneratorKafka generate cpp MTM1M3 \
+    && MAKEFLAGS="-j$(nproc)" G_LIB=/opt/vcpkg/installed/x64-linux/lib salgeneratorKafka generate cpp MTMount
 
 ARG cRIO_CPP=v1.16.1
 ARG M1M3_SUPPORT=develop
 ARG TARGET=simulator
+
+FROM setup AS build
 
 RUN source ~/.crio_setup.sh \
     && cd ts_cRIOcpp && git fetch && git checkout $cRIO_CPP \

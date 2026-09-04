@@ -1,5 +1,26 @@
 #!/usr/bin/env python3
 
+# This file is part of ts_m1m3support.
+#
+# Developed for the Vera C. Rubin Observatory Telescope and Site Systems.
+# This product includes software developed by the LSST Project
+# (https://www.lsst.org).
+# See the COPYRIGHT file at the top-level directory of this distribution
+# for details of code ownership.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 import argparse
 import asyncio
 import enum
@@ -41,9 +62,7 @@ class CalibrateACAccelerometer:
         self._tma_data: pd.DataFrame | None = None
 
     async def _load_period(self) -> None:
-        period_end = min(
-            self.end, self._current_time + TimeDelta(self._period, format="sec")
-        )
+        period_end = min(self.end, self._current_time + TimeDelta(self._period, format="sec"))
         logging.info("Probing interval {self._current_time} - {period_end}")
 
         self.elevation = await self.client.select_time_series(
@@ -52,9 +71,7 @@ class CalibrateACAccelerometer:
             self._current_time,
             period_end,
         )
-        self.elevation = self.elevation.rename(
-            lambda n: "elevation_" + n, axis="columns"
-        )
+        self.elevation = self.elevation.rename(lambda n: "elevation_" + n, axis="columns")
 
         self.azimuth = await self.client.select_time_series(
             "lsst.sal.MTMount.elevation",
@@ -94,18 +111,14 @@ class CalibrateACAccelerometer:
                     / self._tma_derivative["elevation_timestamp"]
                 ).plot(style=".-")
                 (
-                    self.elevation_acc["elevation_actualVelocity"]
-                    / self.elevation_acc["elevation_timestamp"]
+                    self.elevation_acc["elevation_actualVelocity"] / self.elevation_acc["elevation_timestamp"]
                 ).plot(style="o-")
 
                 (
-                    self.elevation_acc["elevation_demandVelocity"]
-                    / self.elevation_acc["elevation_timestamp"]
+                    self.elevation_acc["elevation_demandVelocity"] / self.elevation_acc["elevation_timestamp"]
                 ).plot(style="|-")
 
-                plt.legend(
-                    ["el. demand", "el. actual", "el only actual", "el only demand"]
-                )
+                plt.legend(["el. demand", "el. actual", "el only actual", "el only demand"])
                 plt.show()
 
             break
@@ -124,9 +137,7 @@ class CalibrateACAccelerometer:
             actual = elevation["actualPosition"]
             elevation["demandPosition"]
 
-            print(
-                f"Elevation {np.mean(actual):.6f} {np.min(actual):.6f} {np.max(actual):.6f}"
-            )
+            print(f"Elevation {np.mean(actual):.6f} {np.min(actual):.6f} {np.max(actual):.6f}")
         except KeyError:
             print("Unknow elevation, perharps TMA isn't running?")
 
@@ -134,10 +145,7 @@ class CalibrateACAccelerometer:
             "lsst.sal.MTM1M3.accelerometerData", "*", start, end
         )
 
-        stat = [
-            (np.mean(dc_accelerometers[field]), np.std(dc_accelerometers[field]))
-            for field in RAW_FIELDS
-        ]
+        stat = [(np.mean(dc_accelerometers[field]), np.std(dc_accelerometers[field])) for field in RAW_FIELDS]
 
         for a in range(8):
             print(f"Average {a + 1}: {stat[a][0] * 1000:.1f} stdev {stat[a][1]}")
@@ -181,9 +189,7 @@ def parse_interval(interval: str) -> float:
     )
 
 
-parser = argparse.ArgumentParser(
-    prog="DC average", description="Calculate DC accelerometer average"
-)
+parser = argparse.ArgumentParser(prog="DC average", description="Calculate DC accelerometer average")
 
 parser.add_argument(
     "--start",
