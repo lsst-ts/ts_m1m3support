@@ -367,7 +367,9 @@ PositionControllerSettings:
   ReferencePosition: [32438, 37387, 43686, 44733, 34861, 40855]
 SafetyControllerSettings:
   AirControllerSettings:
+    # Fault if sensed commanded state doesn't equal commanded valve state.
     FaultOnCommandOutputMismatch: On
+    # Fault if sensed valve state doesn't equal commanded (desired) state. Testing starts ValveTransitionTimeout after valve was commanded to change its state.
     FaultOnCommandSensorMismatch: On
     ValveTransitionTimeout: 40
   DisplacementSettings:
