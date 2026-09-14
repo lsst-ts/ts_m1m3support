@@ -2,21 +2,25 @@
 
 Unless noted, setting override are in SafetyControllerSettings section of the init file. Faults codes
 
-## No Fault
+## No Fault - 0x00000000 (0)
 
 Obviously meaning no fault. Used to reset previous error codes.
 
-## AirControllerCommandOutputMismatch - 0x00010001 (65537)
+## Air Controller - Air Valve
 
-Occurs when commanded value to open the master air valve doesn't match sensed
-command state. Most likely indicates either problem in the valve or wiring.
-Overriding the problem shall be futile - the mirror cannot be operated without
-air.
+Those errors occurs due to mismatch between commanded and desired master air
+valve state. There is only one, electronically controlled air valve. 
 
 ### Severity
 
 Most likely air valve will remain closed or cannot be closed. Mirror shall not
 be operated with this failure.
+
+M1M3 support system cannot operate without air - so it cannot operate when the
+valve is closed. Keeping the valve open can be dangerous, as this is the last
+line of defence against jammed force actuator valve. Even as the whole scenario
+is highly unlikely, we warn against using overrides to let the system operate
+with the following errors.
 
 ### Rectification
 
@@ -24,34 +28,74 @@ Check master air valve signals and wiring. Check air valve - does it really open
 closes as commanded? You can use pressure inside the system (measured on
 hardpoints) to confirm valve true state.
 
-### Telemetry
+### AirControllerCommandOutputMismatch - 0x00010001 (65537)
 
-MTM1M3\_logevent\_airSupplyStatus - airCommandedOn, airCommandOutputOn
+Occurs when commanded value to open the master air valve doesn't match sensed
+command state. Most likely indicates either problem in the valve or wiring.
+Overriding the problem shall be futile - the mirror cannot be operated without
+air.
 
-### Setting override
+#### Telemetry
+
+MTM1M3\_logevent\__airSupplyStatus | airCommandedOn, airCommandOutputOn
+
+MTM1M3\_hardpointMonitorData | breakawayPressure
+
+MTAirCompressor\_analogData | linePressure
+
+#### Setting override
 
 AirControllerSettings | FaultOnCommandOutputMismatch
 
-## AirControllerCommandSensorMismatch - 0x00010002 (65538)
+### AirControllerCommandSensorMismatch - 0x00010002 (65538)
 
 Occurs when the master air valve sensor value doesn't match expected
 (commanded) air valve state. Air valve needs about 30 seconds to change state
 (open or close). There is a sensor attached to the valve, which is logical 1
 when air valve is closed.
 
-### Rectification
+#### Telemetry
 
-Check wires signalling open valve. Check the air valve.
+MTM1M3\_logevent\__airSupplyStatus | airCommandedOn, airValveOpened, airValveClosed
 
-### Telemetry
+MTM1M3\_hardpointMonitorData | breakawayPressure
 
-MTM1M3\_logevent\_airSupplyStatus - airCommandedOn, airValveOpened, airValveClosed
+MTAirCompressor\_analogData | linePressure
 
-### Setting override
+#### Setting override
 
 AirControllerSettings | FaultOnCommandSensorMismatch
 
-## DisplacementSensorReportsInvalidCommand - 0x00020001 (131073)
+## Displacement Sensors - Independent Measurement System (IMS)
+
+Those errors signal problem in IMS. IMS sensors are readout by a convertor -
+DL-RS1A unit. Data are transmitted to control system via serial link from the
+converter. Serial line is connected to cRIO serial module, and commanded by
+FPGA code to readout data.
+
+Please consult DL-RS1A manual, available on data sheet wiki page, for details.
+You shall be able to hook your computer to serial line going to the DL-RS1A and
+query it directly to find out details of the failure.
+
+### Severity
+
+As the IMS is optional, and isn't used for mirror control, suggested overrides
+can be used to keep the mirror operational.
+
+### Rectification
+
+Check the DL-RS1A communication unit, its power and wiring (bothw wiring to
+cRIO and to the displacement sensors). Audit changes to CSC and FPGA bitfile.
+Replace DL-RS1A unit and/or a displacement sensor.
+
+The unit is connected to NI-9870 module - slot 8 of the cRIO, port 2. The NI
+module needs to be independently powered. The power to the module shall be
+checked, and the module replaced. 
+
+Inclinometer shares the same NI module to communicate with the hardware. If
+inclinometer reports errors, chances are the NI module is the culprit.
+
+### DisplacementSensorReportsInvalidCommand - 0x00020001 (131073)
 
 Internal to displacement sensor logic (DL-RS1A controller). Per DL-RS1A, "Make
 sure that the external device has sent a command listed in "Communication
@@ -59,99 +103,70 @@ commands" (page 11). As the command is always to read all data (FPGA doesn't
 know any other command), occurrence of this error would either point to some
 strange issue in the cRIO, FPGA software (bitfile) of DL-RS1A controller.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror
-operation.
+MTM1M3\_logevent\__displacementSensorWarning | sensorReportsInvalidCommand
 
-### Rectification
+MTM1M3\_imsData
 
-Check DL-RS1A communication unit, changes to CSC and FPGA bitfile.
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | sensorReportsInvalidCommand
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsInvalidCommand
 
-## DisplacementSensorReportsCommunicationTimeoutError - 0x00020002 (131074)
+### DisplacementSensorReportsCommunicationTimeoutError - 0x00020002 (131074)
 
 Reported by the DL-R51A unit, suggest problem of the controller communicating
 with the sensors. Communication could not be established between the DL and the
 amplifier.
 
-### Severity
+#### Rectification
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror
-operation.
-
-### Rectification
-
-Check DL-RS1A communication unit serial port wiring, power and cRIO module
-reading out the serial port (NI-9870 unit, Slot 8, port 1 of support system
-cRIO). Per RL-RS1A, check if the GT2-100 is not in the initial reset process or
+Per RL-RS1A manual, check if the GT2-100 is not in the initial reset process or
 reflecting the valid ID setting.
 
-### Telemetry
+#### Telemetry
 
-MTM1M3_logevent_displacementSensorWarning | sensorReportsCommunicationTimeoutError
+MTM1M3\_logevent\__displacementSensorWarning | sensorReportsCommunicationTimeoutError
 
-### Setting override
+MTM1M3\_imsData
+
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsCommunicationTimeoutError
 
-## DisplacementSensorReportsDataLengthError  - 0x00020003 (131075)
+### DisplacementSensorReportsDataLengthError  - 0x00020003 (131075)
 
 Data with the correct length was not received. Not expected, as the CSC doesn't
 send any data to IMS unit - it sends only requests to retrieve data.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror
-operation.
+MTM1M3\_logevent\__displacementSensorWarning | sensorReportsDataLenghtError
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | sensorReportsDataLenghtError
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsDataLengthError
 
-## DisplacementSensorReportsNumberOfParametersError - 0x00020004 (131076)
+### DisplacementSensorReportsNumberOfParametersError - 0x00020004 (131076)
 
 The correct number of parameters for the command was not received. Not expected, as the CSC doesn't
 send any data to IMS unit - it sends only requests to retrieve data.
 
-### Severit 
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\__displacementSensorWarning | sensorReportsNumberOfParametersError
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | sensorReportsNumberOfParametersError
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsNumberOfParametersError
 
-## DisplacementSensorReportsParameterError - 0x00020005 (131077)
+### DisplacementSensorReportsParameterError - 0x00020005 (131077)
 
-* A parameter exceeds its ranga of value.
+* A parameter exceeds its range of value.
 * The external device is trying to write a data type that cannot be written.
 * The external device is trying to read a data type that cannot be read.
 * The data format is incorrect
@@ -159,332 +174,312 @@ DisplacementSettings | FaultOnSensorReportsNumberOfParametersError
 Not expected, as the CSC doesn't send any data to IMS unit - it sends only
 requests to retrieve data.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\__displacementSensorWarning | sensorReportsParameterError
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | sensorReportsParameterError
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsParameterError
 
-## DisplacementSensorReportsCommunicationError - 0x00020006 (131078)
+### DisplacementSensorReportsCommunicationError - 0x00020006 (131078)
 
-An error was detected with RS-232C communication.
+An error was detected with sensor RS-232C communication.
 
-### Severity
-
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
-
-### Rectification
+#### Rectification
 
 Make sure that DL-RS1A and the external device have the same communication
 settings configured. For information on configuring DL-RS1A, refer to page 2 of
 the DL-RS1A user manual (available on Wiki Datasheets page).
 
-### Telemetry
+#### Telemetry
 
-MTM1M3_logevent_displacementSensorWarning | sensorReportsCommunicationError
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsCommunicationError
 
-### Setting override
+MTM1M3\_imsData
+
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsCommunicationError
 
-## DisplacementSensorReportsIDNumberError - 0x00020007 (131079)
+### DisplacementSensorReportsIDNumberError - 0x00020007 (131079)
 
 The ID number specified with the command is incorrect. Not expected, as the CSC
-doesn't send any data to IMS unit - it sends only requests to retrieve data.
+doesn't send any data to IMS unit - it sends only requests to retrieve all data.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsIDNumberError
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | sensorReportsIDNumberError
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsIDNumberError
 
-## DisplacementSensorReportsExpansionLineError - 0x00020008 (131080)
+### DisplacementSensorReportsExpansionLineError - 0x00020008 (131080)
 
 The communication could not be established due to a problem with an expansion line.
 
-### Severity
-
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
-
-### Rectification
+#### Rectification
 
 Check that each of the sensor amplifiers and DL-RS1A are securely and properly
 connected by referring to "Connecting the Unit to Sensor Amplifiers" (page 3i
 of DL-RS1A User manual - in Wiki Datasheets).
 
 Make sure that sensor amplifiers that are supported by DL-RS1A are connected
-(refer to page 4 of the DL-RS1A User manual).Check if the GT2-100 is not in the
+(refer to page 4 of the DL-RS1A User manual). Check if the GT2-100 is not in the
 initial reset process or reflecting the valid ID setting
 
-### Telemetry
+#### Telemetry
 
-MTM1M3_logevent_displacementSensorWarning | sensorReportsExpansionLineError
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsExpansionLineError
 
-### Setting override
+MTM1M3\_imsData
+
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsExpansionLineError
 
-## DisplacementSensorReportsWriteControlError - 0x00020009 (131081)
+### DisplacementSensorReportsWriteControlError - 0x00020009 (131081)
 
 DL-RS1A is not writable. Not expected, as the CSC doesn't send any data to IMS
 unit - it sends only requests to retrieve data.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\__displacementSensorWarning | sensorReportsWriteControlError
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | sensorReportsWriteControlError
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnSensorReportsWriteControlError
 
-## DisplacementResponseTimeoutError - 0x0002000A (131082)
+### DisplacementResponseTimeoutError - 0x0002000A (131082)
 
-Indicates timeout in communication between cRIO NI-9870 serial module and DL-RS1A IMS unit.
+Indicates timeout in communication between the cRIO NI-9870 serial module and
+DL-RS1A IMS unit.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\_displacementSensorWarning | responseTimeoutError
 
-### Rectification
-
-Confirm communication port availability on NI-9870 serial module. Check the
-DL-RS1A module is powered and properly wired. Try to replace DL-RS1A and NI-9870 serial module.
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | responseTimeoutError
+MTM1M3\_imsData
 
 ### Setting override
 
 DisplacementSettings | FaultOnResponseTimeoutError
 
-## DisplacementInvalidLength - 0x0002000B (131083)
+### DisplacementInvalidLength - 0x0002000B (131083)
 
 Triggered on invalid length of reply from the DL-RS1A. Most likely cause would
 be some DL-RS1A problems. This shall be similar to timeout problem (error
 0x2000A).
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\__displacementSensorWarning | invalidLength
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | invalidLength
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnInvalidLength
 
-## DisplacementUnknownCommand - 0x0002000C (131084)
+### DisplacementUnknownCommand - 0x0002000C (131084)
 
 Wrong reply from the DL-RS1A unit.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\_displacementSensorWarning | unknownCommand
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | unknownCommand
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnUnknownCommand
 
-## DisplacementUnknownProblem - 0x0002000D (131085)
+### DisplacementUnknownProblem - 0x0002000D (131085)
 
 Most likely problem in DL-RS1A communication.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\_displacementSensorWarning | unknownProblem
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | unknownProblem
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnUnknownProblem
 
-## DisplacementInvalidResponse - 0x0002000E (131086)
+### DisplacementInvalidResponse - 0x0002000E (131086)
 
 Wrong reply from the DL-RS1A unit.
 
-### Severity
+#### Telemetry
 
-IMS is optional - can be disabled and ignored. IMS is not needed for mirror operation.
+MTM1M3\_logevent\_displacementSensorWarning | invalidResponse
 
-### Rectification
+MTM1M3\_imsData
 
-Check unit response. If IMS data are still flowing in and doesn't show any
-problem, most likely this was a random error. If it re-occurs, try to replace
-IMS serial - sensor unit (DL-RS1A).
-
-### Telemetry
-
-MTM1M3_logevent_displacementSensorWarning | invalidResponse
-
-### Setting override
+#### Setting override
 
 DisplacementSettings | FaultOnInvalidResponse
 
-## InclinometerResponseTimeout - 0x00030001 (196609)
+## Inclinometer
+
+The M1M3 inclinometer is a key orientation sensor mounted on the mirror cell
+structure. Its primary function is to measure the real-time elevation angle of
+the M1M3 mirror cell relative to the gravity vector.
+
+As the Telescope Mount Assembly (TMA) rotates in elevation, the direction and
+magnitude of gravitational forces acting on the 17-ton glass mirror change
+continuously. The inclinometer provides the primary elevation angle input to
+the M1M3 Support Controller. The controller uses this angle as parameter to
+query a Look-Up Table (LUT) — interpolating via 5th-order splines — to
+calculate the exact axial and lateral support forces required from the 156
+pneumatic force actuators to support the mirror without deforming its optical
+figure.
 
 ### Severity
 
-Critical warning during movement and positioning operations.
+The support system requires verified elevation data for operation. Although TMA
+elevation data may serve as an alternative, operational experience demonstrates
+that its reliability degrades in boundary TMA states. Flawed elevation data
+risks inducing excessive mirror stress and critical glass oscillations,
+negatively impacting structural safety.
 
 ### Rectification
 
-Check RS-485 Modbus serial line to the inclinometer sensor. Confirm Modbus ID and baud rate settings on the cRIO serial port module.
+Using TMA Elevation - setting ForceActuatorSettings | UseInclinometer to False
+- is highly discouraged. TMA can at times provide inaccurate elevation, and
+this can prove fatal for the glass. Much safer would be to move mirror on
+static supports to zenith and fix inclinometer problem.
 
-### Telemetry
+Check inclinometer Modbus address - refer to T7 inclinometer documentation in
+Wiki Datasheets. Check RS-485 Modbus serial line to the inclinometer sensor.
+Confirm Modbus ID and baud rate settings on the cRIO serial port module. Check
+inclinometer power supply. Replace inclinometer and/or NI-9870 module.
 
-MTM1M3_logevent_inclinometerWarning | responseTimeout
+If the Displacement / IMS sensors shows communication issues, the most
+plausible common element to cause this is the NI-9870 serial module both units
+are connected.
 
-### Setting override
+### InclinometerResponseTimeout - 0x00030001 (196609)
+
+Inclinometer (providing independent measurement of the M1M3 cell orientation)
+is not sending data. Inclinometer is connected to port 2 of the slot 8 NI-9870
+unit, and uses serial port communication. Any interruption will cause
+inclinometer timeout.
+
+#### Telemetry
+
+MTM1M3\_logevent\_inclinometerWarning | responseTimeout
+
+MTM1M3\_inclinometerData | inclinometerAngle
+
+#### Setting override
 
 InclinometerSettings | FaultOnResponseTimeout
 
-## InclinometerInvalidCRC - 0x00030002 (196610)
+TMASettings | InclinometerDeviationDeg
 
-### Severity
+ForceActuatorSettings | UseInclinometer
 
-Warning - data frame dropped.
+### InclinometerInvalidCRC - 0x00030002 (196610)
 
-### Rectification
+Invalid CRC in inclinometer Modbus communication. 
 
-Inspect line termination resistors (120 Ohm) on the Modbus network. Check cable shielding and grounding near high-power force actuators.
+#### Telemetry
 
-### Telemetry
+MTM1M3\_logevent\_inclinometerWarning | invalidCRC
 
-MTM1M3_logevent_inclinometerWarning | invalidCRC
+MTM1M3\_inclinometerData | inclinometerAngle
 
-### Setting override
+#### Setting override
 
 InclinometerSettings | FaultOnInvalidCRC
 
-## InclinometerUnknownAddress - 0x00030003 (196611)
+TMASettings | InclinometerDeviationDeg
 
-### Severity
+ForceActuatorSettings | UseInclinometer
 
-Configuration Error.
+### InclinometerUnknownAddress - 0x00030003 (196611)
 
-### Rectification
+Inclinometer Modbus reply contains unknown source (reply originator) address.
+Inclinometer is assumed to be on original, default 127 address. If its address
+shall be changed, the address must be replaced in multiple .vi (LabVIEW FPGA
+source files).
 
-Verify target Modbus slave address in `InclinometerSettings.json` matches the DIP-switch / internal address of the inclinometer unit.
+Most likely inclinometer T7 unit issue. Very unlikely to ever appear, as the
+inclinometer shall not respond to queries send to different address.
 
-### Telemetry
+#### Telemetry
 
-MTM1M3_logevent_inclinometerWarning | unknownAddress
+MTM1M3\_logevent\_inclinometerWarning | unknownAddress
 
-### Setting override
+MTM1M3\_inclinometerData | inclinometerAngle
+
+#### Setting override
 
 InclinometerSettings | FaultOnUnknownAddress
 
-## InclinometerUnknownFunction - 0x00030004 (196612)
+TMASettings | InclinometerDeviationDeg
 
-### Severity
+ForceActuatorSettings | UseInclinometer
 
-Configuration Warning.
+### InclinometerUnknownFunction - 0x00030004 (196612)
 
-### Rectification
+Inclinometer unit Modbus reply contains wrong function code. Unexpected to
+occur, most likely caused by defective inclinometer unit or significant noise
+on inclinometer serial line.
 
-Verify Modbus function code sent by cRIO (e.g., Read Holding Registers 0x03) is supported by the inclinometer firmware.
+#### Telemetry
 
-### Telemetry
+MTM1M3\_logevent\_inclinometerWarning | unknownFunction
 
-MTM1M3_logevent_inclinometerWarning | unknownFunction
+MTM1M3\_inclinometerData | inclinometerAngle
 
-### Setting override
+#### Setting override
 
 InclinometerSettings | FaultOnUnknownFunction
 
-## InclinometerInvalidLength - 0x00030005 (196613)
+TMASettings | InclinometerDeviationDeg
 
-### Severity
+ForceActuatorSettings | UseInclinometer
 
-Warning - frame dropped.
+### InclinometerInvalidLength - 0x00030005 (196613)
 
-### Rectification
+Invalid length of Modbus response from the inclinometer unit.
 
-Check frame parsing logic in `Inclinometer` driver component and verify standard Modbus RTU payload lengths.
+#### Telemetry
 
-### Telemetry
+MTM1M3\_logevent\_inclinometerWarning | invalidLength
 
-MTM1M3_logevent_inclinometerWarning | invalidLength
+MTM1M3\_inclinometerData | inclinometerAngle
 
-### Setting override
+#### Setting override
 
 InclinometerSettings | FaultOnInvalidLength
 
-## InclinometerSensorReportsIllegalDataAddress - 0x00030006 (196614)
+### InclinometerSensorReportsIllegalDataAddress - 0x00030006 (196614)
 
-### Severity
+#### Severity
 
 Configuration Error.
 
-### Rectification
+#### Rectification
 
 Check register offset addresses mapped in configuration files against the vendor memory map for the inclinometer model.
 
 ### Telemetry
 
-MTM1M3_logevent_inclinometerWarning | sensorReportsIllegalDataAddress
+MTM1M3\_logevent\_inclinometerWarning | sensorReportsIllegalDataAddress
 
 ### Setting override
 
@@ -502,7 +497,7 @@ Ensure request types match read-only vs read/write permissions on the inclinomet
 
 ### Telemetry
 
-MTM1M3_logevent_inclinometerWarning | sensorReportsIllegalFunction
+MTM1M3\_logevent\_inclinometerWarning | sensorReportsIllegalFunction
 
 ### Setting override
 
@@ -520,7 +515,7 @@ Power cycle the inclinometer power bus and inspect health registers via direct M
 
 ### Telemetry
 
-MTM1M3_logevent_inclinometerWarning | unknownProblem
+MTM1M3\_logevent\_inclinometerWarning | unknownProblem
 
 ### Setting override
 
@@ -538,7 +533,7 @@ Inspect safety FPGA digital IO line for heartbeat toggle. Confirm handshake timi
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | heartbeatStateOutputMismatch
+MTM1M3\_logevent\_interlockSystemFault | heartbeatStateOutputMismatch
 
 ### Setting override
 
@@ -556,7 +551,7 @@ Check active fault matrix on the Global Interlock System (GIS) and hardwired saf
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | criticalFaultStateOutputMismatch
+MTM1M3\_logevent\_interlockSystemFault | criticalFaultStateOutputMismatch
 
 ### Setting override
 
@@ -574,7 +569,7 @@ Verify state machine transitions for mirror raise/lower sequences. Check digital
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | mirrorLoweringRaisingStateOutputMismatch
+MTM1M3\_logevent\_interlockSystemFault | mirrorLoweringRaisingStateOutputMismatch
 
 ### Setting override
 
@@ -592,7 +587,7 @@ Verify physical limit switch outputs and displacement sensors confirm mirror is 
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | mirrorParkedStateOutputMismatch
+MTM1M3\_logevent\_interlockSystemFault | mirrorParkedStateOutputMismatch
 
 ### Setting override
 
@@ -610,7 +605,7 @@ Inspect AC/DC power supply breakers and relay outputs for actuator power buses A
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | powerNetworksOff
+MTM1M3\_logevent\_interlockSystemFault | powerNetworksOff
 
 ### Setting override
 
@@ -628,7 +623,7 @@ Verify thermal control system power and interlock contactors are engaged. Inspec
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | thermalEquipmentOff
+MTM1M3\_logevent\_interlockSystemFault | thermalEquipmentOff
 
 ### Setting override
 
@@ -646,7 +641,7 @@ Verify metrology laser tracker power status and connection to external safety sy
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | laserTrackerOff
+MTM1M3\_logevent\_interlockSystemFault | laserTrackerOff
 
 ### Setting override
 
@@ -664,7 +659,7 @@ Check main pneumatic supply pressure gauge and digital pressure switches. Confir
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | airSupplyOff
+MTM1M3\_logevent\_interlockSystemFault | airSupplyOff
 
 ### Setting override
 
@@ -682,7 +677,7 @@ Seismic trigger detected by Global Interlock System. Verify structural integrity
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | gisEarthquake
+MTM1M3\_logevent\_interlockSystemFault | gisEarthquake
 
 ### Setting override
 
@@ -700,7 +695,7 @@ Locate and clear active Emergency Stop button press on GIS console or local M1M3
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | gisEStop
+MTM1M3\_logevent\_interlockSystemFault | gisEStop
 
 ### Setting override
 
@@ -718,7 +713,7 @@ Telescope Mount Assembly (TMA) commanded motion stop. Wait for TMA safety system
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | tmaMotionStop
+MTM1M3\_logevent\_interlockSystemFault | tmaMotionStop
 
 ### Setting override
 
@@ -736,7 +731,7 @@ Check network line and hardwired pulse train connecting M1M3 controller to Globa
 
 ### Telemetry
 
-MTM1M3_logevent_interlockSystemFault | gisHeartbeatLost
+MTM1M3\_logevent\_interlockSystemFault | gisHeartbeatLost
 
 ### Setting override
 
@@ -754,7 +749,7 @@ Inspect net calculated force distribution. Check for physical binding, incorrect
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | safetyLimit
+MTM1M3\_logevent\_forceControllerFault | safetyLimit
 
 ### Setting override
 
@@ -772,7 +767,7 @@ Calculated X-axis moment exceeds safety threshold. Check elevation angle inputs 
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | xMomentLimit
+MTM1M3\_logevent\_forceControllerFault | xMomentLimit
 
 ### Setting override
 
@@ -790,7 +785,7 @@ Calculated Y-axis moment exceeds safety threshold. Inspect elevation orientation
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | yMomentLimit
+MTM1M3\_logevent\_forceControllerFault | yMomentLimit
 
 ### Setting override
 
@@ -808,7 +803,7 @@ Calculated Z-axis (torsional) moment exceeds safety limit. Verify active optical
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | zMomentLimit
+MTM1M3\_logevent\_forceControllerFault | zMomentLimit
 
 ### Setting override
 
@@ -826,7 +821,7 @@ Relative force differential between adjacent force actuators exceeds limit. Chec
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | nearNeighborCheck
+MTM1M3\_logevent\_forceControllerFault | nearNeighborCheck
 
 ### Setting override
 
@@ -844,7 +839,7 @@ Vector sum magnitude of total force on single actuator cell exceeds safe operati
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | magnitudeLimit
+MTM1M3\_logevent\_forceControllerFault | magnitudeLimit
 
 ### Setting override
 
@@ -862,7 +857,7 @@ Gradient check across extended actuator zones failed. Inspect spatial force dema
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | farNeighborCheck
+MTM1M3\_logevent\_forceControllerFault | farNeighborCheck
 
 ### Setting override
 
@@ -880,7 +875,7 @@ Elevation-dependent force component clipped to max limit threshold. Verify incli
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | elevationForceClipping
+MTM1M3\_logevent\_forceControllerWarning | elevationForceClipping
 
 ### Setting override
 
@@ -898,7 +893,7 @@ Azimuth acceleration/wind balance demand clipped. Verify azimuth angle input str
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | azimuthForceClipping
+MTM1M3\_logevent\_forceControllerWarning | azimuthForceClipping
 
 ### Setting override
 
@@ -916,7 +911,7 @@ Thermal compensation force vector clipped. Check thermal sensor telemetry across
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | thermalForceClipping
+MTM1M3\_logevent\_forceControllerWarning | thermalForceClipping
 
 ### Setting override
 
@@ -934,7 +929,7 @@ Calculated static balancing forces exceeded envelope limit. Recalibrate mirror c
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | balanceForceClipping
+MTM1M3\_logevent\_forceControllerWarning | balanceForceClipping
 
 ### Setting override
 
@@ -952,7 +947,7 @@ Dynamic acceleration compensation force demands clipped. Verify mount accelerati
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | accelerationForceClipping
+MTM1M3\_logevent\_forceControllerWarning | accelerationForceClipping
 
 ### Setting override
 
@@ -970,7 +965,7 @@ Net force contribution from active optics bending modes is non-zero (violates fo
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | activeOpticNetForceCheck
+MTM1M3\_logevent\_forceControllerFault | activeOpticNetForceCheck
 
 ### Setting override
 
@@ -988,7 +983,7 @@ Bending mode correction force truncated at maximum actuator limits. Reduce magni
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | activeOpticForceClipping
+MTM1M3\_logevent\_forceControllerWarning | activeOpticForceClipping
 
 ### Setting override
 
@@ -1006,7 +1001,7 @@ Baseline deadweight compensation force clipped for target actuator. Verify deadw
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | staticForceClipping
+MTM1M3\_logevent\_forceControllerWarning | staticForceClipping
 
 ### Setting override
 
@@ -1024,7 +1019,7 @@ User/operator manual force offset command clipped. Lower manual force delta inpu
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | offsetForceClipping
+MTM1M3\_logevent\_forceControllerWarning | offsetForceClipping
 
 ### Setting override
 
@@ -1042,7 +1037,7 @@ Damping/velocity force compensation truncated. Verify velocity feedback signals 
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | velocityForceClipping
+MTM1M3\_logevent\_forceControllerWarning | velocityForceClipping
 
 ### Setting override
 
@@ -1060,7 +1055,7 @@ Final output demand force clipped by master actuator safety bounds. Inspect comb
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerWarning | forceClipping
+MTM1M3\_logevent\_forceControllerWarning | forceClipping
 
 ### Setting override
 
@@ -1078,7 +1073,7 @@ Sum of load cell feedback along X-axis exceeds safety threshold. Inspect hardpoi
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | measuredXForceLimit
+MTM1M3\_logevent\_forceControllerFault | measuredXForceLimit
 
 ### Setting override
 
@@ -1096,7 +1091,7 @@ Sum of load cell feedback along Y-axis exceeds safety threshold. Inspect lateral
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | measuredYForceLimit
+MTM1M3\_logevent\_forceControllerFault | measuredYForceLimit
 
 ### Setting override
 
@@ -1114,7 +1109,7 @@ Sum of axial load cell readings exceeds safe mirror weight range. Immediately ve
 
 ### Telemetry
 
-MTM1M3_logevent_forceControllerFault | measuredZForceLimit
+MTM1M3\_logevent\_forceControllerFault | measuredZForceLimit
 
 ### Setting override
 
@@ -1132,7 +1127,7 @@ Check cell light level status sensors. Mismatch indicates light leak into mirror
 
 ### Telemetry
 
-MTM1M3_logevent_cellLightWarning | sensorMismatch
+MTM1M3\_logevent\_cellLightWarning | sensorMismatch
 
 ### Setting override
 
@@ -1150,7 +1145,7 @@ Commanded status for Power Network A does not match feedback contactor relay. Ch
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | powerNetworkAOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | powerNetworkAOutputMismatch
 
 ### Setting override
 
@@ -1168,7 +1163,7 @@ Check contactors, circuit breakers, and digital feedback lines for Power Network
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | powerNetworkBOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | powerNetworkBOutputMismatch
 
 ### Setting override
 
@@ -1186,7 +1181,7 @@ Check contactors, circuit breakers, and digital feedback lines for Power Network
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | powerNetworkCOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | powerNetworkCOutputMismatch
 
 ### Setting override
 
@@ -1204,7 +1199,7 @@ Check contactors, circuit breakers, and digital feedback lines for Power Network
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | powerNetworkDOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | powerNetworkDOutputMismatch
 
 ### Setting override
 
@@ -1222,7 +1217,7 @@ Inspect auxiliary power bus A distribution panel, switching relays, and monitor 
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | auxPowerNetworkAOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | auxPowerNetworkAOutputMismatch
 
 ### Setting override
 
@@ -1240,7 +1235,7 @@ Inspect auxiliary power bus B distribution panel, switching relays, and monitor 
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | auxPowerNetworkBOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | auxPowerNetworkBOutputMismatch
 
 ### Setting override
 
@@ -1258,7 +1253,7 @@ Inspect auxiliary power bus C distribution panel, switching relays, and monitor 
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | auxPowerNetworkCOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | auxPowerNetworkCOutputMismatch
 
 ### Setting override
 
@@ -1276,7 +1271,7 @@ Inspect auxiliary power bus D distribution panel, switching relays, and monitor 
 
 ### Telemetry
 
-MTM1M3_logevent_powerSupplyFault | auxPowerNetworkDOutputMismatch
+MTM1M3\_logevent\_powerSupplyFault | auxPowerNetworkDOutputMismatch
 
 ### Setting override
 
@@ -1294,7 +1289,7 @@ Mirror raise sequence took longer than maximum configured timeout. Check pneumat
 
 ### Telemetry
 
-MTM1M3_logevent_supportOperationFault | raiseOperationTimeout
+MTM1M3\_logevent\_supportOperationFault | raiseOperationTimeout
 
 ### Setting override
 
@@ -1312,7 +1307,7 @@ Mirror lower sequence failed to reach static parked state within time limit. Che
 
 ### Telemetry
 
-MTM1M3_logevent_supportOperationFault | lowerOperationTimeout
+MTM1M3\_logevent\_supportOperationFault | lowerOperationTimeout
 
 ### Setting override
 
@@ -1330,7 +1325,7 @@ Check subnet communication loops to Individual Loop Controllers (ILC). Verify po
 
 ### Telemetry
 
-MTM1M3_logevent_ilcWarning | communicationTimeout
+MTM1M3\_logevent\_ilcWarning | communicationTimeout
 
 ### Setting override
 
@@ -1348,7 +1343,7 @@ Interrupt processing timeout on cRIO Modbus interface module. Check CPU utilizat
 
 ### Telemetry
 
-MTM1M3_logevent_ilcWarning | modbusIRQTimeout
+MTM1M3\_logevent\_ilcWarning | modbusIRQTimeout
 
 ### Setting override
 
@@ -1366,7 +1361,7 @@ Force actuator output feedback deviates from command setpoint continuously. Insp
 
 ### Telemetry
 
-MTM1M3_logevent_forceActuatorWarning | followingErrorCounting
+MTM1M3\_logevent\_forceActuatorWarning | followingErrorCounting
 
 ### Setting override
 
@@ -1384,7 +1379,7 @@ Large sudden step error between commanded and measured force on actuator. Check 
 
 ### Telemetry
 
-MTM1M3_logevent_forceActuatorFault | followingErrorImmediate
+MTM1M3\_logevent\_forceActuatorFault | followingErrorImmediate
 
 ### Setting override
 
@@ -1402,7 +1397,7 @@ General fault reported on hardpoint positioning mechanism. Check encoder feedbac
 
 ### Telemetry
 
-MTM1M3_logevent_hardpointActuatorFault | hardpointActuator
+MTM1M3\_logevent\_hardpointActuatorFault | hardpointActuator
 
 ### Setting override
 
@@ -1420,7 +1415,7 @@ Load cell reading on target hardpoint is out of valid electrical/physical bounds
 
 ### Telemetry
 
-MTM1M3_logevent_hardpointActuatorFault | loadCellError
+MTM1M3\_logevent\_hardpointActuatorFault | loadCellError
 
 ### Setting override
 
@@ -1438,7 +1433,7 @@ Measured force on hardpoint exceeds safe operational envelope during active opti
 
 ### Telemetry
 
-MTM1M3_logevent_hardpointActuatorFault | measuredForceError
+MTM1M3\_logevent\_hardpointActuatorFault | measuredForceError
 
 ### Setting override
 
@@ -1456,7 +1451,7 @@ Hardpoint load cell registered tension force exceeding maximum tension limit. Im
 
 ### Telemetry
 
-MTM1M3_logevent_hardpointActuatorFault | highTension
+MTM1M3\_logevent\_hardpointActuatorFault | highTension
 
 ### Setting override
 
