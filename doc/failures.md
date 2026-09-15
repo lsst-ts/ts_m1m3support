@@ -6,7 +6,7 @@ Unless noted, setting override are in SafetyControllerSettings section of the in
 
 Obviously meaning no fault. Used to reset previous error codes.
 
-## Air Controller - Air Valve
+## Air Controller - Air Valve (0x00010000 mask)
 
 Those errors occurs due to mismatch between commanded and desired master air
 valve state. There is only one, electronically controlled air valve. 
@@ -37,7 +37,7 @@ air.
 
 #### Telemetry
 
-MTM1M3\_logevent\__airSupplyStatus | airCommandedOn, airCommandOutputOn
+MTM1M3\_logevent\_airSupplyStatus | airCommandedOn, airCommandOutputOn
 
 MTM1M3\_hardpointMonitorData | breakawayPressure
 
@@ -56,7 +56,7 @@ when air valve is closed.
 
 #### Telemetry
 
-MTM1M3\_logevent\__airSupplyStatus | airCommandedOn, airValveOpened, airValveClosed
+MTM1M3\_logevent\_airSupplyStatus | airCommandedOn, airValveOpened, airValveClosed
 
 MTM1M3\_hardpointMonitorData | breakawayPressure
 
@@ -105,7 +105,7 @@ strange issue in the cRIO, FPGA software (bitfile) of DL-RS1A controller.
 
 #### Telemetry
 
-MTM1M3\_logevent\__displacementSensorWarning | sensorReportsInvalidCommand
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsInvalidCommand
 
 MTM1M3\_imsData
 
@@ -126,7 +126,7 @@ reflecting the valid ID setting.
 
 #### Telemetry
 
-MTM1M3\_logevent\__displacementSensorWarning | sensorReportsCommunicationTimeoutError
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsCommunicationTimeoutError
 
 MTM1M3\_imsData
 
@@ -141,7 +141,7 @@ send any data to IMS unit - it sends only requests to retrieve data.
 
 #### Telemetry
 
-MTM1M3\_logevent\__displacementSensorWarning | sensorReportsDataLenghtError
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsDataLenghtError
 
 MTM1M3\_imsData
 
@@ -156,7 +156,7 @@ send any data to IMS unit - it sends only requests to retrieve data.
 
 #### Telemetry
 
-MTM1M3\_logevent\__displacementSensorWarning | sensorReportsNumberOfParametersError
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsNumberOfParametersError
 
 MTM1M3\_imsData
 
@@ -176,7 +176,7 @@ requests to retrieve data.
 
 #### Telemetry
 
-MTM1M3\_logevent\__displacementSensorWarning | sensorReportsParameterError
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsParameterError
 
 MTM1M3\_imsData
 
@@ -250,7 +250,7 @@ unit - it sends only requests to retrieve data.
 
 #### Telemetry
 
-MTM1M3\_logevent\__displacementSensorWarning | sensorReportsWriteControlError
+MTM1M3\_logevent\_displacementSensorWarning | sensorReportsWriteControlError
 
 MTM1M3\_imsData
 
@@ -331,7 +331,7 @@ MTM1M3\_imsData
 
 DisplacementSettings | FaultOnInvalidResponse
 
-## Inclinometer
+## Inclinometer (0x00020000 mask)
 
 The M1M3 inclinometer is a key orientation sensor mounted on the mirror cell
 structure. Its primary function is to measure the real-time elevation angle of
@@ -356,9 +356,9 @@ negatively impacting structural safety.
 
 ### Rectification
 
-Using TMA Elevation - setting ForceActuatorSettings | UseInclinometer to False
-- is highly discouraged. TMA can at times provide inaccurate elevation, and
-this can prove fatal for the glass. Much safer would be to move mirror on
+Switching to TMA Elevation - setting ForceActuatorSettings | UseInclinometer to
+False - is highly discouraged. TMA can at times provide inaccurate elevation,
+and this can prove fatal for the glass. Much safer would be to move mirror on
 static supports to zenith and fix inclinometer problem.
 
 Check inclinometer Modbus address - refer to T7 inclinometer documentation in
@@ -370,26 +370,40 @@ If the Displacement / IMS sensors shows communication issues, the most
 plausible common element to cause this is the NI-9870 serial module both units
 are connected.
 
+Inclinometer is connected to port 2 of the NI-9870 serial module in slot 8 of
+support system cRIO.
+
+### Telemetry
+
+MTM1M3\_inclinometerData | inclinometerAngle
+
+### Setting override
+
+Those two settings controls allowable deviation among TMA and inclinometer, and
+if inclinometer is used at all. 
+
+UseInclinometer shall be set to False to not use inclinometer at all.
+
+When InclinometerDeviationDeg is equal or less than 0, discrepancy between TMA
+elevation and inclinometer angle is ignored. Otherwise, the absolute 
+
+TMASettings | InclinometerDeviationDeg
+
+ForceActuatorSettings | UseInclinometer
+
 ### InclinometerResponseTimeout - 0x00030001 (196609)
 
-Inclinometer (providing independent measurement of the M1M3 cell orientation)
-is not sending data. Inclinometer is connected to port 2 of the slot 8 NI-9870
-unit, and uses serial port communication. Any interruption will cause
-inclinometer timeout.
+Inclinometer is not sending data. Inclinometer is connected to port 2 of the
+slot 8 NI-9870 unit, and uses serial port communication. Any interruption will
+cause inclinometer timeout.
 
 #### Telemetry
 
 MTM1M3\_logevent\_inclinometerWarning | responseTimeout
 
-MTM1M3\_inclinometerData | inclinometerAngle
-
 #### Setting override
 
 InclinometerSettings | FaultOnResponseTimeout
-
-TMASettings | InclinometerDeviationDeg
-
-ForceActuatorSettings | UseInclinometer
 
 ### InclinometerInvalidCRC - 0x00030002 (196610)
 
@@ -399,15 +413,9 @@ Invalid CRC in inclinometer Modbus communication.
 
 MTM1M3\_logevent\_inclinometerWarning | invalidCRC
 
-MTM1M3\_inclinometerData | inclinometerAngle
-
 #### Setting override
 
 InclinometerSettings | FaultOnInvalidCRC
-
-TMASettings | InclinometerDeviationDeg
-
-ForceActuatorSettings | UseInclinometer
 
 ### InclinometerUnknownAddress - 0x00030003 (196611)
 
@@ -423,15 +431,9 @@ inclinometer shall not respond to queries send to different address.
 
 MTM1M3\_logevent\_inclinometerWarning | unknownAddress
 
-MTM1M3\_inclinometerData | inclinometerAngle
-
 #### Setting override
 
 InclinometerSettings | FaultOnUnknownAddress
-
-TMASettings | InclinometerDeviationDeg
-
-ForceActuatorSettings | UseInclinometer
 
 ### InclinometerUnknownFunction - 0x00030004 (196612)
 
@@ -443,15 +445,9 @@ on inclinometer serial line.
 
 MTM1M3\_logevent\_inclinometerWarning | unknownFunction
 
-MTM1M3\_inclinometerData | inclinometerAngle
-
 #### Setting override
 
 InclinometerSettings | FaultOnUnknownFunction
-
-TMASettings | InclinometerDeviationDeg
-
-ForceActuatorSettings | UseInclinometer
 
 ### InclinometerInvalidLength - 0x00030005 (196613)
 
@@ -461,73 +457,66 @@ Invalid length of Modbus response from the inclinometer unit.
 
 MTM1M3\_logevent\_inclinometerWarning | invalidLength
 
-MTM1M3\_inclinometerData | inclinometerAngle
-
 #### Setting override
 
 InclinometerSettings | FaultOnInvalidLength
 
 ### InclinometerSensorReportsIllegalDataAddress - 0x00030006 (196614)
 
-#### Severity
+Modbus exception code is equal to 2 (see
+https://simplymodbus.ca/learn-exceptions.html for list of Exception Codes).
 
-Configuration Error.
+Very unlikely to occur. If it occurs, it is probably inclinometer problem.
 
-#### Rectification
-
-Check register offset addresses mapped in configuration files against the vendor memory map for the inclinometer model.
-
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_inclinometerWarning | sensorReportsIllegalDataAddress
 
-### Setting override
+#### Setting override
 
 InclinometerSettings | FaultOnSensorReportsIllegalDataAddress
 
-## InclinometerSensorReportsIllegalFunction - 0x00030007 (196615)
+### InclinometerSensorReportsIllegalFunction - 0x00030007 (196615)
 
-### Severity
+Modbus exception code is equal to 1 (see
+https://simplymodbus.ca/learn-exceptions.html for list of Exception Codes).
 
-Configuration Error.
+Very unlikely to occur. If it occurs, it is probably inclinometer problem.
 
-### Rectification
-
-Ensure request types match read-only vs read/write permissions on the inclinometer registers.
-
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_inclinometerWarning | sensorReportsIllegalFunction
 
-### Setting override
+#### Setting override
 
 InclinometerSettings | FaultOnSensorReportsIllegalFunction
 
-## InclinometerUnknownProblem - 0x00030008 (196616)
+### InclinometerUnknownProblem - 0x00030008 (196616)
 
-### Severity
+Modbus exception code is not 1 or 2 (see
+https://simplymodbus.ca/learn-exceptions.html for list of Exception Codes).
 
-General Warning.
+Very unlikely to occur. If it occurs, it is probably inclinometer problem.
 
-### Rectification
-
-Power cycle the inclinometer power bus and inspect health registers via direct Modbus diagnostic query.
-
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_inclinometerWarning | unknownProblem
 
-### Setting override
+MTM1M3\_inclinometerData | inclinometerAngle
+
+#### Setting override
 
 InclinometerSettings | FaultOnUnknownProblem
 
-## InterlockHeartbeatStateOutputMismatch - 0x00040001 (262145)
+## Interlock
 
-### Severity
+### InterlockHeartbeatStateOutputMismatch - 0x00040001 (262145)
+
+#### Severity
 
 Critical Safety Fault - Prevents or halts active mirror support operation.
 
-### Rectification
+#### Rectification
 
 Inspect safety FPGA digital IO line for heartbeat toggle. Confirm handshake timing between Safety Controller and Main Controller cRIO.
 

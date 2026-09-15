@@ -422,14 +422,21 @@ SafetyControllerSettings:
   # If problems persists and TMA elevation is better than this, toggle
   # UseInclinometer to False/Off to use TMA elevation instead.
   InclinometerSettings:
-
+    # Fault when inclinometer modbus reply is not received.
     FaultOnResponseTimeout: On
+    # Fault when reply with invalid CRC is received.
     FaultOnInvalidCRC: On
+    # Fault when reply with unknown address is received.
     FaultOnUnknownAddress: On
+    # Fault when reply with unknown function code is received.
     FaultOnUnknownFunction: On
+    # Fault when reply with invalid length is received.
     FaultOnInvalidLength: On
+    # Fault when exception reply exception code is equal 2 (Illegal Data Address).
     FaultOnSensorReportsIllegalDataAddress: On
+    # Fault when exception reply exception code is equal 1 (Illegal Function).
     FaultOnSensorReportsIllegalFunction: On
+    # Fault when exception reply exception code isn't 1 or 2. 
     FaultOnUnknownProblem: On
   InterlockSettings:
     FaultOnHeartbeatStateOutputMismatch: On
