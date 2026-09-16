@@ -508,225 +508,151 @@ MTM1M3\_inclinometerData | inclinometerAngle
 
 InclinometerSettings | FaultOnUnknownProblem
 
-## Interlock
+## Interlock (0x00040000 mask)
+
+The following faults are triggered by interlocks. Those are the most common
+problems - as the M1M3 operation is blocked by something that says the mirror
+cannot be safely operated.
+
+### Severity
+
+Mirror support system shall not be operated with any active interlock. Priority
+shall be given to fix the problem then overriding the interlock condition.
+
+### Rectification
+
+Fix the interlock cause and reset the interlock.
 
 ### InterlockHeartbeatStateOutputMismatch - 0x00040001 (262145)
 
-#### Severity
-
-Critical Safety Fault - Prevents or halts active mirror support operation.
+Occurs when sensed interlock heartbeat signal output is different to commanded heartbeat signal.
 
 #### Rectification
 
-Inspect safety FPGA digital IO line for heartbeat toggle. Confirm handshake timing between Safety Controller and Main Controller cRIO.
+This is most likely software issue. If it ever occurs, it means the code
+sending signal out wasn't executed, but the code switching commanded heartbeat
+boolean variable was executed.
 
-### Telemetry
+If it ever occurs, check if an updated CSC version was installed. Try to run
+some old CSC to see if the problem reappears. Code to switch states can be
+tracked in CSC C++ source code, searching for provided telemetry items -
+heartbeatStateOutputMismatch, heartbeatCommandedState and heartbeatOutputState.
 
-MTM1M3\_logevent\_interlockSystemFault | heartbeatStateOutputMismatch
+#### Telemetry
 
-### Setting override
+MTM1M3\_logevent\_interlockWarning | heartbeatStateOutputMismatch
 
-SafetySettings | FaultOnHeartbeatStateOutputMismatch
+MTM1M3\_logevent\_interlockStatus | heartbeatCommandedState, heartbeatOutputState
 
-## InterlockCriticalFaultStateOutputMismatch - 0x00040002 (262146)
+#### Setting override
 
-### Severity
+InterlockSettings | FaultOnHeartbeatStateOutputMismatch
 
-Critical Safety Fault.
+### InterlockCriticalFaultStateOutputMismatch - 0x00040002 (262146)
 
-### Rectification
+Not used.
 
-Check active fault matrix on the Global Interlock System (GIS) and hardwired safety loop circuits. Resolve underlying critical trip before resetting interlock.
+### InterlockMirrorLoweringRaisingStateOutputMismatch - 0x00040003 (262147)
 
-### Telemetry
+Not used.
 
-MTM1M3\_logevent\_interlockSystemFault | criticalFaultStateOutputMismatch
+### InterlockMirrorParkedStateOutputMismatch - 0x00040004 (262148)
 
-### Setting override
+Not used.
 
-SafetySettings | FaultOnCriticalFaultStateOutputMismatch
+### InterlockPowerNetworksOff - 0x00040005 (262149)
 
-## InterlockMirrorLoweringRaisingStateOutputMismatch - 0x00040003 (262147)
+Activated when power is not supplied to the force actuators valves. This opens
+3-way solenoid valves, so the pressurized air inside cylinders bleeds out
+through flow restrictor orifice.
 
-### Severity
-
-Critical Safety Fault.
-
-### Rectification
-
-Verify state machine transitions for mirror raise/lower sequences. Check digital feedback signals from hardpoints and static support mechanisms.
-
-### Telemetry
-
-MTM1M3\_logevent\_interlockSystemFault | mirrorLoweringRaisingStateOutputMismatch
-
-### Setting override
-
-SafetySettings | FaultOnMirrorLoweringRaisingStateOutputMismatch
-
-## InterlockMirrorParkedStateOutputMismatch - 0x00040004 (262148)
-
-### Severity
-
-Critical Safety Fault.
-
-### Rectification
-
-Verify physical limit switch outputs and displacement sensors confirm mirror is securely resting on static supports (parked state).
-
-### Telemetry
-
-MTM1M3\_logevent\_interlockSystemFault | mirrorParkedStateOutputMismatch
-
-### Setting override
-
-SafetySettings | FaultOnMirrorParkedStateOutputMismatch
-
-## InterlockPowerNetworksOff - 0x00040005 (262149)
-
-### Severity
-
-Operational Interlock Fault.
-
-### Rectification
-
-Inspect AC/DC power supply breakers and relay outputs for actuator power buses A, B, C, and D. Ensure main power relays are commanded ON.
-
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_interlockSystemFault | powerNetworksOff
 
-### Setting override
+#### Setting override
 
 SafetySettings | FaultOnPowerNetworksOff
 
-## InterlockThermalEquipmentOff - 0x00040006 (262150)
+### InterlockThermalEquipmentOff - 0x00040006 (262150)
 
-### Severity
+This is in fact mirror doors interlock, signaling the mirror cell doors are
+open. For reasons we were unable to identify, GIS sometimes briefly triggers
+this interlock during observation. As this is a human-safety interlock,
+designed to prevent mirror operations when somebody is inside the mirror cell,
+it is usually ignored in GIS.
 
-Operational Interlock Warning / Fault.
+Extra caution needs to be carried when mirror cell doors are opened to allow
+access and work inside the cell. Afternoon walk around shall verify mirror cell
+is clear of any personal and equipment.
 
-### Rectification
+#### Rectification
 
-Verify thermal control system power and interlock contactors are engaged. Inspect fan and glycol cooling loop status inputs.
+Usually resetting CSC would be enough to fix the problem - the interlock
+triggers only briefly.
 
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_interlockSystemFault | thermalEquipmentOff
 
-### Setting override
+#### Setting override
 
 SafetySettings | FaultOnThermalEquipmentOff
 
-## InterlockLaserTrackerOff - 0x00040007 (262151)
+### InterlockLaserTrackerOff - 0x00040007 (262151)
 
-### Severity
+Not used.
 
-Warning / System Interlock.
+### InterlockAirSupplyOff - 0x00040008 (262152)
 
-### Rectification
+GIS is overriding M1M3 CSC control, closes air valve and opens bleed valve.
 
-Verify metrology laser tracker power status and connection to external safety system interlock loop.
-
-### Telemetry
-
-MTM1M3\_logevent\_interlockSystemFault | laserTrackerOff
-
-### Setting override
-
-SafetySettings | FaultOnLaserTrackerOff
-
-## InterlockAirSupplyOff - 0x00040008 (262152)
-
-### Severity
-
-Critical Interlock Fault - Pneumatic force actuators require pressurized air.
-
-### Rectification
-
-Check main pneumatic supply pressure gauge and digital pressure switches. Confirm supply valve is open and operating above minimum bar threshold.
-
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_interlockSystemFault | airSupplyOff
 
-### Setting override
+#### Setting override
 
 SafetySettings | FaultOnAirSupplyOff
 
-## InterlockGISEarthquake - 0x00040009 (262153)
+### InterlockGISEarthquake - 0x00040009 (262153)
 
-### Severity
+Not used.
 
-Emergency Safety Trip.
+### InterlockGISEStop - 0x0004000A (262154)
 
-### Rectification
+Not used.
 
-Seismic trigger detected by Global Interlock System. Verify structural integrity of mirror, cell, and supports prior to resetting seismic trip state.
+### InterlockTMAMotionStop - 0x0004000B (262155)
 
-### Telemetry
+TMA movement was stopped. This usually happens when TMA emergency breaks are
+activated.
 
-MTM1M3\_logevent\_interlockSystemFault | gisEarthquake
+#### Rectificationa
 
-### Setting override
+Clear all TMA interlocks.
 
-SafetySettings | FaultOnGISEarthquake
-
-## InterlockGISEStop - 0x0004000A (262154)
-
-### Severity
-
-Emergency Safety Trip - Immediate force release to safe state.
-
-### Rectification
-
-Locate and clear active Emergency Stop button press on GIS console or local M1M3 cell interface panels. Reset E-stop relay circuit.
-
-### Telemetry
-
-MTM1M3\_logevent\_interlockSystemFault | gisEStop
-
-### Setting override
-
-SafetySettings | FaultOnGISEStop
-
-## InterlockTMAMotionStop - 0x0004000B (262155)
-
-### Severity
-
-Operational Interlock.
-
-### Rectification
-
-Telescope Mount Assembly (TMA) commanded motion stop. Wait for TMA safety system clear signal before re-engaging active optics controller forces.
-
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_interlockSystemFault | tmaMotionStop
 
-### Setting override
+#### Setting override
 
 SafetySettings | FaultOnTMAMotionStop
 
-## InterlockGISHeartbeatLost - 0x0004000C (262156)
+### InterlockGISHeartbeatLost - 0x0004000C (262156)
 
-### Severity
+GIS heartbeat was lost. Either GIS issue, or a wiring issue.
 
-Critical Interlock Fault.
-
-### Rectification
-
-Check network line and hardwired pulse train connecting M1M3 controller to Global Interlock System. Confirm GIS controller power status.
-
-### Telemetry
+#### Telemetry
 
 MTM1M3\_logevent\_interlockSystemFault | gisHeartbeatLost
 
-### Setting override
+#### Setting override
 
 SafetySettings | FaultOnGISHeartbeatLost
 
-## ForceControllerSafetyLimit - 0x00050001 (327681)
+### ForceControllerSafetyLimit - 0x00050001 (327681)
 
 ### Severity
 

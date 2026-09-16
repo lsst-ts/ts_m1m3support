@@ -439,12 +439,19 @@ SafetyControllerSettings:
     # Fault when exception reply exception code isn't 1 or 2. 
     FaultOnUnknownProblem: On
   InterlockSettings:
+    # Fault on highly unlikely software error in the code sending out M1M3 SS heartbeats.
     FaultOnHeartbeatStateOutputMismatch: On
+    # Fault when 24 VDC bus, powering force actuator valves, is cut.
     FaultOnAuxPowerNetworksOff: On
+    # Fault on mirror cell doors open signal (name is wrong).
     FaultOnThermalEquipmentOff: On
+    # Fault when air supply valve operation is blocked by GIS.
     FaultOnAirSupplyOff: On
+    # Fault when cabinet doors are opened.
     FaultOnCabinetDoorOpen: On
+    # Fault when TMA motion was interruped.
     FaultOnTMAMotionStop: On
+    # Fault when GIS heartbeat signals are lost.
     FaultOnGISHeartbeatLost: On
   ForceControllerSettings:
     # When true/on, the support system will fail when applied cylinder force

@@ -122,7 +122,6 @@ struct FaultCodes {
         HardpointActuator = _MASK_HARDPOINT | 0x01,
         HardpointActuatorLoadCellError = _MASK_HARDPOINT | 0x02,
         HardpointActuatorMeasuredForceError = _MASK_HARDPOINT | 0x03,
-        HardpointHighTension = _MASK_HARDPOINT | 0x04,
 
         /**
          * Triggered when pressure as measured inside hardpoint breakway
@@ -170,6 +169,8 @@ struct FaultCodes {
          * FinePositioning.
          */
         HardpointUnstableError = _MASK_HARDPOINT | 0x0A,
+
+        HardpointHighTension = _MASK_HARDPOINT | 0x0B,
 
         TMAAzimuthTimeout = _MASK_TMA | 0x01,
         TMAElevationTimeout = _MASK_TMA | 0x02,
