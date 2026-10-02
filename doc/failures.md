@@ -560,7 +560,7 @@ Not used.
 
 Not used.
 
-### InterlockPowerNetworksOff - 0x00040005 (262149)
+### InterlockAuxPowerNetworksOff - 0x00040005 (262149)
 
 Activated when power is not supplied to the force actuators valves. This opens
 3-way solenoid valves, so the pressurized air inside cylinders bleeds out
@@ -572,7 +572,7 @@ MTM1M3\_logevent\_interlockSystemFault | powerNetworksOff
 
 #### Setting override
 
-SafetySettings | FaultOnPowerNetworksOff
+InterlockSettings | FaultOnAuxPowerNetworksOff
 
 ### InterlockThermalEquipmentOff - 0x00040006 (262150)
 
@@ -597,7 +597,7 @@ MTM1M3\_logevent\_interlockSystemFault | thermalEquipmentOff
 
 #### Setting override
 
-SafetySettings | FaultOnThermalEquipmentOff
+InterlockSettings | FaultOnThermalEquipmentOff
 
 ### InterlockLaserTrackerOff - 0x00040007 (262151)
 
@@ -1354,7 +1354,21 @@ MTM1M3\_logevent\_hardpointActuatorFault | measuredForceError
 
 HardpointSettings | FaultOnMeasuredForceError
 
-## HardpointHighTension - 0x000A0004 (655364)
+## HardpointActuatorAirPressureHigh - 0x000A0004 (655364)
+
+## HardpointActuatorAirPressureLow - 0x000A0005 (655365)
+
+## HardpointActuatorAirPressureOutside - 0x000A0006 (655366)
+
+## HardpointActuatorLimitLowError - 0x000A0007 (655367)
+
+## HardpointActuatorLimitHighError - 0x000A0008 (655368)
+
+## HardpointActuatorFollowingError - 0x000A0009 (655369)
+
+## HardpointUnstableError - 0x000A000A (6553670)
+
+## HardpointHighTension - 0x000A000B (655371)
 
 ### Severity
 
@@ -1371,3 +1385,11 @@ MTM1M3\_logevent\_hardpointActuatorFault | highTension
 ### Setting override
 
 HardpointSettings | FaultOnHighTension
+
+## TMAAzimuthTimeout - 0x000B0001 (720897)
+
+## TMAElevationTimeout - 0x000B0002 (720898)
+
+## TMAInclinometerDeviation - 0x000B0004 (720900)
+
+## UserPanic - 0x000C0001 (786433)
