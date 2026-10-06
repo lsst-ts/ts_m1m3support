@@ -367,40 +367,91 @@ PositionControllerSettings:
   ReferencePosition: [32438, 37387, 43686, 44733, 34861, 40855]
 SafetyControllerSettings:
   AirControllerSettings:
+    # Fault if sensed commanded state doesn't equal commanded valve state.
     FaultOnCommandOutputMismatch: On
+    # Fault if sensed valve state doesn't equal commanded (desired) state.
+    # Testing starts ValveTransitionTimeout after valve was commanded to change
+    # its state.
     FaultOnCommandSensorMismatch: On
+    # Maximal expected time to ignore discrepancy between sensed and commanded
+    # values. At each valve change, software ignores all fault conditions for
+    # this time in seconds. When the timeout expires, any discrepancy between
+    # commanded and desired state will trigger fault.
     ValveTransitionTimeout: 40
+  # The DisplacementSettings FaultOn... relates to Independent measurement
+  # system (IMS) (here referenced as displacement system) failures.
   DisplacementSettings:
+    # Fault on very unlikely internal displacement error.
     FaultOnSensorReportsInvalidCommand: On
+    # Fault when displacement sensor isn't communicating with the DL-RS1A
+    # control board.
     FaultOnSensorReportsCommunicationTimeoutError: On
+    # Fault when displacement sensor is sending data with wrong length to the
+    # DL-RS1A unit.
     FaultOnSensorReportsDataLengthError: On
+    # Fault when displacement sensor is sending wrong number of parameters in
+    # reply to DL-RS1A command.
     FaultOnSensorReportsNumberOfParametersError: On
+    # Fault when displacement sensor is sending wrong (out of range,..)
+    # parameters in reply to DL-RS1A command.
     FaultOnSensorReportsParameterError: On
+    # Fault when displacement sensor report communication error.
     FaultOnSensorReportsCommunicationError: On
+    # Fault when a command with wrong ID is send.
     FaultOnSensorReportsIDNumberError: On
+    # Fault when communication cannot be established due to a problem with an
+    # expansion line.
     FaultOnSensorReportsExpansionLineError: On
+    # Fault when DL-RS1A reports it is not writable. Not expected.
     FaultOnSensorReportsWriteControlError: On
+    # Fault when timeout occurs in communication between the cRIO NI-9870
+    # serial module and DL-RS1A unit.
     FaultOnResponseTimeoutError: On
+    # Fault when DL-RS1A reply has wrong length.
     FaultOnInvalidLength: On
+    # Fault on invalid reply from teh DL-RS1A unit.
     FaultOnInvalidResponse: On
+    # Fault on wrong command / reply from the DL-RS1A unit.
     FaultOnUnknownCommand: On
+    # Fault on some other problem - most likely in DL-RS1A and cRIO
+    # communication.
     FaultOnUnknownProblem: On
+  # Ignore faults of the mirror cell sensor. Use with caution - most likely you
+  # want to fix the problem, not override it.
+  #
+  # If problems persists and TMA elevation is better than this, toggle
+  # UseInclinometer to False/Off to use TMA elevation instead.
   InclinometerSettings:
+    # Fault when inclinometer modbus reply is not received.
     FaultOnResponseTimeout: On
+    # Fault when reply with invalid CRC is received.
     FaultOnInvalidCRC: On
+    # Fault when reply with unknown address is received.
     FaultOnUnknownAddress: On
+    # Fault when reply with unknown function code is received.
     FaultOnUnknownFunction: On
+    # Fault when reply with invalid length is received.
     FaultOnInvalidLength: On
+    # Fault when exception reply exception code is equal 2 (Illegal Data Address).
     FaultOnSensorReportsIllegalDataAddress: On
+    # Fault when exception reply exception code is equal 1 (Illegal Function).
     FaultOnSensorReportsIllegalFunction: On
+    # Fault when exception reply exception code isn't 1 or 2. 
     FaultOnUnknownProblem: On
   InterlockSettings:
+    # Fault on highly unlikely software error in the code sending out M1M3 SS heartbeats.
     FaultOnHeartbeatStateOutputMismatch: On
+    # Fault when 24 VDC bus, powering force actuator valves, is cut.
     FaultOnAuxPowerNetworksOff: On
+    # Fault on mirror cell doors open signal (name is wrong).
     FaultOnThermalEquipmentOff: On
+    # Fault when air supply valve operation is blocked by GIS.
     FaultOnAirSupplyOff: On
+    # Fault when cabinet doors are opened.
     FaultOnCabinetDoorOpen: On
+    # Fault when TMA motion was interruped.
     FaultOnTMAMotionStop: On
+    # Fault when GIS heartbeat signals are lost.
     FaultOnGISHeartbeatLost: On
   ForceControllerSettings:
     # When true/on, the support system will fail when applied cylinder force
@@ -430,7 +481,10 @@ SafetyControllerSettings:
     FaultForTensionAboveSupported: 90
     FaultForCompressionAboveSupported: 40
   CellLightSettings:
+    # Fault when commanded cell light switch state doesn't match sensed light
+    # switch state (lights power).
     FaultOnOutputMismatch: On
+    # Fault when sensed light state doesn't match commanded cell light switch state.
     FaultOnSensorMismatch: On
   PowerControllerSettings:
     FaultOnPowerNetworkAOutputMismatch: On
