@@ -481,7 +481,10 @@ SafetyControllerSettings:
     FaultForTensionAboveSupported: 90
     FaultForCompressionAboveSupported: 40
   CellLightSettings:
+    # Fault when commanded cell light switch state doesn't match sensed light
+    # switch state (lights power).
     FaultOnOutputMismatch: On
+    # Fault when sensed light state doesn't match commanded cell light switch state.
     FaultOnSensorMismatch: On
   PowerControllerSettings:
     FaultOnPowerNetworkAOutputMismatch: On
