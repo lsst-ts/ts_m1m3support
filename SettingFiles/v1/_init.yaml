@@ -409,9 +409,9 @@ SafetyControllerSettings:
     FaultOnXMomentLimit: On
     FaultOnYMomentLimit: On
     FaultOnZMomentLimit: On
-    FaultOnNearNeighborCheck: On
+    FaultOnNearNeighborCheck: Off
     FaultOnMagnitudeLimit: On
-    FaultOnFarNeighborCheck: On
+    FaultOnFarNeighborCheck: Off
     FaultOnElevationForceClipping: Off
     FaultOnAzimuthForceClipping: On
     FaultOnThermalForceClipping: On
