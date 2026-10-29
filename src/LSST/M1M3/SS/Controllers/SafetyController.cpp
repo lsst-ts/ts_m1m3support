@@ -242,7 +242,7 @@ void SafetyController::interlockNotifyHeartbeatStateOutputMismatch(bool conditio
 }
 
 void SafetyController::interlockNotifyAuxPowerNetworksOff(bool conditionFlag) {
-    _updateOverride(FaultCodes::InterlockPowerNetworksOff,
+    _updateOverride(FaultCodes::InterlockAuxPowerNetworksOff,
                     _safetyControllerSettings->Interlock.FaultOnAuxPowerNetworksOff, conditionFlag,
                     "Interlock Aux Power Bus Off");
 }

@@ -74,7 +74,7 @@ struct FaultCodes {
         InterlockCriticalFaultStateOutputMismatch = _MASK_INTERLOCK | 0x02,
         InterlockMirrorLoweringRaisingStateOutputMismatch = _MASK_INTERLOCK | 0x03,
         InterlockMirrorParkedStateOutputMismatch = _MASK_INTERLOCK | 0x04,
-        InterlockPowerNetworksOff = _MASK_INTERLOCK | 0x05,
+        InterlockAuxPowerNetworksOff = _MASK_INTERLOCK | 0x05,
         InterlockThermalEquipmentOff = _MASK_INTERLOCK | 0x06,
         InterlockLaserTrackerOff = _MASK_INTERLOCK | 0x07,
         InterlockAirSupplyOff = _MASK_INTERLOCK | 0x08,
@@ -122,7 +122,6 @@ struct FaultCodes {
         HardpointActuator = _MASK_HARDPOINT | 0x01,
         HardpointActuatorLoadCellError = _MASK_HARDPOINT | 0x02,
         HardpointActuatorMeasuredForceError = _MASK_HARDPOINT | 0x03,
-        HardpointHighTension = _MASK_HARDPOINT | 0x04,
 
         /**
          * Triggered when pressure as measured inside hardpoint breakway
@@ -170,6 +169,8 @@ struct FaultCodes {
          * FinePositioning.
          */
         HardpointUnstableError = _MASK_HARDPOINT | 0x0A,
+
+        HardpointHighTension = _MASK_HARDPOINT | 0x0B,
 
         TMAAzimuthTimeout = _MASK_TMA | 0x01,
         TMAElevationTimeout = _MASK_TMA | 0x02,
