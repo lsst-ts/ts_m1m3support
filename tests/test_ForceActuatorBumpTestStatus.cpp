@@ -1,7 +1,7 @@
 /*
- * This file is part of LSST M1M3 SS test suite. Tests ForceController.
+ * This file is part of ts_m1m3support.
  *
- * Developed for the LSST Telescope and Site Systems.
+ * Developed for the Vera C. Rubin Observatory Telescope and Site Systems.
  * This product includes software developed by the LSST Project
  * (https://www.lsst.org).
  * See the COPYRIGHT file at the top-level directory of this distribution
@@ -14,11 +14,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <limits>
@@ -52,19 +52,31 @@ TEST_CASE("M1M3 ForceActuatorBumpTestStatus data", "[ForceActuatorBumpTestStatus
     CHECK_NOTHROW(fa_bump_status.trigger_bump_test(0, true, false));
     CHECK(fa_bump_status.test_in_progress() == true);
 
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(1, actuator_id), WithinRel(0.665785193, 1e-3));
+    CHECK(actuator_id == 101);
+
     CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(2.400574684, 1e-3));
     CHECK(actuator_id == 101);
 
-    CHECK_THAT(fa_bump_status.minimal_tested_distance(155, actuator_id), WithinRel(5.103684425, 1e-3));
-    CHECK(actuator_id == 324);
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(150, actuator_id), WithinRel(3.461410522, 1e-3));
+    CHECK(actuator_id == 101);
+
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(155, actuator_id), WithinRel(3.784299612, 1e-3));
+    CHECK(actuator_id == 101);
 
     CHECK_NOTHROW(fa_bump_status.trigger_bump_test(149, true, true));
 
-    CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(1.76155436, 1e-3));
-    CHECK(actuator_id == 102);
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(1, actuator_id), WithinRel(0.665785193, 1e-3));
+    CHECK(actuator_id == 101);
 
-    CHECK_THAT(fa_bump_status.minimal_tested_distance(155, actuator_id), WithinRel(3.696306467, 1e-3));
-    CHECK(actuator_id == 102);
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(10, actuator_id), WithinRel(2.400574684, 1e-3));
+    CHECK(actuator_id == 101);
+
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(150, actuator_id), WithinRel(0.665784776, 1e-3));
+    CHECK(actuator_id == 437);
+
+    CHECK_THAT(fa_bump_status.minimal_tested_distance(155, actuator_id), WithinRel(1.401592255, 1e-3));
+    CHECK(actuator_id == 437);
 
     CHECK_NOTHROW(fa_bump_status.stop_all());
 
